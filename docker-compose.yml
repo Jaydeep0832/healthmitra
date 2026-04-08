@@ -24,7 +24,7 @@ services:
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - DATABASE_NAME=${DATABASE_NAME:-healthmitra}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-healthmitra-secret-2024}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-healthmitra-super-secret-2024}
       - JWT_ALGORITHM=HS256
       - JWT_EXPIRATION_MINUTES=1440
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}

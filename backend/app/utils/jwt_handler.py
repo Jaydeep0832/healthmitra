@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-JWT_SECRET = os.getenv("JWT_SECRET_KEY", "healthmitra-secret-key")
+JWT_SECRET = os.getenv("JWT_SECRET_KEY", "healthmitra-super-secret-2024")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRATION = int(os.getenv("JWT_EXPIRATION_MINUTES", "1440"))
 

@@ -184,12 +184,14 @@ function Register() {
     setError('');
     try {
       const submitData = {
-        ...formData,
-        age: parseInt(formData.age),
-        known_diseases: formData.known_diseases ? formData.known_diseases.split(',').map(s => s.trim()).filter(Boolean) : [],
-        allergies: formData.allergies ? formData.allergies.split(',').map(s => s.trim()).filter(Boolean) : [],
-        current_medicines: [],
-        pregnancy_status: false
+      ...formData,
+      age: parseInt(formData.age),
+      phone: formData.phone || null,           // ← send null instead of ""
+      emergency_contact: formData.emergency_contact || null,  // ← same issue here
+      known_diseases: formData.known_diseases ? formData.known_diseases.split(',').map(s => s.trim()).filter(Boolean) : [],
+      allergies: formData.allergies ? formData.allergies.split(',').map(s => s.trim()).filter(Boolean) : [],
+      current_medicines: [],
+      pregnancy_status: false
       };
       const res = await authAPI.register(submitData);
       localStorage.setItem('token', res.data.access_token);

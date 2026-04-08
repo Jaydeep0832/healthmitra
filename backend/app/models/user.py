@@ -1,3 +1,4 @@
+#user.py
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
 from datetime import datetime
@@ -22,9 +23,9 @@ class UserCreate(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=100)
     email: str = Field(..., min_length=5)
     password: str = Field(..., min_length=6)
-    phone: str = Field(..., min_length=10, max_length=15)
-    age: int = Field(..., ge=1, le=120)
-    gender: str = Field(..., pattern="^(male|female|other)$")
+    phone: Optional[str] = Field(None, min_length=10, max_length=15)
+    age: Optional[int] = Field(None, ge=1, le=120)
+    gender: Optional[str] = Field(None, pattern="^(male|female|other)$")
     village: Optional[str] = ""
     district: Optional[str] = ""
     state: Optional[str] = ""
@@ -84,9 +85,9 @@ class UserResponse(BaseModel):
     id: str
     full_name: str
     email: str
-    phone: str
-    age: int
-    gender: str
+    phone: str = ""
+    age: int = 0
+    gender: str = ""
     village: str = ""
     district: str = ""
     state: str = ""
