@@ -4,8 +4,117 @@ from bson import ObjectId
 from datetime import datetime
 from typing import Optional
 import re
+import os
+import json
+
+try:
+    import requests as http_requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 hospital_service = HospitalService()
+
+
+def translate_response_with_gemini(response_data: dict, target_language: str) -> dict:
+    """Translate the entire triage response to the target language using Gemini"""
+    if not GEMINI_API_KEY or not REQUESTS_AVAILABLE:
+        return response_data
+    if target_language == "english":
+        return response_data
+
+    language_names = {
+        "gujarati": "Gujarati (ગુજરાતી)",
+        "hindi": "Hindi (हिंदी)",
+        "tamil": "Tamil (தமிழ்)",
+        "marathi": "Marathi (मराठी)",
+        "bengali": "Bengali (বাংলা)",
+        "telugu": "Telugu (తెలుగు)",
+        "kannada": "Kannada (ಕನ್ನಡ)",
+        "malayalam": "Malayalam (മലയാളം)",
+    }
+
+    lang_name = language_names.get(target_language, target_language)
+
+    # Build a translation payload
+    to_translate = {
+        "recommendations": response_data.get("recommendations", []),
+        "precautions": response_data.get("precautions", []),
+        "when_to_see_doctor": response_data.get("when_to_see_doctor", ""),
+        "disclaimer": response_data.get("disclaimer", ""),
+        "possible_conditions": response_data.get("possible_conditions", []),
+    }
+
+    # Also translate medicine info
+    medicines = response_data.get("medicines_info", [])
+    med_names = [m.get("name", "") for m in medicines]
+    med_dosages = [m.get("dosage", "") for m in medicines]
+
+    prompt = (
+        f"Translate the following medical health guidance from English to {lang_name}. "
+        f"Keep medical terms, medicine names, and phone numbers as-is (do not translate them). "
+        f"Translate the rest naturally into {lang_name}.\n\n"
+        f"Return ONLY a JSON object with the same keys, with translated values.\n\n"
+        f"Input JSON:\n{json.dumps(to_translate, ensure_ascii=False)}\n\n"
+        f"Also translate these medicine dosage instructions (keep medicine names in English):\n"
+        f"Dosages: {json.dumps(med_dosages, ensure_ascii=False)}\n\n"
+        f"Return format:\n"
+        "{\n"
+        '  "recommendations": ["translated items..."],\n'
+        '  "precautions": ["translated items..."],\n'
+        '  "when_to_see_doctor": "translated text",\n'
+        '  "disclaimer": "translated text",\n'
+        '  "possible_conditions": ["translated items..."],\n'
+        '  "dosages": ["translated dosages..."]\n'
+        "}\n"
+        "IMPORTANT: Return ONLY the JSON object, no markdown fences, no other text."
+    )
+
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "temperature": 0.2,
+                "maxOutputTokens": 2048,
+            }
+        }
+        resp = http_requests.post(url, json=payload, timeout=30)
+        if resp.status_code == 200:
+            data = resp.json()
+            text = data["candidates"][0]["content"]["parts"][0]["text"]
+            # Clean markdown fences
+            cleaned = text.strip()
+            if cleaned.startswith("```"):
+                cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
+                cleaned = re.sub(r'\s*```$', '', cleaned)
+            translated = json.loads(cleaned)
+
+            # Apply translations
+            if translated.get("recommendations"):
+                response_data["recommendations"] = translated["recommendations"]
+            if translated.get("precautions"):
+                response_data["precautions"] = translated["precautions"]
+            if translated.get("when_to_see_doctor"):
+                response_data["when_to_see_doctor"] = translated["when_to_see_doctor"]
+            if translated.get("disclaimer"):
+                response_data["disclaimer"] = translated["disclaimer"]
+            if translated.get("possible_conditions"):
+                response_data["possible_conditions"] = translated["possible_conditions"]
+
+            # Apply translated dosages to medicines
+            translated_dosages = translated.get("dosages", [])
+            for i, med in enumerate(response_data.get("medicines_info", [])):
+                if i < len(translated_dosages):
+                    med["dosage"] = translated_dosages[i]
+
+            response_data["response_language"] = target_language
+    except Exception as e:
+        print(f"Translation error: {e}")
+
+    return response_data
 
 
 # ============================================================
@@ -540,7 +649,7 @@ class TriageService:
             "In case of emergency, call 108/102 immediately."
         )
 
-        return {
+        response = {
             "urgency_level": urgency_result["urgency_level"],
             "urgency_color": urgency_result["urgency_color"],
             "confidence": urgency_result["confidence"],
@@ -552,8 +661,18 @@ class TriageService:
             "when_to_see_doctor": when_to_see,
             "disclaimer": disclaimer,
             "nearby_hospitals": nearby_hospitals[:5],
-            "translated_response": None
+            "translated_response": None,
+            "response_language": "english"
         }
+
+        # Step 11: Translate response to user's language if not English
+        if language and language != "english":
+            try:
+                response = translate_response_with_gemini(response, language)
+            except Exception as e:
+                print(f"Translation step failed: {e}")
+
+        return response
 
     async def get_user_history(self, user_id: str) -> list:
         """Get user's triage history"""

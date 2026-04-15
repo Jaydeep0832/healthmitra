@@ -96,6 +96,9 @@ export const reportAPI = {
 export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
   getTriageTrends: () => api.get('/admin/triage-trends'),
+  getPatients: (skip = 0, limit = 50) => api.get(`/admin/patients?skip=${skip}&limit=${limit}`),
+  getPatientDetail: (id) => api.get(`/admin/patients/${id}`),
+  getVillageStats: () => api.get('/admin/village-stats'),
 };
 
 export default api;

@@ -112,28 +112,47 @@ function Hospitals() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [location, setLocation] = useState(null);
+  const [locationStatus, setLocationStatus] = useState('detecting'); // detecting, granted, denied, fallback
   const [filter, setFilter] = useState('all');
   const [searchText, setSearchText] = useState('');
-  const [radius, setRadius] = useState(100);
+  const [radius, setRadius] = useState(200);
 
   useEffect(() => {
-    const defaultLoc = { latitude: 25.3176, longitude: 82.9739 };
+    detectLocation();
+  }, []);
+
+  const detectLocation = () => {
+    setLocationStatus('detecting');
+    setError('');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
           const loc = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
           setLocation(loc);
-          fetchHospitals(loc.latitude, loc.longitude);
+          setLocationStatus('granted');
+          fetchHospitals(loc.latitude, loc.longitude, radius);
         },
-        () => { setLocation(defaultLoc); fetchHospitals(defaultLoc.latitude, defaultLoc.longitude); }
+        (err) => {
+          console.log('Geolocation error:', err.message);
+          // Use a central India fallback
+          const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 }; // Morbi, Gujarat area
+          setLocation(fallbackLoc);
+          setLocationStatus('fallback');
+          setError('📍 Location access denied. Showing hospitals near default location. Click "Detect My Location" to retry.');
+          fetchHospitals(fallbackLoc.latitude, fallbackLoc.longitude, radius);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
     } else {
-      setLocation(defaultLoc);
-      fetchHospitals(defaultLoc.latitude, defaultLoc.longitude);
+      const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 };
+      setLocation(fallbackLoc);
+      setLocationStatus('fallback');
+      setError('Your browser does not support geolocation. Showing hospitals near default location.');
+      fetchHospitals(fallbackLoc.latitude, fallbackLoc.longitude, radius);
     }
-  }, []);
+  };
 
-  const fetchHospitals = async (lat, lng, r = 100) => {
+  const fetchHospitals = async (lat, lng, r = 200) => {
     setLoading(true);
     try {
       const res = await hospitalAPI.getNearby(lat, lng, r);
@@ -183,9 +202,32 @@ function Hospitals() {
 
       {/* Location */}
       {location && (
-        <div style={S.locationBar}>
+        <div style={{
+          ...S.locationBar,
+          background: locationStatus === 'granted' ? '#f0fdf4' : '#fffbeb',
+          borderColor: locationStatus === 'granted' ? '#86efac' : '#fde68a',
+          color: locationStatus === 'granted' ? '#166534' : '#92400e',
+        }}>
           📍 Location: {location.latitude.toFixed(4)}°N, {location.longitude.toFixed(4)}°E
-          <span style={{ marginLeft: 'auto', color: '#059669' }}>✓ GPS Active</span>
+          <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {locationStatus === 'granted' ? (
+              <span style={{ color: '#059669' }}>✓ GPS Active</span>
+            ) : (
+              <>
+                <span style={{ color: '#d97706' }}>⚠ Default Location</span>
+                <button
+                  onClick={detectLocation}
+                  style={{
+                    background: '#059669', color: 'white', border: 'none',
+                    padding: '5px 12px', borderRadius: '8px', fontSize: '12px',
+                    fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit',
+                  }}
+                >
+                  📍 Detect My Location
+                </button>
+              </>
+            )}
+          </span>
         </div>
       )}
 
@@ -205,7 +247,7 @@ function Hospitals() {
             <span style={{ fontSize: '13px', color: '#64748b', fontWeight: '600', whiteSpace: 'nowrap' }}>
               Radius: <strong>{radius}km</strong>
             </span>
-            <input type="range" min="10" max="200" value={radius}
+            <input type="range" min="10" max="500" value={radius}
               onChange={e => {
                 setRadius(Number(e.target.value));
                 if (location) fetchHospitals(location.latitude, location.longitude, Number(e.target.value));

@@ -10,10 +10,24 @@ import Hospitals from './pages/Hospitals';
 import Reports from './pages/Reports';
 import History from './pages/History';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/login" />;
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+  );
+}
+
+function AdminRoute({ children }) {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) return <Navigate to="/login" />;
+  if (user.role !== 'admin') return <Navigate to="/dashboard" />;
   return (
     <>
       <Navbar />
@@ -36,6 +50,7 @@ function App() {
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

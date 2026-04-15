@@ -12,7 +12,7 @@ const S = {
     padding: '24px',
     fontFamily: "'Segoe UI', Roboto, sans-serif",
   },
-  container: { width: '100%', maxWidth: '420px' },
+  container: { width: '100%', maxWidth: '440px' },
   logoSection: { textAlign: 'center', marginBottom: '32px' },
   logoIcon: {
     width: '64px', height: '64px',
@@ -31,13 +31,30 @@ const S = {
     overflow: 'hidden',
     border: '1px solid #f1f5f9',
   },
-  cardHeader: {
-    background: 'linear-gradient(135deg, #059669, #0891b2)',
-    padding: '24px',
-    textAlign: 'center',
+  roleTabs: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '0',
   },
-  cardHeaderTitle: { color: 'white', fontWeight: '800', fontSize: '20px', margin: '0 0 4px 0' },
-  cardHeaderSub: { color: 'rgba(255,255,255,0.8)', fontSize: '13px', margin: 0 },
+  roleTab: (active, isAdmin) => ({
+    padding: '18px 16px',
+    textAlign: 'center',
+    cursor: 'pointer',
+    fontWeight: '800',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    border: 'none',
+    transition: 'all 0.3s',
+    background: active
+      ? (isAdmin ? 'linear-gradient(135deg, #7c3aed, #5b21b6)' : 'linear-gradient(135deg, #059669, #0891b2)')
+      : '#f8fafc',
+    color: active ? 'white' : '#94a3b8',
+    borderBottom: active ? 'none' : '2px solid #e2e8f0',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+  }),
   cardBody: { padding: '28px' },
   errorBox: {
     background: '#fff1f2',
@@ -51,6 +68,18 @@ const S = {
     alignItems: 'center',
     gap: '8px',
   },
+  roleInfoBox: (isAdmin) => ({
+    background: isAdmin ? '#faf5ff' : '#f0fdf4',
+    border: `1px solid ${isAdmin ? '#e9d5ff' : '#bbf7d0'}`,
+    borderRadius: '12px',
+    padding: '12px 16px',
+    marginBottom: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontSize: '13px',
+    color: isAdmin ? '#6d28d9' : '#166534',
+  }),
   label: {
     display: 'block',
     fontSize: '11px',
@@ -73,9 +102,11 @@ const S = {
     fontFamily: 'inherit',
     outline: 'none',
   },
-  submitBtn: {
+  submitBtn: (isAdmin) => ({
     width: '100%',
-    background: 'linear-gradient(135deg, #059669, #047857)',
+    background: isAdmin
+      ? 'linear-gradient(135deg, #7c3aed, #5b21b6)'
+      : 'linear-gradient(135deg, #059669, #047857)',
     color: 'white',
     border: 'none',
     borderRadius: '14px',
@@ -83,11 +114,13 @@ const S = {
     fontSize: '16px',
     fontWeight: '800',
     cursor: 'pointer',
-    boxShadow: '0 6px 20px rgba(5,150,105,0.4)',
+    boxShadow: isAdmin
+      ? '0 6px 20px rgba(124,58,237,0.4)'
+      : '0 6px 20px rgba(5,150,105,0.4)',
     transition: 'all 0.3s',
     marginBottom: '20px',
     fontFamily: 'inherit',
-  },
+  }),
   linkRow: { textAlign: 'center', color: '#64748b', fontSize: '14px' },
   link: { color: '#059669', fontWeight: '700', textDecoration: 'none' },
   emergencyBox: {
@@ -115,6 +148,9 @@ function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [role, setRole] = useState('patient'); // 'patient' or 'admin'
+
+  const isAdmin = role === 'admin';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,15 +158,37 @@ function Login() {
     setError('');
     try {
       const response = await authAPI.login({ email, password });
+      const userData = response.data.user;
+
+      // Check if user role matches selected role tab
+      if (isAdmin && userData.role !== 'admin') {
+        setError('This account is not registered as an ASHA Worker. Please use the Patient login.');
+        setLoading(false);
+        return;
+      }
+      if (!isAdmin && userData.role === 'admin') {
+        setError('This is an ASHA Worker account. Please use the ASHA Worker login tab.');
+        setLoading(false);
+        return;
+      }
+
       localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      navigate('/dashboard');
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      // Route based on role
+      if (userData.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid email or password.');
     } finally {
       setLoading(false);
     }
   };
+
+  const focusColor = isAdmin ? '#7c3aed' : '#059669';
 
   return (
     <div style={S.page}>
@@ -142,12 +200,34 @@ function Login() {
         </div>
 
         <div style={S.card}>
-          <div style={S.cardHeader}>
-            <p style={S.cardHeaderTitle}>Welcome Back 👋</p>
-            <p style={S.cardHeaderSub}>Login to access your health dashboard</p>
+          {/* Role Tabs */}
+          <div style={S.roleTabs}>
+            <button
+              style={S.roleTab(role === 'patient', false)}
+              onClick={() => { setRole('patient'); setError(''); }}
+            >
+              <span>🧑‍🤝‍🧑</span> Patient Login
+            </button>
+            <button
+              style={S.roleTab(role === 'admin', true)}
+              onClick={() => { setRole('admin'); setError(''); }}
+            >
+              <span>👩‍⚕️</span> ASHA Worker Login
+            </button>
           </div>
 
           <div style={S.cardBody}>
+            {/* Role Info */}
+            <div style={S.roleInfoBox(isAdmin)}>
+              <span style={{ fontSize: '20px' }}>{isAdmin ? '👩‍⚕️' : '🧑‍🤝‍🧑'}</span>
+              <span>
+                {isAdmin
+                  ? 'Login as ASHA Worker / Admin to manage patients and view health trends'
+                  : 'Login as Patient to check symptoms, find hospitals, and manage health'
+                }
+              </span>
+            </div>
+
             {error && (
               <div style={S.errorBox}>⚠️ {error}</div>
             )}
@@ -162,7 +242,7 @@ function Login() {
                   style={S.input}
                   placeholder="Enter your email"
                   required
-                  onFocus={e => e.target.style.borderColor = '#059669'}
+                  onFocus={e => e.target.style.borderColor = focusColor}
                   onBlur={e => e.target.style.borderColor = '#e2e8f0'}
                 />
               </div>
@@ -176,7 +256,7 @@ function Login() {
                   style={S.input}
                   placeholder="Enter your password"
                   required
-                  onFocus={e => e.target.style.borderColor = '#059669'}
+                  onFocus={e => e.target.style.borderColor = focusColor}
                   onBlur={e => e.target.style.borderColor = '#e2e8f0'}
                 />
               </div>
@@ -184,9 +264,12 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                style={{ ...S.submitBtn, opacity: loading ? 0.7 : 1 }}
+                style={{ ...S.submitBtn(isAdmin), opacity: loading ? 0.7 : 1 }}
               >
-                {loading ? '⏳ Logging in...' : '🚀 Login to Dashboard'}
+                {loading
+                  ? '⏳ Logging in...'
+                  : isAdmin ? '🔐 Login as ASHA Worker' : '🚀 Login to Dashboard'
+                }
               </button>
             </form>
 

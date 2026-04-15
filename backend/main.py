@@ -16,6 +16,16 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 Starting HealthMitra Backend...")
     await connect_to_database()
+
+    # Auto-seed hospitals if collection is empty
+    try:
+        from app.services.hospital_service import HospitalService
+        hospital_svc = HospitalService()
+        count = await hospital_svc.seed_hospitals()
+        print(f"🏥 Hospitals ready: {count} in database")
+    except Exception as e:
+        print(f"⚠️ Hospital seeding note: {e}")
+
     yield
     # Shutdown
     await close_database_connection()

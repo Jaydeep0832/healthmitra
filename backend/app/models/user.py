@@ -35,6 +35,7 @@ class UserCreate(BaseModel):
     current_medicines: Optional[List[str]] = []
     emergency_contact: Optional[str] = ""
     pregnancy_status: Optional[bool] = False
+    role: str = Field(default="patient", pattern="^(patient|admin)$")
 
     class Config:
         json_schema_extra = {

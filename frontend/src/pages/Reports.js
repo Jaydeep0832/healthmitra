@@ -53,6 +53,18 @@ const S = {
     background: '#faf5ff', border: '1px solid #d8b4fe',
     borderRadius: '14px', padding: '18px', marginBottom: '16px',
   },
+  riskBadge: (level) => ({
+    display: 'inline-flex', alignItems: 'center', gap: '6px',
+    padding: '6px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: '800',
+    background: level === 'high' ? '#fee2e2' : level === 'medium' ? '#fef3c7' : '#dcfce7',
+    color: level === 'high' ? '#dc2626' : level === 'medium' ? '#d97706' : '#16a34a',
+    border: `1px solid ${level === 'high' ? '#fca5a5' : level === 'medium' ? '#fde68a' : '#86efac'}`,
+  }),
+  suggestionItem: {
+    display: 'flex', alignItems: 'flex-start', gap: '10px',
+    padding: '12px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0',
+    borderRadius: '12px', marginBottom: '8px',
+  },
   abnormalItem: {
     background: 'white', border: '1px solid #fca5a5',
     borderRadius: '12px', padding: '14px', marginBottom: '8px',
@@ -123,6 +135,12 @@ function Reports() {
     } finally { setLoading(false); }
   };
 
+  const getRiskIcon = (level) => {
+    if (level === 'high') return '🔴';
+    if (level === 'medium') return '🟡';
+    return '🟢';
+  };
+
   return (
     <div style={S.page}>
       {/* Header */}
@@ -130,7 +148,7 @@ function Reports() {
         <div style={S.headerIcon}>📄</div>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1e293b', margin: 0 }}>Medical Reports</h1>
-          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Upload and analyze lab reports, prescriptions, and X-rays</p>
+          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Upload and get AI-powered analysis with health suggestions</p>
         </div>
       </div>
 
@@ -195,9 +213,9 @@ function Reports() {
                   {loading ? (
                     <>
                       <div style={{ width: '18px', height: '18px', border: '3px solid rgba(124,58,237,0.3)', borderTop: '3px solid #7c3aed', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div>
-                      Analyzing Report...
+                      Analyzing with AI...
                     </>
-                  ) : <><span>🔬</span> Upload & Analyze</>}
+                  ) : <><span>🔬</span> Upload & Analyze with AI</>}
                 </button>
               </form>
             </div>
@@ -207,22 +225,73 @@ function Reports() {
           {result && (
             <div style={S.card}>
               <div style={S.resultHeader}>
-                <p style={{ color: 'white', fontWeight: '900', fontSize: '17px', margin: '0 0 4px 0' }}>
-                  🔍 Analysis Complete!
-                </p>
-                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', margin: 0 }}>
-                  {docIcons[result.document_type] || '📄'} {result.document_type?.replace(/_/g, ' ')} · {result.file_name}
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <p style={{ color: 'white', fontWeight: '900', fontSize: '17px', margin: '0 0 4px 0' }}>
+                      🔍 AI Analysis Complete!
+                    </p>
+                    <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', margin: 0 }}>
+                      {docIcons[result.document_type] || '📄'} {result.document_type?.replace(/_/g, ' ')} · {result.file_name}
+                    </p>
+                  </div>
+                  {result.risk_level && (
+                    <span style={S.riskBadge(result.risk_level)}>
+                      {getRiskIcon(result.risk_level)} Risk: {result.risk_level?.toUpperCase()}
+                    </span>
+                  )}
+                </div>
               </div>
               <div style={S.cardBody}>
 
-                {/* Summary */}
+                {/* AI Summary */}
                 <div style={S.summaryBox}>
                   <p style={{ fontWeight: '800', color: '#6d28d9', margin: '0 0 10px 0', fontSize: '14px' }}>🤖 AI Summary</p>
                   <pre style={{ whiteSpace: 'pre-wrap', fontSize: '13px', color: '#4c1d95', fontFamily: 'inherit', lineHeight: '1.7', margin: 0 }}>
                     {result.ai_summary}
                   </pre>
                 </div>
+
+                {/* Health Suggestions */}
+                {result.ai_suggestions?.length > 0 && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <p style={{ fontWeight: '800', color: '#059669', margin: '0 0 10px 0', fontSize: '14px' }}>💡 Health Suggestions</p>
+                    {result.ai_suggestions.map((s, i) => (
+                      <div key={i} style={S.suggestionItem}>
+                        <span style={{ color: '#059669', fontWeight: '800', fontSize: '14px', flexShrink: 0 }}>{i + 1}.</span>
+                        <span style={{ color: '#166534', fontSize: '13px' }}>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Diet & Lifestyle Advice */}
+                {(result.diet_advice || result.lifestyle_advice) && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                    {result.diet_advice && (
+                      <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '14px' }}>
+                        <p style={{ fontWeight: '800', color: '#92400e', fontSize: '13px', margin: '0 0 6px 0' }}>🥗 Diet Advice</p>
+                        <p style={{ color: '#78350f', fontSize: '12px', margin: 0, lineHeight: '1.5' }}>{result.diet_advice}</p>
+                      </div>
+                    )}
+                    {result.lifestyle_advice && (
+                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '14px' }}>
+                        <p style={{ fontWeight: '800', color: '#1d4ed8', fontSize: '13px', margin: '0 0 6px 0' }}>🏃 Lifestyle Advice</p>
+                        <p style={{ color: '#1e40af', fontSize: '12px', margin: 0, lineHeight: '1.5' }}>{result.lifestyle_advice}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Doctor Visit Advice */}
+                {result.when_to_see_doctor && (
+                  <div style={{ background: 'linear-gradient(135deg, #eff6ff, #dbeafe)', border: '1px solid #93c5fd', borderRadius: '14px', padding: '16px', marginBottom: '16px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>👨‍⚕️</span>
+                    <div>
+                      <p style={{ fontWeight: '800', color: '#1d4ed8', margin: '0 0 4px 0', fontSize: '13px' }}>When to See Doctor</p>
+                      <p style={{ color: '#1e40af', fontSize: '13px', margin: 0, lineHeight: '1.5' }}>{result.when_to_see_doctor}</p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Abnormal Values */}
                 {result.abnormal_values?.length > 0 && (
@@ -297,17 +366,36 @@ function Reports() {
                           {report.created_at?.substring(0, 10)}
                         </p>
                       </div>
-                      <span style={{ background: '#f1f5f9', color: '#64748b', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '700', textTransform: 'capitalize', flexShrink: 0 }}>
-                        {report.document_type?.replace(/_/g, ' ')}
-                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
+                        <span style={{ background: '#f1f5f9', color: '#64748b', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '700', textTransform: 'capitalize' }}>
+                          {report.document_type?.replace(/_/g, ' ')}
+                        </span>
+                        {report.risk_level && (
+                          <span style={{
+                            fontSize: '10px', fontWeight: '700', padding: '2px 6px', borderRadius: '6px',
+                            background: report.risk_level === 'high' ? '#fee2e2' : report.risk_level === 'medium' ? '#fef3c7' : '#dcfce7',
+                            color: report.risk_level === 'high' ? '#dc2626' : report.risk_level === 'medium' ? '#d97706' : '#16a34a'
+                          }}>
+                            {getRiskIcon(report.risk_level)} {report.risk_level}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {selected?.id === report.id && (
                       <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e9d5ff' }}>
                         <p style={{ fontSize: '11px', color: '#7c3aed', fontWeight: '700', margin: '0 0 6px 0' }}>AI Summary:</p>
                         <p style={{ fontSize: '11px', color: '#64748b', margin: 0, lineHeight: '1.5' }}>
-                          {report.ai_summary?.substring(0, 250)}...
+                          {report.ai_summary?.substring(0, 300)}...
                         </p>
+                        {report.ai_suggestions?.length > 0 && (
+                          <div style={{ marginTop: '8px' }}>
+                            <p style={{ fontSize: '11px', color: '#059669', fontWeight: '700', margin: '0 0 4px 0' }}>Suggestions:</p>
+                            {report.ai_suggestions.slice(0, 3).map((s, j) => (
+                              <p key={j} style={{ fontSize: '11px', color: '#166534', margin: '0 0 2px 0' }}>• {s}</p>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

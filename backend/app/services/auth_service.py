@@ -42,7 +42,7 @@ class AuthService:
             "current_medicines": user_data.current_medicines or [],
             "emergency_contact": user_data.emergency_contact or "",
             "pregnancy_status": user_data.pregnancy_status or False,
-            "role": "patient",
+            "role": user_data.role if hasattr(user_data, 'role') and user_data.role else "patient",
             "is_active": True,
             "latitude": None,
             "longitude": None,

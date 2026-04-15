@@ -341,11 +341,18 @@ class HospitalService:
 
     async def seed_hospitals(self):
         db = get_database()
-        await db.hospitals.delete_many({})
+        existing = await db.hospitals.count_documents({})
+        if existing > 0:
+            return existing  # Already seeded, skip
+
+        hospitals_to_insert = []
         for h in SAMPLE_HOSPITALS:
-            h["is_active"] = True
-            h["created_at"] = datetime.utcnow()
-        result = await db.hospitals.insert_many(SAMPLE_HOSPITALS)
+            hospital = dict(h)  # Create a copy to avoid mutating the original
+            hospital["is_active"] = True
+            hospital["created_at"] = datetime.utcnow()
+            hospitals_to_insert.append(hospital)
+
+        result = await db.hospitals.insert_many(hospitals_to_insert)
         return len(result.inserted_ids)
 
     async def find_nearby(self, latitude, longitude, radius_km=200.0,

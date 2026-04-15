@@ -61,11 +61,13 @@ const S = {
     overflow: 'hidden',
     border: '1px solid #f1f5f9',
   },
-  cardHeader: {
-    background: 'linear-gradient(135deg, #059669, #0891b2)',
+  cardHeader: (isAdmin) => ({
+    background: isAdmin
+      ? 'linear-gradient(135deg, #7c3aed, #5b21b6)'
+      : 'linear-gradient(135deg, #059669, #0891b2)',
     padding: '20px 24px',
     textAlign: 'center',
-  },
+  }),
   cardHeaderTitle: { color: 'white', fontWeight: '800', fontSize: '18px', margin: 0 },
   cardBody: { padding: '28px' },
   errorBox: {
@@ -77,6 +79,25 @@ const S = {
     fontSize: '13px',
     marginBottom: '20px',
   },
+  roleSelector: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '12px',
+    marginBottom: '20px',
+  },
+  roleCard: (active, isAdmin) => ({
+    padding: '18px 14px',
+    borderRadius: '16px',
+    border: active
+      ? `3px solid ${isAdmin ? '#7c3aed' : '#059669'}`
+      : '3px solid #e2e8f0',
+    background: active
+      ? (isAdmin ? '#faf5ff' : '#f0fdf4')
+      : 'white',
+    cursor: 'pointer',
+    textAlign: 'center',
+    transition: 'all 0.3s',
+  }),
   grid2: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -130,9 +151,11 @@ const S = {
     cursor: 'pointer',
     fontFamily: 'inherit',
   },
-  nextBtn: {
+  nextBtn: (isAdmin) => ({
     flex: 2,
-    background: 'linear-gradient(135deg, #059669, #047857)',
+    background: isAdmin
+      ? 'linear-gradient(135deg, #7c3aed, #5b21b6)'
+      : 'linear-gradient(135deg, #059669, #047857)',
     color: 'white',
     border: 'none',
     borderRadius: '12px',
@@ -140,9 +163,11 @@ const S = {
     fontSize: '15px',
     fontWeight: '800',
     cursor: 'pointer',
-    boxShadow: '0 4px 15px rgba(5,150,105,0.35)',
+    boxShadow: isAdmin
+      ? '0 4px 15px rgba(124,58,237,0.35)'
+      : '0 4px 15px rgba(5,150,105,0.35)',
     fontFamily: 'inherit',
-  },
+  }),
   linkRow: { textAlign: 'center', color: '#64748b', fontSize: '14px', marginTop: '20px' },
   link: { color: '#059669', fontWeight: '700', textDecoration: 'none' },
   disclaimer: { textAlign: 'center', color: '#94a3b8', fontSize: '11px', marginTop: '16px' },
@@ -155,10 +180,13 @@ function Register() {
     full_name: '', email: '', password: '', phone: '',
     age: '', gender: 'male', village: '', district: '',
     state: '', preferred_language: 'english',
-    known_diseases: '', allergies: '', emergency_contact: ''
+    known_diseases: '', allergies: '', emergency_contact: '',
+    role: 'patient'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const isAdmin = formData.role === 'admin';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -186,8 +214,8 @@ function Register() {
       const submitData = {
       ...formData,
       age: parseInt(formData.age),
-      phone: formData.phone || null,           // ← send null instead of ""
-      emergency_contact: formData.emergency_contact || null,  // ← same issue here
+      phone: formData.phone || null,
+      emergency_contact: formData.emergency_contact || null,
       known_diseases: formData.known_diseases ? formData.known_diseases.split(',').map(s => s.trim()).filter(Boolean) : [],
       allergies: formData.allergies ? formData.allergies.split(',').map(s => s.trim()).filter(Boolean) : [],
       current_medicines: [],
@@ -199,9 +227,16 @@ function Register() {
         id: res.data.user_id,
         full_name: formData.full_name,
         email: formData.email,
-        preferred_language: formData.preferred_language
+        preferred_language: formData.preferred_language,
+        role: formData.role
       }));
-      navigate('/dashboard');
+
+      // Route based on role
+      if (formData.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
@@ -209,7 +244,7 @@ function Register() {
     }
   };
 
-  const inputFocus = (e) => { e.target.style.borderColor = '#059669'; e.target.style.boxShadow = '0 0 0 3px rgba(5,150,105,0.1)'; };
+  const inputFocus = (e) => { e.target.style.borderColor = isAdmin ? '#7c3aed' : '#059669'; e.target.style.boxShadow = `0 0 0 3px ${isAdmin ? 'rgba(124,58,237,0.1)' : 'rgba(5,150,105,0.1)'}`; };
   const inputBlur = (e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; };
 
   return (
@@ -221,17 +256,50 @@ function Register() {
           <p style={S.logoSub}>Create your free health account</p>
         </div>
 
+        {/* Role Selection */}
+        {step === 1 && (
+          <div style={S.roleSelector}>
+            <div
+              style={S.roleCard(formData.role === 'patient', false)}
+              onClick={() => setFormData({ ...formData, role: 'patient' })}
+            >
+              <p style={{ fontSize: '36px', margin: '0 0 8px 0' }}>🧑‍🤝‍🧑</p>
+              <p style={{ fontWeight: '800', color: formData.role === 'patient' ? '#059669' : '#374151', fontSize: '15px', margin: '0 0 4px 0' }}>
+                Patient
+              </p>
+              <p style={{ color: '#94a3b8', fontSize: '11px', margin: 0 }}>
+                Check symptoms, find hospitals, manage health
+              </p>
+            </div>
+            <div
+              style={S.roleCard(formData.role === 'admin', true)}
+              onClick={() => setFormData({ ...formData, role: 'admin' })}
+            >
+              <p style={{ fontSize: '36px', margin: '0 0 8px 0' }}>👩‍⚕️</p>
+              <p style={{ fontWeight: '800', color: formData.role === 'admin' ? '#7c3aed' : '#374151', fontSize: '15px', margin: '0 0 4px 0' }}>
+                ASHA Worker
+              </p>
+              <p style={{ color: '#94a3b8', fontSize: '11px', margin: 0 }}>
+                Manage patients, view trends, village health data
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Progress */}
         <div style={S.progressRow}>
           <div style={step === 1 ? S.stepActive : S.stepInactive}>1 · Basic Info</div>
           <div style={S.stepDivider}></div>
-          <div style={step === 2 ? S.stepActive : S.stepInactive}>2 · Health Info</div>
+          <div style={step === 2 ? S.stepActive : S.stepInactive}>2 · {isAdmin ? 'Area Info' : 'Health Info'}</div>
         </div>
 
         <div style={S.card}>
-          <div style={S.cardHeader}>
+          <div style={S.cardHeader(isAdmin)}>
             <p style={S.cardHeaderTitle}>
-              {step === 1 ? '👤 Personal Details' : '🏥 Health Information'}
+              {step === 1
+                ? (isAdmin ? '👩‍⚕️ ASHA Worker Registration' : '👤 Patient Registration')
+                : (isAdmin ? '🏘 Area Information' : '🏥 Health Information')
+              }
             </p>
           </div>
 
@@ -281,8 +349,8 @@ function Register() {
                   </div>
                 </div>
 
-                <button onClick={handleNext} style={S.nextBtn}>
-                  Next: Health Info →
+                <button onClick={handleNext} style={S.nextBtn(isAdmin)}>
+                  Next: {isAdmin ? 'Area Info' : 'Health Info'} →
                 </button>
               </div>
             ) : (
@@ -313,17 +381,21 @@ function Register() {
                   </div>
                 </div>
 
-                <div style={S.inputWrap}>
-                  <label style={S.label}>Known Diseases (comma separated)</label>
-                  <input name="known_diseases" value={formData.known_diseases} onChange={handleChange}
-                    style={S.input} placeholder="e.g., diabetes, hypertension" onFocus={inputFocus} onBlur={inputBlur} />
-                </div>
+                {!isAdmin && (
+                  <>
+                    <div style={S.inputWrap}>
+                      <label style={S.label}>Known Diseases (comma separated)</label>
+                      <input name="known_diseases" value={formData.known_diseases} onChange={handleChange}
+                        style={S.input} placeholder="e.g., diabetes, hypertension" onFocus={inputFocus} onBlur={inputBlur} />
+                    </div>
 
-                <div style={S.inputWrap}>
-                  <label style={S.label}>Allergies (comma separated)</label>
-                  <input name="allergies" value={formData.allergies} onChange={handleChange}
-                    style={S.input} placeholder="e.g., penicillin, dust" onFocus={inputFocus} onBlur={inputBlur} />
-                </div>
+                    <div style={S.inputWrap}>
+                      <label style={S.label}>Allergies (comma separated)</label>
+                      <input name="allergies" value={formData.allergies} onChange={handleChange}
+                        style={S.input} placeholder="e.g., penicillin, dust" onFocus={inputFocus} onBlur={inputBlur} />
+                    </div>
+                  </>
+                )}
 
                 <div style={S.inputWrap}>
                   <label style={S.label}>Emergency Contact Number</label>
@@ -333,8 +405,8 @@ function Register() {
 
                 <div style={S.btnRow}>
                   <button type="button" onClick={() => setStep(1)} style={S.backBtn}>← Back</button>
-                  <button type="submit" disabled={loading} style={{ ...S.nextBtn, opacity: loading ? 0.7 : 1 }}>
-                    {loading ? '⏳ Creating Account...' : '🚀 Create Account'}
+                  <button type="submit" disabled={loading} style={{ ...S.nextBtn(isAdmin), opacity: loading ? 0.7 : 1 }}>
+                    {loading ? '⏳ Creating Account...' : (isAdmin ? '👩‍⚕️ Register as ASHA Worker' : '🚀 Create Account')}
                   </button>
                 </div>
               </form>

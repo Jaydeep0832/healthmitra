@@ -68,7 +68,8 @@ async def login(credentials: UserLogin):
                 "id": str(user["_id"]),
                 "full_name": user["full_name"],
                 "email": user["email"],
-                "preferred_language": user.get("preferred_language", "english")
+                "preferred_language": user.get("preferred_language", "english"),
+                "role": user.get("role", "patient")
             }
         }
 

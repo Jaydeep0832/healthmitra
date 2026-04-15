@@ -45,22 +45,49 @@ const S = {
     transition: 'all 0.2s',
     border: active ? '1px solid #bbf7d0' : '1px solid transparent',
   }),
+  adminNavLink: (active) => ({
+    display: 'flex', alignItems: 'center', gap: '6px',
+    padding: '8px 12px',
+    borderRadius: '10px',
+    textDecoration: 'none',
+    fontSize: '13px',
+    fontWeight: active ? '700' : '500',
+    color: active ? '#7c3aed' : '#64748b',
+    background: active ? '#faf5ff' : 'transparent',
+    transition: 'all 0.2s',
+    border: active ? '1px solid #e9d5ff' : '1px solid transparent',
+  }),
   rightSection: { display: 'flex', alignItems: 'center', gap: '10px' },
-  userBadge: {
+  userBadge: (isAdmin) => ({
     display: 'flex', alignItems: 'center', gap: '8px',
-    background: '#f0fdf4',
-    border: '1px solid #bbf7d0',
+    background: isAdmin ? '#faf5ff' : '#f0fdf4',
+    border: `1px solid ${isAdmin ? '#e9d5ff' : '#bbf7d0'}`,
     padding: '6px 14px',
     borderRadius: '999px',
-  },
-  userAvatar: {
+  }),
+  userAvatar: (isAdmin) => ({
     width: '26px', height: '26px',
-    background: 'linear-gradient(135deg, #059669, #0891b2)',
+    background: isAdmin
+      ? 'linear-gradient(135deg, #7c3aed, #5b21b6)'
+      : 'linear-gradient(135deg, #059669, #0891b2)',
     borderRadius: '50%',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     color: 'white', fontSize: '12px', fontWeight: '800',
-  },
-  userName: { color: '#166534', fontSize: '13px', fontWeight: '600' },
+  }),
+  userName: (isAdmin) => ({
+    color: isAdmin ? '#6d28d9' : '#166534',
+    fontSize: '13px', fontWeight: '600',
+  }),
+  roleBadge: (isAdmin) => ({
+    background: isAdmin ? '#7c3aed' : '#059669',
+    color: 'white',
+    padding: '2px 8px',
+    borderRadius: '6px',
+    fontSize: '9px',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+  }),
   emergencyBtn: {
     background: '#dc2626',
     color: 'white',
@@ -86,9 +113,18 @@ const S = {
   },
 };
 
-const navLinks = [
+const patientLinks = [
   { path: '/dashboard', icon: '🏠', label: 'Dashboard' },
   { path: '/symptom-checker', icon: '🩺', label: 'Symptoms' },
+  { path: '/hospitals', icon: '🏨', label: 'Hospitals' },
+  { path: '/reports', icon: '📄', label: 'Reports' },
+  { path: '/history', icon: '📋', label: 'History' },
+  { path: '/profile', icon: '👤', label: 'Profile' },
+];
+
+const adminLinks = [
+  { path: '/admin', icon: '📊', label: 'Dashboard' },
+  { path: '/symptom-checker', icon: '🩺', label: 'Triage' },
   { path: '/hospitals', icon: '🏨', label: 'Hospitals' },
   { path: '/reports', icon: '📄', label: 'Reports' },
   { path: '/history', icon: '📋', label: 'History' },
@@ -100,6 +136,9 @@ function Navbar() {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isAdmin = user?.role === 'admin';
+  const navLinks = isAdmin ? adminLinks : patientLinks;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -113,7 +152,7 @@ function Navbar() {
     <nav style={S.nav}>
       <div style={S.inner}>
         {/* Logo */}
-        <Link to="/dashboard" style={S.logo}>
+        <Link to={isAdmin ? '/admin' : '/dashboard'} style={S.logo}>
           <div style={S.logoIcon}>🏥</div>
           <span style={S.logoText}>
             Health<span style={{ color: '#059669' }}>Mitra</span>
@@ -126,7 +165,10 @@ function Navbar() {
             <Link
               key={link.path}
               to={link.path}
-              style={S.navLink(location.pathname === link.path)}
+              style={isAdmin
+                ? S.adminNavLink(location.pathname === link.path)
+                : S.navLink(location.pathname === link.path)
+              }
             >
               <span>{link.icon}</span>
               <span>{link.label}</span>
@@ -136,12 +178,15 @@ function Navbar() {
 
         {/* Right */}
         <div style={S.rightSection}>
-          <div style={S.userBadge}>
-            <div style={S.userAvatar}>
+          <div style={S.userBadge(isAdmin)}>
+            <div style={S.userAvatar(isAdmin)}>
               {user?.full_name?.charAt(0) || 'U'}
             </div>
-            <span style={S.userName}>
+            <span style={S.userName(isAdmin)}>
               {user?.full_name?.split(' ')[0] || 'User'}
+            </span>
+            <span style={S.roleBadge(isAdmin)}>
+              {isAdmin ? 'ASHA' : 'Patient'}
             </span>
           </div>
 
@@ -168,7 +213,7 @@ function Navbar() {
               to={link.path}
               onClick={() => setMobileOpen(false)}
               style={{
-                ...S.navLink(location.pathname === link.path),
+                ...(isAdmin ? S.adminNavLink(location.pathname === link.path) : S.navLink(location.pathname === link.path)),
                 display: 'flex',
                 marginBottom: '4px',
               }}
