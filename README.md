@@ -144,11 +144,11 @@ MongoDB Atlas — `healthmitra` database · 4 collections · 10 indexes
 
 | Main Dashboard | AI Symptom Checker | Triage Result |
 |:-:|:-:|:-:|
-| ![dashboard](https://via.placeholder.com/260x160?text=Dashboard) | ![symptom](https://via.placeholder.com/260x160?text=Symptom+Checker) | ![triage](https://via.placeholder.com/260x160?text=Triage+Result) |
+| ![dashboard](assets/main_dashboard.png) | ![symptom](assets/symptoms.png) | ![triage](assets/triage.png) |
 
 | Hospital Locator | PDF Report Analyzer | Emergency SOS |
 |:-:|:-:|:-:|
-| ![hospital](https://via.placeholder.com/260x160?text=Hospital+Locator) | ![pdf](https://via.placeholder.com/260x160?text=Report+Analyzer) | ![sos](https://via.placeholder.com/260x160?text=Emergency+SOS) |
+| ![hospital](assets/hospitals.png) | ![pdf](assets/report_analyzer.png) | ![sos](assets/emergency.png) |
 
 ---
 
