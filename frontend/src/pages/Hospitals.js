@@ -133,13 +133,28 @@ function Hospitals() {
           fetchHospitals(loc.latitude, loc.longitude, radius);
         },
         (err) => {
-          console.log('Geolocation error:', err.message);
-          // Use a central India fallback
-          const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 }; // Morbi, Gujarat area
-          setLocation(fallbackLoc);
-          setLocationStatus('fallback');
-          setError('📍 Location access denied. Showing hospitals near default location. Click "Detect My Location" to retry.');
-          fetchHospitals(fallbackLoc.latitude, fallbackLoc.longitude, radius);
+          console.warn('Geolocation error:', err.message);
+          // Try IP-based geolocation as fallback
+          fetch('https://ipapi.co/json/')
+            .then(r => r.json())
+            .then(data => {
+              if (data.latitude && data.longitude) {
+                const loc = { latitude: data.latitude, longitude: data.longitude };
+                setLocation(loc);
+                setLocationStatus('fallback');
+                setError('📍 Using approximate location via IP. For accurate results, allow GPS access.');
+                fetchHospitals(loc.latitude, loc.longitude, radius);
+              } else {
+                throw new Error("IP location failed");
+              }
+            })
+            .catch(() => {
+              const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 }; // Morbi, Gujarat area
+              setLocation(fallbackLoc);
+              setLocationStatus('fallback');
+              setError('📍 Location access denied. Showing default location. Click "Detect My Location" to retry.');
+              fetchHospitals(fallbackLoc.latitude, fallbackLoc.longitude, radius);
+            });
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
@@ -147,7 +162,7 @@ function Hospitals() {
       const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 };
       setLocation(fallbackLoc);
       setLocationStatus('fallback');
-      setError('Your browser does not support geolocation. Showing hospitals near default location.');
+      setError('Your browser does not support geolocation. Showing default location.');
       fetchHospitals(fallbackLoc.latitude, fallbackLoc.longitude, radius);
     }
   };

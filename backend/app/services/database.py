@@ -19,13 +19,13 @@ async def connect_to_database():
         database = client[DATABASE_NAME]
         # Test the connection
         await client.admin.command('ping')
-        print(f"✅ Connected to MongoDB: {DATABASE_NAME}")
+        print(f"Connected to MongoDB: {DATABASE_NAME}")
 
         # Create indexes
         await create_indexes()
 
     except Exception as e:
-        print(f"❌ Failed to connect to MongoDB: {e}")
+        print(f"Failed to connect to MongoDB: {e}")
         raise e
 
 
@@ -49,9 +49,9 @@ async def create_indexes():
         # Reports
         await database.reports.create_index("user_id")
 
-        print("✅ Database indexes created")
+        print("Database indexes created")
     except Exception as e:
-        print(f"⚠️ Index creation warning: {e}")
+        print(f"Index creation warning: {e}")
 
 
 async def close_database_connection():
@@ -59,7 +59,7 @@ async def close_database_connection():
     global client
     if client:
         client.close()
-        print("🔌 MongoDB connection closed")
+        print("MongoDB connection closed")
 
 
 def get_database():

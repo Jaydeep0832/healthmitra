@@ -394,17 +394,43 @@ function SymptomChecker() {
   const [error, setError] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [location, setLocation] = useState(null);
+  const [locationStatus, setLocationStatus] = useState('detecting'); // detecting, granted, denied, ip_fallback
   const [step, setStep] = useState(1);
   const recognitionRef = useRef(null);
   const resultRef = useRef(null);
 
-  useEffect(() => {
+  const detectLocation = () => {
+    setLocationStatus('detecting');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-        () => {}
+        pos => {
+          setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+          setLocationStatus('granted');
+        },
+        (err) => {
+          console.warn('Geolocation error:', err.message);
+          // Try IP-based geolocation as fallback
+          fetch('https://ipapi.co/json/')
+            .then(r => r.json())
+            .then(data => {
+              if (data.latitude && data.longitude) {
+                setLocation({ latitude: data.latitude, longitude: data.longitude });
+                setLocationStatus('ip_fallback');
+              } else {
+                setLocationStatus('denied');
+              }
+            })
+            .catch(() => setLocationStatus('denied'));
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
+    } else {
+      setLocationStatus('denied');
     }
+  };
+
+  useEffect(() => {
+    detectLocation();
   }, []);
 
   useEffect(() => {
@@ -441,7 +467,8 @@ function SymptomChecker() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = language === 'hindi' ? 'hi-IN' : 'en-IN';
+      const speechLangMap = { english: 'en-IN', hindi: 'hi-IN', gujarati: 'gu-IN', tamil: 'ta-IN', marathi: 'mr-IN' };
+      u.lang = speechLangMap[language] || 'en-IN';
       u.rate = 0.85;
       window.speechSynthesis.speak(u);
     }
@@ -539,14 +566,33 @@ function SymptomChecker() {
           </div>
 
           {/* Location */}
-          <div style={S.locationInfo}>
-            <span>{location ? '📍' : '📍'}</span>
-            <span style={{ color: location ? '#059669' : '#94a3b8', fontWeight: location ? '600' : '400' }}>
-              {location
-                ? `Location detected (${location.latitude.toFixed(3)}°N) — nearby hospitals will be shown`
-                : 'Location not detected — enable for nearby hospital recommendations'
-              }
+          <div style={{
+            ...S.locationInfo,
+            background: locationStatus === 'granted' ? '#f0fdf4' : locationStatus === 'ip_fallback' ? '#fffbeb' : locationStatus === 'denied' ? '#fff1f2' : '#f8fafc',
+            borderBottom: `1px solid ${locationStatus === 'granted' ? '#86efac' : locationStatus === 'ip_fallback' ? '#fde68a' : locationStatus === 'denied' ? '#fca5a5' : '#f1f5f9'}`,
+          }}>
+            <span>📍</span>
+            <span style={{
+              color: locationStatus === 'granted' ? '#059669' : locationStatus === 'ip_fallback' ? '#d97706' : locationStatus === 'denied' ? '#dc2626' : '#94a3b8',
+              fontWeight: '600', flex: 1,
+            }}>
+              {locationStatus === 'detecting' && 'Detecting your location...'}
+              {locationStatus === 'granted' && `GPS Location: ${location.latitude.toFixed(4)}°N, ${location.longitude.toFixed(4)}°E — nearby hospitals will be shown`}
+              {locationStatus === 'ip_fallback' && `Approximate location via IP (${location.latitude.toFixed(2)}°N) — for accurate results, allow GPS access`}
+              {locationStatus === 'denied' && 'Location not available — enable GPS for nearby hospital recommendations'}
             </span>
+            {(locationStatus === 'denied' || locationStatus === 'ip_fallback') && (
+              <button onClick={detectLocation} style={{
+                background: '#059669', color: 'white', border: 'none', padding: '5px 12px',
+                borderRadius: '8px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
+                fontFamily: 'inherit', whiteSpace: 'nowrap',
+              }}>
+                📍 Retry GPS
+              </button>
+            )}
+            {locationStatus === 'granted' && (
+              <span style={{ color: '#059669', fontSize: '12px', fontWeight: '700' }}>✓ GPS</span>
+            )}
           </div>
 
           {/* Submit */}

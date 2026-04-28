@@ -14,31 +14,54 @@ except ImportError:
     REQUESTS_AVAILABLE = False
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 
 hospital_service = HospitalService()
 
 
-def translate_response_with_gemini(response_data: dict, target_language: str) -> dict:
-    """Translate the entire triage response to the target language using Gemini"""
+# =============================================================================
+# Gemini Translation Helper
+# =============================================================================
+
+def _call_gemini(prompt: str, temperature: float = 0.2, timeout: int = 30) -> str:
+    """Call Gemini API and return raw text response."""
     if not GEMINI_API_KEY or not REQUESTS_AVAILABLE:
-        return response_data
-    if target_language == "english":
+        return ""
+    try:
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"temperature": temperature, "maxOutputTokens": 2048}
+        }
+        resp = http_requests.post(GEMINI_URL, json=payload, timeout=timeout)
+        if resp.status_code == 200:
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception as e:
+        print(f"Gemini API error: {e}")
+    return ""
+
+
+def _clean_json(text: str) -> dict:
+    """Parse JSON from Gemini response, stripping markdown fences."""
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
+        cleaned = re.sub(r'\s*```$', '', cleaned)
+    return json.loads(cleaned)
+
+
+def translate_response_with_gemini(response_data: dict, target_language: str) -> dict:
+    """Translate the triage response to the target language using Gemini."""
+    if not GEMINI_API_KEY or target_language == "english":
         return response_data
 
-    language_names = {
-        "gujarati": "Gujarati (ગુજરાતી)",
-        "hindi": "Hindi (हिंदी)",
-        "tamil": "Tamil (தமிழ்)",
-        "marathi": "Marathi (मराठी)",
-        "bengali": "Bengali (বাংলা)",
-        "telugu": "Telugu (తెలుగు)",
-        "kannada": "Kannada (ಕನ್ನಡ)",
-        "malayalam": "Malayalam (മലയാളം)",
+    LANGUAGE_NAMES = {
+        "gujarati": "Gujarati (ગુજરાતી)", "hindi": "Hindi (हिंदी)",
+        "tamil": "Tamil (தமிழ்)", "marathi": "Marathi (मराठी)",
+        "bengali": "Bengali (বাংলা)", "telugu": "Telugu (తెలుగు)",
+        "kannada": "Kannada (ಕನ್ನಡ)", "malayalam": "Malayalam (മലയാളം)",
     }
+    lang_name = LANGUAGE_NAMES.get(target_language, target_language)
 
-    lang_name = language_names.get(target_language, target_language)
-
-    # Build a translation payload
     to_translate = {
         "recommendations": response_data.get("recommendations", []),
         "precautions": response_data.get("precautions", []),
@@ -46,70 +69,31 @@ def translate_response_with_gemini(response_data: dict, target_language: str) ->
         "disclaimer": response_data.get("disclaimer", ""),
         "possible_conditions": response_data.get("possible_conditions", []),
     }
-
-    # Also translate medicine info
-    medicines = response_data.get("medicines_info", [])
-    med_names = [m.get("name", "") for m in medicines]
-    med_dosages = [m.get("dosage", "") for m in medicines]
+    med_dosages = [m.get("dosage", "") for m in response_data.get("medicines_info", [])]
 
     prompt = (
-        f"Translate the following medical health guidance from English to {lang_name}. "
-        f"Keep medical terms, medicine names, and phone numbers as-is (do not translate them). "
-        f"Translate the rest naturally into {lang_name}.\n\n"
-        f"Return ONLY a JSON object with the same keys, with translated values.\n\n"
-        f"Input JSON:\n{json.dumps(to_translate, ensure_ascii=False)}\n\n"
-        f"Also translate these medicine dosage instructions (keep medicine names in English):\n"
+        f"Translate the following medical guidance from English to {lang_name}. "
+        f"Keep medicine names and phone numbers as-is. Return ONLY a JSON object.\n\n"
+        f"Input: {json.dumps(to_translate, ensure_ascii=False)}\n"
         f"Dosages: {json.dumps(med_dosages, ensure_ascii=False)}\n\n"
-        f"Return format:\n"
-        "{\n"
-        '  "recommendations": ["translated items..."],\n'
-        '  "precautions": ["translated items..."],\n'
-        '  "when_to_see_doctor": "translated text",\n'
-        '  "disclaimer": "translated text",\n'
-        '  "possible_conditions": ["translated items..."],\n'
-        '  "dosages": ["translated dosages..."]\n'
-        "}\n"
-        "IMPORTANT: Return ONLY the JSON object, no markdown fences, no other text."
+        "Format: {\"recommendations\": [...], \"precautions\": [...], "
+        "\"when_to_see_doctor\": \"...\", \"disclaimer\": \"...\", "
+        "\"possible_conditions\": [...], \"dosages\": [...]}\n"
+        "IMPORTANT: Return ONLY the JSON object."
     )
 
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-        payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "temperature": 0.2,
-                "maxOutputTokens": 2048,
-            }
-        }
-        resp = http_requests.post(url, json=payload, timeout=30)
-        if resp.status_code == 200:
-            data = resp.json()
-            text = data["candidates"][0]["content"]["parts"][0]["text"]
-            # Clean markdown fences
-            cleaned = text.strip()
-            if cleaned.startswith("```"):
-                cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
-                cleaned = re.sub(r'\s*```$', '', cleaned)
-            translated = json.loads(cleaned)
-
+        text = _call_gemini(prompt)
+        if text:
+            translated = _clean_json(text)
             # Apply translations
-            if translated.get("recommendations"):
-                response_data["recommendations"] = translated["recommendations"]
-            if translated.get("precautions"):
-                response_data["precautions"] = translated["precautions"]
-            if translated.get("when_to_see_doctor"):
-                response_data["when_to_see_doctor"] = translated["when_to_see_doctor"]
-            if translated.get("disclaimer"):
-                response_data["disclaimer"] = translated["disclaimer"]
-            if translated.get("possible_conditions"):
-                response_data["possible_conditions"] = translated["possible_conditions"]
-
-            # Apply translated dosages to medicines
-            translated_dosages = translated.get("dosages", [])
+            for key in ["recommendations", "precautions", "when_to_see_doctor", "disclaimer", "possible_conditions"]:
+                if translated.get(key):
+                    response_data[key] = translated[key]
+            # Apply translated dosages
             for i, med in enumerate(response_data.get("medicines_info", [])):
-                if i < len(translated_dosages):
-                    med["dosage"] = translated_dosages[i]
-
+                if i < len(translated.get("dosages", [])):
+                    med["dosage"] = translated["dosages"][i]
             response_data["response_language"] = target_language
     except Exception as e:
         print(f"Translation error: {e}")
@@ -117,12 +101,12 @@ def translate_response_with_gemini(response_data: dict, target_language: str) ->
     return response_data
 
 
-# ============================================================
-# SYMPTOM DATABASE - Rule-Based Triage Engine
-# ============================================================
+# =============================================================================
+# SYMPTOM DATABASE — Rule-Based Triage Engine
+# =============================================================================
 
 SYMPTOM_DATABASE = {
-    # EMERGENCY SYMPTOMS (RED)
+    # EMERGENCY (RED)
     "chest pain": {"urgency": "emergency", "conditions": ["Heart Attack", "Angina", "Pulmonary Embolism"], "score": 10},
     "breathing difficulty": {"urgency": "emergency", "conditions": ["Asthma Attack", "Pneumonia", "Heart Failure"], "score": 10},
     "breathlessness": {"urgency": "emergency", "conditions": ["Asthma", "COPD", "Pneumonia"], "score": 10},
@@ -141,7 +125,7 @@ SYMPTOM_DATABASE = {
     "accident": {"urgency": "emergency", "conditions": ["Trauma", "Fracture"], "score": 9},
     "fracture": {"urgency": "emergency", "conditions": ["Bone Fracture"], "score": 8},
 
-    # VISIT CLINIC SYMPTOMS (YELLOW)
+    # VISIT CLINIC (YELLOW)
     "fever": {"urgency": "visit-clinic", "conditions": ["Viral Fever", "Malaria", "Dengue", "Typhoid"], "score": 5},
     "high fever": {"urgency": "visit-clinic", "conditions": ["Malaria", "Dengue", "Typhoid"], "score": 7},
     "persistent fever": {"urgency": "visit-clinic", "conditions": ["Typhoid", "TB", "Chronic Infection"], "score": 7},
@@ -172,7 +156,7 @@ SYMPTOM_DATABASE = {
     "chest tightness": {"urgency": "visit-clinic", "conditions": ["Asthma", "Anxiety", "GERD"], "score": 6},
     "palpitations": {"urgency": "visit-clinic", "conditions": ["Arrhythmia", "Anxiety", "Thyroid"], "score": 6},
 
-    # SELF-CARE SYMPTOMS (GREEN)
+    # SELF-CARE (GREEN)
     "cold": {"urgency": "self-care", "conditions": ["Common Cold", "Viral Infection"], "score": 2},
     "common cold": {"urgency": "self-care", "conditions": ["Common Cold"], "score": 2},
     "mild fever": {"urgency": "self-care", "conditions": ["Viral Fever", "Common Cold"], "score": 3},
@@ -196,144 +180,105 @@ SYMPTOM_DATABASE = {
 }
 
 
-# ============================================================
-# GUJARATI SYMPTOM TRANSLATION MAP
-# ============================================================
+# =============================================================================
+# MULTILINGUAL SYMPTOM MAPS
+# =============================================================================
 
-GUJARATI_SYMPTOM_MAP = {
-    # Emergency
-    "છાતીમાં દુઃખાવો": "chest pain",
-    "છાતી દુખે": "chest pain",
-    "શ્વાસ લેવામાં તકલીફ": "breathing difficulty",
-    "શ્વાસ ન આવે": "breathlessness",
-    "બેભાન": "unconscious",
-    "લોહી વહે": "severe bleeding",
-    "હુમલો": "seizure",
-    "લકવો": "paralysis",
-    "અચાનક નબળાઈ": "sudden weakness",
-    "ઝેર ખાધું": "poisoning",
-    "સાપ કરડ્યો": "snake bite",
-    "ઈજા": "accident",
-    "અકસ્માત": "accident",
-    "હાડકું ભાંગ્યું": "fracture",
-    "દાઝ્યો": "burn",
-
-    # Visit Clinic
-    "તાવ": "fever",
-    "ઊંચો તાવ": "high fever",
-    "ઉલ્ટી": "vomiting",
-    "ઊલટી": "vomiting",
-    "ઝાડા": "diarrhea",
-    "ઝાડ": "diarrhea",
-    "ઉધરસ": "cough",
-    "ખાંસી": "cough",
-    "સખત ઉધરસ": "persistent cough",
-    "વજન ઘટવું": "weight loss",
-    "રાત્રે પરસેવો": "night sweats",
-    "સાંધા દુખે": "joint pain",
-    "સોજો": "swelling",
-    "ચાંભા": "rash",
-    "ખૂજલી": "rash",
-    "કાન દુખે": "ear pain",
-    "આંખ દુખે": "eye pain",
-    "ઝાંખું દેખાય": "blurred vision",
-    "પેટ દુખે": "stomach pain",
-    "પેટ દુઃખાવો": "abdominal pain",
-    "કમર દુখે": "back pain",
-    "પેશાબ બળે": "burning urination",
-    "નબળાઈ": "weakness",
-    "થાક": "fatigue",
-    "ચક્કર": "dizziness",
-    "ધબકારા": "palpitations",
-
-    # Self Care
-    "શરદી": "cold",
-    "સળેખમ": "cold",
-    "નાક વહે": "runny nose",
-    "છીંક": "sneezing",
-    "માથું દુખે": "headache",
-    "માથાનો દુઃખાવો": "headache",
-    "ગળું દુખે": "sore throat",
-    "અંગ દુઃખાવો": "body ache",
-    "સ્નાયુ દુખે": "muscle pain",
-    "એસિડિટી": "acidity",
-    "ગેસ": "gas",
-    "ગ્રહણી": "bloating",
-    "કબજિયાત": "constipation",
-    "ઊંઘ ન આવે": "insomnia",
-    "તણાવ": "stress",
-    "ભૂખ ન લાગે": "fatigue",
-    "હળવો તાવ": "mild fever",
-    "ઓછો તાવ": "low fever",
+SYMPTOM_TRANSLATIONS = {
+    "gujarati": {
+        "છાતીમાં દુઃખાવો": "chest pain", "છાતી દુખે": "chest pain",
+        "શ્વાસ લેવામાં તકલીફ": "breathing difficulty", "શ્વાસ ન આવે": "breathlessness",
+        "બેભાન": "unconscious", "લોહી વહે": "severe bleeding", "હુમલો": "seizure",
+        "લકવો": "paralysis", "અચાનક નબળાઈ": "sudden weakness",
+        "ઝેર ખાધું": "poisoning", "સાપ કરડ્યો": "snake bite",
+        "ઈજા": "accident", "અકસ્માત": "accident",
+        "હાડકું ભાંગ્યું": "fracture", "દાઝ્યો": "burn",
+        "તાવ": "fever", "ઊંચો તાવ": "high fever", "ઉલ્ટી": "vomiting", "ઊલટી": "vomiting",
+        "ઝાડા": "diarrhea", "ઝાડ": "diarrhea", "ઉધરસ": "cough", "ખાંસી": "cough",
+        "સખત ઉધરસ": "persistent cough", "વજન ઘટવું": "weight loss",
+        "રાત્રે પરસેવો": "night sweats", "સાંધા દુખે": "joint pain",
+        "સોજો": "swelling", "ચાંભા": "rash", "ખૂજલી": "rash",
+        "કાન દુખે": "ear pain", "આંખ દુખે": "eye pain", "ઝાંખું દેખાય": "blurred vision",
+        "પેટ દુખે": "stomach pain", "પેટ દુઃખાવો": "abdominal pain",
+        "કમર દુખે": "back pain", "પેશાબ બળે": "burning urination",
+        "નબળાઈ": "weakness", "થાક": "fatigue", "ચક્કર": "dizziness", "ધબકારા": "palpitations",
+        "શરદી": "cold", "સળેખમ": "cold", "નાક વહે": "runny nose", "છીંક": "sneezing",
+        "માથું દુખે": "headache", "માથાનો દુઃખાવો": "headache",
+        "ગળું દુખે": "sore throat", "અંગ દુઃખાવો": "body ache", "સ્નાયુ દુખે": "muscle pain",
+        "એસિડિટી": "acidity", "ગેસ": "gas", "ગ્રહણી": "bloating",
+        "કબજિયાત": "constipation", "ઊંઘ ન આવે": "insomnia", "તણાવ": "stress",
+        "ભૂખ ન લાગે": "fatigue", "હળવો તાવ": "mild fever", "ઓછો તાવ": "low fever",
+    },
+    "hindi": {
+        "सीने में दर्द": "chest pain", "छाती में दर्द": "chest pain",
+        "सांस लेने में तकलीफ": "breathing difficulty", "सांस नहीं आती": "breathlessness",
+        "बेहोश": "unconscious", "खून बह रहा है": "severe bleeding", "दौरा": "seizure",
+        "लकवा": "paralysis", "अचानक कमजोरी": "sudden weakness",
+        "जहर खाया": "poisoning", "सांप ने काटा": "snake bite",
+        "दुर्घटना": "accident", "हड्डी टूटी": "fracture", "जल गया": "burn",
+        "बुखार": "fever", "तेज बुखार": "high fever", "उल्टी": "vomiting",
+        "दस्त": "diarrhea", "खांसी": "cough", "लगातार खांसी": "persistent cough",
+        "वजन कम होना": "weight loss", "रात को पसीना": "night sweats",
+        "जोड़ों में दर्द": "joint pain", "सूजन": "swelling",
+        "चकत्ते": "rash", "खुजली": "rash", "कान में दर्द": "ear pain",
+        "आंख में दर्द": "eye pain", "धुंधला दिखना": "blurred vision",
+        "पेट दर्द": "stomach pain", "पीठ दर्द": "back pain",
+        "पेशाब में जलन": "burning urination", "कमजोरी": "weakness",
+        "थकान": "fatigue", "चक्कर": "dizziness", "घबराहट": "palpitations",
+        "सर्दी": "cold", "जुकाम": "cold", "नाक बहना": "runny nose", "छींक": "sneezing",
+        "सिर दर्द": "headache", "गले में दर्द": "sore throat", "बदन दर्द": "body ache",
+        "मांसपेशियों में दर्द": "muscle pain", "एसिडिटी": "acidity", "गैस": "gas",
+        "कब्ज": "constipation", "नींद नहीं आती": "insomnia", "तनाव": "stress",
+        "हल्का बुखार": "mild fever",
+    },
+    "marathi": {
+        "छातीत दुखणे": "chest pain", "छातीत वेदना": "chest pain",
+        "श्वास घेण्यास त्रास": "breathing difficulty", "श्वास लागणे": "breathlessness",
+        "बेशुद्ध": "unconscious", "रक्तस्त्राव": "severe bleeding", "झटका": "seizure",
+        "अर्धांगवायू": "paralysis", "अचानक अशक्तपणा": "sudden weakness",
+        "विष खाल्ले": "poisoning", "साप चावला": "snake bite",
+        "अपघात": "accident", "हाड मोडले": "fracture", "भाजले": "burn",
+        "ताप": "fever", "खूप ताप": "high fever", "उलटी": "vomiting",
+        "जुलाब": "diarrhea", "खोकला": "cough", "सतत खोकला": "persistent cough",
+        "वजन कमी होणे": "weight loss", "रात्री घाम": "night sweats",
+        "सांधेदुखी": "joint pain", "सूज": "swelling", "पुरळ": "rash", "खाज": "rash",
+        "कान दुखणे": "ear pain", "डोळा दुखणे": "eye pain", "अंधुक दिसणे": "blurred vision",
+        "पोटदुखी": "stomach pain", "पाठदुखी": "back pain",
+        "लघवीला जळजळ": "burning urination", "अशक्तपणा": "weakness",
+        "थकवा": "fatigue", "चक्कर": "dizziness", "धडधडणे": "palpitations",
+        "सर्दी": "cold", "नाक वाहणे": "runny nose", "शिंका": "sneezing",
+        "डोकेदुखी": "headache", "घसा दुखणे": "sore throat",
+        "अंगदुखी": "body ache", "स्नायू दुखणे": "muscle pain",
+        "ॲसिडिटी": "acidity", "गॅस": "gas", "बद्धकोष्ठता": "constipation",
+        "झोप न लागणे": "insomnia", "ताण": "stress", "हलका ताप": "mild fever",
+    },
+    "tamil": {
+        "நெஞ்சு வலி": "chest pain", "மூச்சு விடுவதில் சிரமம்": "breathing difficulty",
+        "மூச்சு திணறல்": "breathlessness", "மயக்கம்": "unconscious",
+        "அதிக இரத்தப்போக்கு": "severe bleeding", "வலிப்பு": "seizure",
+        "பக்கவாதம்": "paralysis", "திடீர் பலவீனம்": "sudden weakness",
+        "விஷம் சாப்பிட்டது": "poisoning", "பாம்பு கடி": "snake bite",
+        "விபத்து": "accident", "எலும்பு முறிவு": "fracture", "தீக்காயம்": "burn",
+        "காய்ச்சல்": "fever", "அதிக காய்ச்சல்": "high fever", "வாந்தி": "vomiting",
+        "வயிற்றுப்போக்கு": "diarrhea", "இருமல்": "cough", "தொடர் இருமல்": "persistent cough",
+        "எடை குறைவு": "weight loss", "இரவு வியர்வை": "night sweats",
+        "மூட்டு வலி": "joint pain", "வீக்கம்": "swelling", "தடிப்பு": "rash", "அரிப்பு": "rash",
+        "காது வலி": "ear pain", "கண் வலி": "eye pain", "மங்கலான பார்வை": "blurred vision",
+        "வயிற்று வலி": "stomach pain", "முதுகு வலி": "back pain",
+        "சிறுநீர் எரிச்சல்": "burning urination", "பலவீனம்": "weakness",
+        "சோர்வு": "fatigue", "தலைச்சுற்றல்": "dizziness", "படபடப்பு": "palpitations",
+        "சளி": "cold", "மூக்கு ஒழுகுதல்": "runny nose", "தும்மல்": "sneezing",
+        "தலைவலி": "headache", "தொண்டை வலி": "sore throat",
+        "உடல் வலி": "body ache", "தசை வலி": "muscle pain",
+        "அமிலத்தன்மை": "acidity", "வாயு": "gas", "மலச்சிக்கல்": "constipation",
+        "தூக்கமின்மை": "insomnia", "மன அழுத்தம்": "stress", "லேசான காய்ச்சல்": "mild fever",
+    },
 }
 
 
-# ============================================================
-# HINDI SYMPTOM TRANSLATION MAP
-# ============================================================
-
-HINDI_SYMPTOM_MAP = {
-    # Emergency
-    "सीने में दर्द": "chest pain",
-    "छाती में दर्द": "chest pain",
-    "सांस लेने में तकलीफ": "breathing difficulty",
-    "सांस नहीं आती": "breathlessness",
-    "बेहोश": "unconscious",
-    "खून बह रहा है": "severe bleeding",
-    "दौरा": "seizure",
-    "लकवा": "paralysis",
-    "अचानक कमजोरी": "sudden weakness",
-    "जहर खाया": "poisoning",
-    "सांप ने काटा": "snake bite",
-    "दुर्घटना": "accident",
-    "हड्डी टूटी": "fracture",
-    "जल गया": "burn",
-
-    # Visit Clinic
-    "बुखार": "fever",
-    "तेज बुखार": "high fever",
-    "उल्टी": "vomiting",
-    "दस्त": "diarrhea",
-    "खांसी": "cough",
-    "लगातार खांसी": "persistent cough",
-    "वजन कम होना": "weight loss",
-    "रात को पसीना": "night sweats",
-    "जोड़ों में दर्द": "joint pain",
-    "सूजन": "swelling",
-    "चकत्ते": "rash",
-    "खुजली": "rash",
-    "कान में दर्द": "ear pain",
-    "आंख में दर्द": "eye pain",
-    "धुंधला दिखना": "blurred vision",
-    "पेट दर्द": "stomach pain",
-    "पीठ दर्द": "back pain",
-    "पेशाब में जलन": "burning urination",
-    "कमजोरी": "weakness",
-    "थकान": "fatigue",
-    "चक्कर": "dizziness",
-    "घबराहट": "palpitations",
-
-    # Self Care
-    "सर्दी": "cold",
-    "जुकाम": "cold",
-    "नाक बहना": "runny nose",
-    "छींक": "sneezing",
-    "सिर दर्द": "headache",
-    "गले में दर्द": "sore throat",
-    "बदन दर्द": "body ache",
-    "मांसपेशियों में दर्द": "muscle pain",
-    "एसिडिटी": "acidity",
-    "गैस": "gas",
-    "कब्ज": "constipation",
-    "नींद नहीं आती": "insomnia",
-    "तनाव": "stress",
-    "हल्का बुखार": "mild fever",
-}
-
-
-# ============================================================
+# =============================================================================
 # MEDICINE RECOMMENDATIONS
-# ============================================================
+# =============================================================================
 
 MEDICINE_RECOMMENDATIONS = {
     "Common Cold": [
@@ -379,9 +324,9 @@ MEDICINE_RECOMMENDATIONS = {
 }
 
 
-# ============================================================
-# PRECAUTIONS DATABASE
-# ============================================================
+# =============================================================================
+# PRECAUTIONS & RECOMMENDATIONS (by urgency level)
+# =============================================================================
 
 PRECAUTIONS = {
     "emergency": [
@@ -413,62 +358,94 @@ PRECAUTIONS = {
     ]
 }
 
+RECOMMENDATIONS = {
+    "emergency": [
+        "Call ambulance (108/102) immediately",
+        "Rush to nearest emergency hospital",
+        "Do not eat or drink anything until seen by doctor",
+        "Keep patient calm and lying down",
+        "Bring list of current medications"
+    ],
+    "visit-clinic": [
+        "Schedule a doctor visit within 24-48 hours",
+        "Take rest and avoid strenuous activity",
+        "Stay hydrated with ORS or water",
+        "Take OTC medication if needed for symptom relief",
+        "Keep track of symptoms including temperature",
+        "Eat light, nutritious food"
+    ],
+    "self-care": [
+        "Rest at home for 2-3 days",
+        "Drink plenty of warm fluids",
+        "Take paracetamol for fever/pain if needed",
+        "Eat light home-cooked meals",
+        "Avoid cold drinks and outside food",
+        "Steam inhalation can help with cold symptoms",
+        "Visit doctor if no improvement in 3 days"
+    ]
+}
+
+DOCTOR_ADVICE = {
+    "emergency": "🚨 GO TO THE NEAREST HOSPITAL IMMEDIATELY. Call 108/102 for ambulance. Do NOT delay!",
+    "visit-clinic": "📋 Visit your nearest clinic or PHC within 24-48 hours. If symptoms worsen, go to hospital immediately.",
+    "self-care": "🏠 You can manage this at home for now. If symptoms don't improve in 2-3 days, please visit a doctor."
+}
+
+DISCLAIMER = (
+    "⚠️ DISCLAIMER: This is an AI-based preliminary assessment only. "
+    "It is NOT a medical diagnosis. Always consult a qualified doctor. "
+    "In case of emergency, call 108/102 immediately."
+)
+
 
 class TriageService:
 
-    def translate_to_english(self, text: str, language: str) -> str:
-        """Translate symptoms to English for processing"""
-        if language == "gujarati":
-            translation_map = GUJARATI_SYMPTOM_MAP
-        elif language == "hindi":
-            translation_map = HINDI_SYMPTOM_MAP
-        else:
-            return text
+    def _translate_to_english(self, text: str, language: str) -> str:
+        """Translate symptoms to English for processing."""
+        translation_map = SYMPTOM_TRANSLATIONS.get(language)
+        if not translation_map:
+            return text  # English or unsupported → return as-is
 
         translated = text
-        # Sort by length (longer phrases first)
-        sorted_keys = sorted(translation_map.keys(), key=len, reverse=True)
-        for native_word in sorted_keys:
+        # Sort by length (longer phrases first) to avoid partial replacements
+        for native_word in sorted(translation_map.keys(), key=len, reverse=True):
             if native_word in translated:
-                translated = translated.replace(
-                    native_word,
-                    translation_map[native_word]
-                )
+                translated = translated.replace(native_word, translation_map[native_word])
+
+        # Fallback to Gemini if no keyword matched and text has non-ASCII chars
+        if translated == text and any(ord(c) > 127 for c in text):
+            result = _call_gemini(
+                f"Translate this {language} medical symptom to English. Return ONLY the translation:\n{text}",
+                temperature=0.1, timeout=15
+            )
+            if result:
+                translated = result.strip()
+
         return translated
 
-    def extract_symptoms(self, text: str) -> list:
-        """Extract symptoms from user text using keyword matching"""
+    def _extract_symptoms(self, text: str) -> list:
+        """Extract known symptoms from text via keyword matching."""
         text_lower = text.lower()
-        found_symptoms = []
+        found = []
 
-        sorted_symptoms = sorted(
-            SYMPTOM_DATABASE.keys(),
-            key=lambda x: len(x),
-            reverse=True
-        )
-
-        for symptom in sorted_symptoms:
+        # Match longer phrases first
+        for symptom in sorted(SYMPTOM_DATABASE.keys(), key=len, reverse=True):
             if symptom in text_lower:
-                found_symptoms.append(symptom)
+                found.append(symptom)
 
-        if not found_symptoms:
-            words = re.findall(r'\b\w+\b', text_lower)
-            for word in words:
+        # Fallback: match individual words
+        if not found:
+            for word in re.findall(r'\b\w+\b', text_lower):
                 if word in SYMPTOM_DATABASE:
-                    found_symptoms.append(word)
+                    found.append(word)
 
-        return list(set(found_symptoms))
+        return list(set(found))
 
-    def calculate_urgency(self, symptoms: list) -> dict:
-        """Rule-based triage engine"""
+    def _calculate_urgency(self, symptoms: list) -> dict:
+        """Rule-based urgency classification."""
         if not symptoms:
-            return {
-                "urgency_level": "self-care",
-                "urgency_color": "green",
-                "confidence": 0.3,
-                "conditions": ["General Wellness Check"],
-                "score": 0
-            }
+            return {"urgency_level": "self-care", "urgency_color": "green",
+                    "confidence": 0.3, "conditions": ["General Wellness Check"], "score": 0}
 
         max_score = 0
         all_conditions = []
@@ -481,191 +458,95 @@ class TriageService:
                 all_conditions.extend(data["conditions"])
                 urgency_levels.append(data["urgency"])
 
+        # Determine urgency level
         if "emergency" in urgency_levels or max_score >= 8:
-            urgency = "emergency"
-            color = "red"
-            confidence = min(0.95, 0.6 + (max_score * 0.04))
+            urgency, color = "emergency", "red"
+            confidence = min(0.95, 0.6 + max_score * 0.04)
         elif "visit-clinic" in urgency_levels or max_score >= 4:
-            urgency = "visit-clinic"
-            color = "yellow"
-            confidence = min(0.9, 0.5 + (max_score * 0.05))
+            urgency, color = "visit-clinic", "yellow"
+            confidence = min(0.9, 0.5 + max_score * 0.05)
         else:
-            urgency = "self-care"
-            color = "green"
-            confidence = min(0.85, 0.4 + (max_score * 0.1))
+            urgency, color = "self-care", "green"
+            confidence = min(0.85, 0.4 + max_score * 0.1)
 
+        # Escalate if 3+ self-care symptoms present
         if len(symptoms) >= 3 and urgency == "self-care":
-            urgency = "visit-clinic"
-            color = "yellow"
+            urgency, color = "visit-clinic", "yellow"
             confidence += 0.1
 
         return {
-            "urgency_level": urgency,
-            "urgency_color": color,
+            "urgency_level": urgency, "urgency_color": color,
             "confidence": round(confidence, 2),
-            "conditions": list(set(all_conditions))[:5],
-            "score": max_score
+            "conditions": list(set(all_conditions))[:5], "score": max_score
         }
 
-    def get_medicine_info(self, conditions: list) -> list:
-        """Get medicine recommendations"""
-        medicines = []
-        seen = set()
-
+    def _get_medicine_info(self, conditions: list) -> list:
+        """Get unique medicine recommendations for the detected conditions."""
+        medicines, seen = [], set()
         for condition in conditions:
-            if condition in MEDICINE_RECOMMENDATIONS:
-                for med in MEDICINE_RECOMMENDATIONS[condition]:
-                    if med["name"] not in seen:
-                        medicines.append(med)
-                        seen.add(med["name"])
+            for med in MEDICINE_RECOMMENDATIONS.get(condition, []):
+                if med["name"] not in seen:
+                    medicines.append(med)
+                    seen.add(med["name"])
 
         if not medicines:
-            medicines.append({
-                "name": "Paracetamol (General)",
-                "dosage": "500mg if needed for pain/fever",
-                "type": "OTC"
-            })
-
+            medicines.append({"name": "Paracetamol (General)", "dosage": "500mg if needed for pain/fever", "type": "OTC"})
         return medicines
 
-    def get_when_to_see_doctor(self, urgency: str) -> str:
-        """Generate doctor visit advice"""
-        messages = {
-            "emergency": "🚨 GO TO THE NEAREST HOSPITAL IMMEDIATELY. Call 108/102 for ambulance. Do NOT delay!",
-            "visit-clinic": "📋 Visit your nearest clinic or PHC within 24-48 hours. If symptoms worsen, go to hospital immediately.",
-            "self-care": "🏠 You can manage this at home for now. If symptoms don't improve in 2-3 days, please visit a doctor."
-        }
-        return messages.get(urgency, messages["self-care"])
-
-    def get_recommendations(self, urgency: str, symptoms: list) -> list:
-        """Generate recommendations"""
-        recs = {
-            "emergency": [
-                "Call ambulance (108/102) immediately",
-                "Rush to nearest emergency hospital",
-                "Do not eat or drink anything until seen by doctor",
-                "Keep patient calm and lying down",
-                "Bring list of current medications"
-            ],
-            "visit-clinic": [
-                "Schedule a doctor visit within 24-48 hours",
-                "Take rest and avoid strenuous activity",
-                "Stay hydrated with ORS or water",
-                "Take OTC medication if needed for symptom relief",
-                "Keep track of symptoms including temperature",
-                "Eat light, nutritious food"
-            ],
-            "self-care": [
-                "Rest at home for 2-3 days",
-                "Drink plenty of warm fluids",
-                "Take paracetamol for fever/pain if needed",
-                "Eat light home-cooked meals",
-                "Avoid cold drinks and outside food",
-                "Steam inhalation can help with cold symptoms",
-                "Visit doctor if no improvement in 3 days"
-            ]
-        }
-        return recs.get(urgency, recs["self-care"])
-
-    async def process_symptoms(
-        self,
-        user_id: str,
-        symptoms: str,
-        language: str = "english",
-        input_type: str = "text",
-        latitude: float = None,
-        longitude: float = None
-    ) -> dict:
-        """Main triage processing function with multilingual support"""
+    async def process_symptoms(self, user_id: str, symptoms: str, language: str = "english",
+                               input_type: str = "text", latitude: float = None, longitude: float = None) -> dict:
+        """Main triage pipeline: translate → extract → classify → respond."""
         db = get_database()
 
-        # Step 1: Translate to English if needed
-        translated_symptoms = self.translate_to_english(symptoms, language)
+        # Translate → Extract → Classify
+        translated = self._translate_to_english(symptoms, language)
+        extracted = self._extract_symptoms(translated)
+        urgency = self._calculate_urgency(extracted)
 
-        # Step 2: Extract symptoms
-        extracted = self.extract_symptoms(translated_symptoms)
+        # Build response data
+        medicines = self._get_medicine_info(urgency["conditions"])
+        precautions = PRECAUTIONS.get(urgency["urgency_level"], PRECAUTIONS["self-care"])
+        recommendations = RECOMMENDATIONS.get(urgency["urgency_level"], RECOMMENDATIONS["self-care"])
+        when_to_see = DOCTOR_ADVICE.get(urgency["urgency_level"], DOCTOR_ADVICE["self-care"])
 
-        # Step 3: Calculate urgency
-        urgency_result = self.calculate_urgency(extracted)
-
-        # Step 4: Get medicine info
-        medicines = self.get_medicine_info(urgency_result["conditions"])
-
-        # Step 5: Get precautions
-        precautions = PRECAUTIONS.get(
-            urgency_result["urgency_level"],
-            PRECAUTIONS["self-care"]
-        )
-
-        # Step 6: Get recommendations
-        recommendations = self.get_recommendations(
-            urgency_result["urgency_level"],
-            extracted
-        )
-
-        # Step 7: Get when to see doctor
-        when_to_see = self.get_when_to_see_doctor(urgency_result["urgency_level"])
-
-        # Step 8: Find nearby hospitals
+        # Find nearby hospitals
         nearby_hospitals = []
         if latitude and longitude:
             try:
                 nearby_hospitals = await hospital_service.find_nearby(
-                    latitude=latitude,
-                    longitude=longitude,
-                    radius_km=500.0,
-                    emergency_only=(urgency_result["urgency_level"] == "emergency")
+                    latitude=latitude, longitude=longitude, radius_km=500.0,
+                    emergency_only=(urgency["urgency_level"] == "emergency")
                 )
             except Exception:
                 pass
 
-        # Step 9: Save triage record
+        # Save triage record
         record = {
-            "user_id": user_id,
-            "symptoms": symptoms,
-            "translated_symptoms": translated_symptoms,
-            "input_type": input_type,
-            "language": language,
-            "urgency_level": urgency_result["urgency_level"],
-            "urgency_color": urgency_result["urgency_color"],
-            "confidence": urgency_result["confidence"],
-            "extracted_symptoms": extracted,
-            "possible_conditions": urgency_result["conditions"],
-            "recommendations": recommendations,
-            "precautions": precautions,
-            "medicines_info": medicines,
+            "user_id": user_id, "symptoms": symptoms, "translated_symptoms": translated,
+            "input_type": input_type, "language": language,
+            "urgency_level": urgency["urgency_level"], "urgency_color": urgency["urgency_color"],
+            "confidence": urgency["confidence"], "extracted_symptoms": extracted,
+            "possible_conditions": urgency["conditions"], "recommendations": recommendations,
+            "precautions": precautions, "medicines_info": medicines,
             "when_to_see_doctor": when_to_see,
-            "latitude": latitude,
-            "longitude": longitude,
+            "latitude": latitude, "longitude": longitude,
             "created_at": datetime.utcnow()
         }
-
         await db.triage_records.insert_one(record)
 
-        # Step 10: Build response
-        disclaimer = (
-            "⚠️ DISCLAIMER: This is an AI-based preliminary assessment only. "
-            "It is NOT a medical diagnosis. Always consult a qualified doctor. "
-            "In case of emergency, call 108/102 immediately."
-        )
-
+        # Build response
         response = {
-            "urgency_level": urgency_result["urgency_level"],
-            "urgency_color": urgency_result["urgency_color"],
-            "confidence": urgency_result["confidence"],
-            "extracted_symptoms": extracted if extracted else ["general discomfort"],
-            "possible_conditions": urgency_result["conditions"],
-            "recommendations": recommendations,
-            "precautions": precautions,
-            "medicines_info": medicines,
-            "when_to_see_doctor": when_to_see,
-            "disclaimer": disclaimer,
-            "nearby_hospitals": nearby_hospitals[:5],
-            "translated_response": None,
-            "response_language": "english"
+            "urgency_level": urgency["urgency_level"], "urgency_color": urgency["urgency_color"],
+            "confidence": urgency["confidence"],
+            "extracted_symptoms": extracted or ["general discomfort"],
+            "possible_conditions": urgency["conditions"],
+            "recommendations": recommendations, "precautions": precautions,
+            "medicines_info": medicines, "when_to_see_doctor": when_to_see,
+            "disclaimer": DISCLAIMER, "nearby_hospitals": nearby_hospitals[:5],
+            "translated_response": None, "response_language": "english"
         }
 
-        # Step 11: Translate response to user's language if not English
+        # Translate response if non-English
         if language and language != "english":
             try:
                 response = translate_response_with_gemini(response, language)
@@ -675,25 +556,19 @@ class TriageService:
         return response
 
     async def get_user_history(self, user_id: str) -> list:
-        """Get user's triage history"""
+        """Get user's triage history (last 20 records)."""
         db = get_database()
         history = []
-
-        async for record in db.triage_records.find(
-            {"user_id": user_id}
-        ).sort("created_at", -1).limit(20):
+        async for record in db.triage_records.find({"user_id": user_id}).sort("created_at", -1).limit(20):
             record["id"] = str(record.pop("_id"))
             record["created_at"] = str(record.get("created_at", ""))
             history.append(record)
-
         return history
 
     async def get_triage_record(self, triage_id: str) -> dict:
-        """Get specific triage record"""
+        """Get a single triage record by ID."""
         db = get_database()
-        record = await db.triage_records.find_one(
-            {"_id": ObjectId(triage_id)}
-        )
+        record = await db.triage_records.find_one({"_id": ObjectId(triage_id)})
         if record:
             record["id"] = str(record.pop("_id"))
             record["created_at"] = str(record.get("created_at", ""))

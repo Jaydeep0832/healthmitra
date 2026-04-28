@@ -14,7 +14,7 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     """Application startup and shutdown events"""
     # Startup
-    print("🚀 Starting HealthMitra Backend...")
+    print("Starting HealthMitra Backend...")
     await connect_to_database()
 
     # Auto-seed hospitals if collection is empty
@@ -22,14 +22,14 @@ async def lifespan(app: FastAPI):
         from app.services.hospital_service import HospitalService
         hospital_svc = HospitalService()
         count = await hospital_svc.seed_hospitals()
-        print(f"🏥 Hospitals ready: {count} in database")
+        print(f"Hospitals ready: {count} in database")
     except Exception as e:
-        print(f"⚠️ Hospital seeding note: {e}")
+        print(f"Hospital seeding note: {e}")
 
     yield
     # Shutdown
     await close_database_connection()
-    print("👋 HealthMitra Backend stopped.")
+    print("HealthMitra Backend stopped.")
 
 
 app = FastAPI(
@@ -39,16 +39,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Configuration
+# CORS — Allow all origins for development (restrict in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-        "*"  # Allow all for development
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

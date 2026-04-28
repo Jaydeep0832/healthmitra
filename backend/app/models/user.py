@@ -1,22 +1,7 @@
 #user.py
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
-from bson import ObjectId
-
-
-class PyObjectId(str):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v, handler=None):
-        if isinstance(v, ObjectId):
-            return str(v)
-        if isinstance(v, str):
-            return v
-        raise ValueError("Invalid ObjectId")
 
 
 class UserCreate(BaseModel):

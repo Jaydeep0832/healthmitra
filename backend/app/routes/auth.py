@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from app.models.user import UserCreate, UserLogin, UserResponse
 from app.services.auth_service import AuthService
 from app.utils.jwt_handler import create_access_token, get_current_user
-from datetime import datetime
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 auth_service = AuthService()
