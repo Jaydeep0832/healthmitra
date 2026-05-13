@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { hospitalAPI } from '../services/api';
+import { hospitalAPI, userAPI } from '../services/api';
 
 const S = {
   page: {
@@ -121,9 +121,11 @@ function Hospitals() {
     detectLocation();
   }, []);
 
-  const detectLocation = () => {
+  const detectLocation = async () => {
     setLocationStatus('detecting');
     setError('');
+    
+    // 1. Try Browser Geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
@@ -132,31 +134,52 @@ function Hospitals() {
           setLocationStatus('granted');
           fetchHospitals(loc.latitude, loc.longitude, radius);
         },
-        (err) => {
+        async (err) => {
           console.warn('Geolocation error:', err.message);
-          // Try IP-based geolocation as fallback
-          fetch('https://ipapi.co/json/')
-            .then(r => r.json())
-            .then(data => {
+          
+          let profileLocationFound = false;
+          
+          // 2. Try User Profile Fallback (if logged in)
+          try {
+            const profileRes = await userAPI.getProfile();
+            const profile = profileRes.data.profile || profileRes.data;
+            if (profile.latitude && profile.longitude) {
+              const loc = { latitude: profile.latitude, longitude: profile.longitude };
+              setLocation(loc);
+              setLocationStatus('fallback');
+              setError('📍 Using location from your profile. Browser GPS is blocked (requires HTTPS).');
+              fetchHospitals(loc.latitude, loc.longitude, radius);
+              profileLocationFound = true;
+            }
+          } catch (profileErr) {
+            console.warn('Profile fetch failed:', profileErr);
+          }
+
+          if (!profileLocationFound) {
+            // 3. Try IP-based geolocation
+            try {
+              const ipRes = await fetch('https://ipapi.co/json/');
+              const data = await ipRes.json();
               if (data.latitude && data.longitude) {
                 const loc = { latitude: data.latitude, longitude: data.longitude };
                 setLocation(loc);
                 setLocationStatus('fallback');
-                setError('📍 Using approximate location via IP. For accurate results, allow GPS access.');
+                setError('📍 Using approximate location via IP. Browser GPS is blocked (requires HTTPS).');
                 fetchHospitals(loc.latitude, loc.longitude, radius);
               } else {
                 throw new Error("IP location failed");
               }
-            })
-            .catch(() => {
-              const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 }; // Morbi, Gujarat area
+            } catch (ipErr) {
+              // 4. Final Fallback (Morbi)
+              const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 };
               setLocation(fallbackLoc);
               setLocationStatus('fallback');
-              setError('📍 Location access denied. Showing default location. Click "Detect My Location" to retry.');
+              setError('📍 Location access denied. Showing default (Morbi). Use HTTPS for GPS support.');
               fetchHospitals(fallbackLoc.latitude, fallbackLoc.longitude, radius);
-            });
+            }
+          }
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
       );
     } else {
       const fallbackLoc = { latitude: 22.8200, longitude: 70.8350 };

@@ -17,5 +17,5 @@ pydantic==2.5.3
 # PDF Processing
 PyMuPDF==1.23.8
 
-# HTTP Requests (Gemini API)
+# HTTP Requests (Groq API)
 requests==2.31.0

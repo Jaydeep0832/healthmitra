@@ -13,35 +13,45 @@ try:
 except ImportError:
     REQUESTS_AVAILABLE = False
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 hospital_service = HospitalService()
 
 
 # =============================================================================
-# Gemini Translation Helper
+# Groq/Llama Translation Helper
 # =============================================================================
 
-def _call_gemini(prompt: str, temperature: float = 0.2, timeout: int = 30) -> str:
-    """Call Gemini API and return raw text response."""
-    if not GEMINI_API_KEY or not REQUESTS_AVAILABLE:
+def _call_llm(prompt: str, temperature: float = 0.2, timeout: int = 30) -> str:
+    """Call Groq API (Llama 3.3) and return raw text response."""
+    if not GROQ_API_KEY or not REQUESTS_AVAILABLE:
+        print("[Groq] Skipped — API key not configured")
         return ""
     try:
-        payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"temperature": temperature, "maxOutputTokens": 2048}
+        headers = {
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
         }
-        resp = http_requests.post(GEMINI_URL, json=payload, timeout=timeout)
+        payload = {
+            "model": GROQ_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": temperature,
+            "max_tokens": 2048
+        }
+        resp = http_requests.post(GROQ_URL, json=payload, headers=headers, timeout=timeout)
         if resp.status_code == 200:
-            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+            return resp.json()["choices"][0]["message"]["content"]
+        else:
+            print(f"[Groq] HTTP {resp.status_code}: {resp.text[:200]}")
     except Exception as e:
-        print(f"Gemini API error: {e}")
+        print(f"[Groq] Error: {e}")
     return ""
 
 
 def _clean_json(text: str) -> dict:
-    """Parse JSON from Gemini response, stripping markdown fences."""
+    """Parse JSON from LLM response, stripping markdown fences."""
     cleaned = text.strip()
     if cleaned.startswith("```"):
         cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
@@ -49,9 +59,9 @@ def _clean_json(text: str) -> dict:
     return json.loads(cleaned)
 
 
-def translate_response_with_gemini(response_data: dict, target_language: str) -> dict:
-    """Translate the triage response to the target language using Gemini."""
-    if not GEMINI_API_KEY or target_language == "english":
+def translate_response_with_llm(response_data: dict, target_language: str) -> dict:
+    """Translate the triage response to the target language using Groq (Llama)."""
+    if not GROQ_API_KEY or target_language == "english":
         return response_data
 
     LANGUAGE_NAMES = {
@@ -83,7 +93,7 @@ def translate_response_with_gemini(response_data: dict, target_language: str) ->
     )
 
     try:
-        text = _call_gemini(prompt)
+        text = _call_llm(prompt)
         if text:
             translated = _clean_json(text)
             # Apply translations
@@ -412,9 +422,9 @@ class TriageService:
             if native_word in translated:
                 translated = translated.replace(native_word, translation_map[native_word])
 
-        # Fallback to Gemini if no keyword matched and text has non-ASCII chars
+        # Fallback to Groq LLM if no keyword matched and text has non-ASCII chars
         if translated == text and any(ord(c) > 127 for c in text):
-            result = _call_gemini(
+            result = _call_llm(
                 f"Translate this {language} medical symptom to English. Return ONLY the translation:\n{text}",
                 temperature=0.1, timeout=15
             )
@@ -549,7 +559,7 @@ class TriageService:
         # Translate response if non-English
         if language and language != "english":
             try:
-                response = translate_response_with_gemini(response, language)
+                response = translate_response_with_llm(response, language)
             except Exception as e:
                 print(f"Translation step failed: {e}")
 

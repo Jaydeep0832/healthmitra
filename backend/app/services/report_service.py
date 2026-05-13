@@ -19,12 +19,14 @@ try:
 except ImportError:
     REQUESTS_AVAILABLE = False
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_VISION_MODEL = "llama-3.2-90b-vision-preview"
 
 
-def _clean_gemini_json(text: str) -> dict:
-    """Parse JSON from Gemini response, stripping markdown fences if present."""
+def _clean_llm_json(text: str) -> dict:
+    """Parse JSON from LLM response, stripping markdown fences if present."""
     cleaned = text.strip()
     if cleaned.startswith("```"):
         cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
@@ -100,25 +102,34 @@ class ReportService:
 
         return data
 
-    def _call_gemini_text(self, prompt: str) -> str:
-        """Call Gemini API with a text-only prompt."""
-        if not GEMINI_API_KEY or not REQUESTS_AVAILABLE:
+    def _call_llm_text(self, prompt: str) -> str:
+        """Call Groq API (Llama 3.3) with a text-only prompt."""
+        if not GROQ_API_KEY or not REQUESTS_AVAILABLE:
+            print("[Report Groq] Skipped — API key not configured")
             return ""
         try:
-            payload = {
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"temperature": 0.3, "maxOutputTokens": 2048}
+            headers = {
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
             }
-            resp = http_requests.post(GEMINI_URL, json=payload, timeout=30)
+            payload = {
+                "model": GROQ_MODEL,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.3,
+                "max_tokens": 2048
+            }
+            resp = http_requests.post(GROQ_URL, json=payload, headers=headers, timeout=30)
             if resp.status_code == 200:
-                return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+                return resp.json()["choices"][0]["message"]["content"]
+            else:
+                print(f"[Report Groq] HTTP {resp.status_code}: {resp.text[:200]}")
         except Exception as e:
-            print(f"Gemini API error: {e}")
+            print(f"[Report Groq] Error: {e}")
         return ""
 
-    def _call_gemini_vision(self, file_content: bytes, file_type: str) -> dict:
-        """Call Gemini Vision API for image/PDF analysis."""
-        if not GEMINI_API_KEY or not REQUESTS_AVAILABLE:
+    def _call_llm_vision(self, file_content: bytes, file_type: str) -> dict:
+        """Call Groq Vision API (Llama 3.2 Vision) for image analysis."""
+        if not GROQ_API_KEY or not REQUESTS_AVAILABLE:
             return {}
         try:
             b64_data = base64.b64encode(file_content).decode("utf-8")
@@ -126,33 +137,48 @@ class ReportService:
                     "image/png": "image/png", "image/webp": "image/webp",
                     "application/pdf": "application/pdf"}.get(file_type, "image/jpeg")
 
+            # Groq vision does not support PDF inline — fall back to text extraction for PDFs
+            if mime == "application/pdf":
+                return {}
+
             prompt_text = (
                 "You are HealthMitra, an expert AI medical report analyzer for rural Indian healthcare. "
                 "Analyze this medical document thoroughly. "
                 "Return ONLY a raw JSON object with these keys (no markdown):\n"
                 '{"summary": "...", "suggestions": ["..."], "risk_level": "low/medium/high", '
-                '"risk_explanation": "...", "when_to_see_doctor": "...", "diet_advice": "...", '
+                '{"risk_explanation": "...", "when_to_see_doctor": "...", "diet_advice": "...", '
                 '"lifestyle_advice": "...", "findings": [{"test": "...", "value": "...", "unit": "...", "status": "..."}], '
                 '"abnormal_values": [...], "medicines_found": [...]}'
             )
 
-            payload = {
-                "contents": [{"parts": [
-                    {"text": prompt_text},
-                    {"inline_data": {"mime_type": mime, "data": b64_data}}
-                ]}],
-                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 2048}
+            headers = {
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
             }
-            resp = http_requests.post(GEMINI_URL, json=payload, timeout=60)
+            payload = {
+                "model": GROQ_VISION_MODEL,
+                "messages": [{
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt_text},
+                        {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64_data}"}}
+                    ]
+                }],
+                "temperature": 0.2,
+                "max_tokens": 2048
+            }
+            resp = http_requests.post(GROQ_URL, json=payload, headers=headers, timeout=60)
             if resp.status_code == 200:
-                text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-                return _clean_gemini_json(text)
+                text = resp.json()["choices"][0]["message"]["content"]
+                return _clean_llm_json(text)
+            else:
+                print(f"[Report Vision] HTTP {resp.status_code}: {resp.text[:200]}")
         except Exception as e:
-            print(f"Gemini Vision error: {e}")
+            print(f"[Report Vision] Error: {e}")
         return {}
 
     def _generate_ai_summary(self, text: str, doc_type: str, extracted_data: dict) -> dict:
-        """Generate AI summary using Gemini, with fallback."""
+        """Generate AI summary using Groq (Llama), with fallback."""
         prompt = (
             "You are HealthMitra, an AI medical report analyzer for rural Indian healthcare. "
             f"Analyze this {doc_type.replace('_', ' ')} report.\n\n"
@@ -165,21 +191,21 @@ class ReportService:
             '"lifestyle_advice": "..."}'
         )
 
-        response = self._call_gemini_text(prompt)
+        response = self._call_llm_text(prompt)
         if response:
             try:
-                return _clean_gemini_json(response)
+                return _clean_llm_json(response)
             except json.JSONDecodeError:
                 return {"summary": response[:1000], "suggestions": ["Consult your doctor"],
                         "risk_level": "medium", "risk_explanation": "Unable to fully analyze.",
                         "when_to_see_doctor": "Visit your doctor soon.",
                         "diet_advice": "Maintain a balanced diet.", "lifestyle_advice": "Exercise regularly."}
 
-        # Fallback when Gemini is unavailable
+        # Fallback when Groq is unavailable
         return self._generate_fallback(doc_type, extracted_data)
 
     def _generate_fallback(self, doc_type: str, extracted_data: dict) -> dict:
-        """Fallback summary when Gemini is unavailable."""
+        """Fallback summary when Groq is unavailable."""
         parts = [f"📄 Document Type: {doc_type.replace('_', ' ').title()}"]
         if extracted_data.get("patient_name"):
             parts.append(f"👤 Patient: {extracted_data['patient_name']}")
@@ -188,7 +214,7 @@ class ReportService:
         if extracted_data.get("abnormal_values"):
             parts.append("⚠️ Abnormal values detected")
         if len(parts) <= 1:
-            parts.append("Report uploaded. AI analysis requires Gemini API key.")
+            parts.append("Report uploaded. AI analysis requires Groq API key.")
 
         return {
             "summary": "\n".join(parts),
@@ -227,10 +253,10 @@ class ReportService:
         if "pdf" in file_type.lower():
             extracted_text = self._extract_text_from_pdf(file_content)
 
-        # Step 2: Use Gemini Vision for images or scanned PDFs
+        # Step 2: Use Groq Vision for images or scanned PDFs
         ai_analysis = None
         if not extracted_text.strip():
-            ai_analysis = self._call_gemini_vision(file_content, file_type)
+            ai_analysis = self._call_llm_vision(file_content, file_type)
             if not ai_analysis:
                 extracted_text = "Document uploaded. Text could not be extracted."
 
@@ -251,7 +277,7 @@ class ReportService:
             else:
                 ai_analysis = self._generate_fallback(document_type, extracted_data)
 
-        # Merge Gemini findings into extracted_data
+        # Merge Groq findings into extracted_data
         for src, dst in [("findings", "test_results"), ("medicines_found", "medicines"), ("abnormal_values", "abnormal_values")]:
             if src in ai_analysis and not extracted_data.get(dst):
                 extracted_data[dst] = ai_analysis[src]

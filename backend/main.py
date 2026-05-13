@@ -17,14 +17,21 @@ async def lifespan(app: FastAPI):
     print("Starting HealthMitra Backend...")
     await connect_to_database()
 
+    # Diagnostics — show config status at startup
+    groq_key = os.getenv("GROQ_API_KEY", "")
+    if groq_key and len(groq_key) > 10:
+        print(f"✅ Groq API Key: configured ({groq_key[:8]}...)")
+    else:
+        print("⚠️  Groq API Key: NOT SET — multilingual translation and report analysis will use fallbacks")
+
     # Auto-seed hospitals if collection is empty
     try:
         from app.services.hospital_service import HospitalService
         hospital_svc = HospitalService()
         count = await hospital_svc.seed_hospitals()
-        print(f"Hospitals ready: {count} in database")
+        print(f"✅ Hospitals ready: {count} in database")
     except Exception as e:
-        print(f"Hospital seeding note: {e}")
+        print(f"⚠️  Hospital seeding note: {e}")
 
     yield
     # Shutdown
@@ -71,7 +78,18 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "HealthMitra Backend"}
+    groq_key = os.getenv("GROQ_API_KEY", "")
+    return {
+        "status": "healthy",
+        "service": "HealthMitra Backend",
+        "groq_configured": bool(groq_key and len(groq_key) > 10),
+        "features": {
+            "multilingual": bool(groq_key),
+            "report_analysis": bool(groq_key),
+            "hospital_finder": True,
+            "symptom_checker": True
+        }
+    }
 
 
 if __name__ == "__main__":

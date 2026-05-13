@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { triageAPI } from '../services/api';
+import { triageAPI, userAPI } from '../services/api';
 
 const S = {
   page: {
@@ -399,30 +399,51 @@ function SymptomChecker() {
   const recognitionRef = useRef(null);
   const resultRef = useRef(null);
 
-  const detectLocation = () => {
+  const detectLocation = async () => {
     setLocationStatus('detecting');
+    
+    // 1. Try Browser Geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
           setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
           setLocationStatus('granted');
         },
-        (err) => {
+        async (err) => {
           console.warn('Geolocation error:', err.message);
-          // Try IP-based geolocation as fallback
-          fetch('https://ipapi.co/json/')
-            .then(r => r.json())
-            .then(data => {
+          
+          let profileLocationFound = false;
+          
+          // 2. Try User Profile Fallback (if logged in)
+          try {
+            const profileRes = await userAPI.getProfile();
+            const profile = profileRes.data.profile || profileRes.data;
+            if (profile.latitude && profile.longitude) {
+              setLocation({ latitude: profile.latitude, longitude: profile.longitude });
+              setLocationStatus('ip_fallback'); 
+              profileLocationFound = true;
+            }
+          } catch (profileErr) {
+            console.warn('Profile fetch failed:', profileErr);
+          }
+
+          if (!profileLocationFound) {
+            // 3. Try IP-based geolocation
+            try {
+              const ipRes = await fetch('https://ipapi.co/json/');
+              const data = await ipRes.json();
               if (data.latitude && data.longitude) {
                 setLocation({ latitude: data.latitude, longitude: data.longitude });
                 setLocationStatus('ip_fallback');
               } else {
-                setLocationStatus('denied');
+                throw new Error("IP location failed");
               }
-            })
-            .catch(() => setLocationStatus('denied'));
+            } catch (ipErr) {
+              setLocationStatus('denied');
+            }
+          }
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
       );
     } else {
       setLocationStatus('denied');
