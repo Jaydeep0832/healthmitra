@@ -11,9 +11,9 @@ Built as a cloud-native application with React, FastAPI, MongoDB Atlas, and depl
 | Feature | Description |
 |---|---|
 | 🩺 **AI Symptom Checker** | Rule-based triage engine that classifies symptoms into 3 urgency levels: Self-Care, Visit Clinic, Emergency |
-| 🌐 **Multilingual Support** | Input symptoms in 5 Indian languages with Gemini-powered translation |
+| 🌐 **Multilingual Support** | Input symptoms in 5 Indian languages with Groq/Llama-powered translation |
 | 🏨 **Hospital Locator** | GPS-based nearest hospital finder using Haversine distance calculation |
-| 📄 **Medical Report Analyzer** | Upload PDFs/images for AI-powered analysis via Gemini Vision API |
+| 📄 **Medical Report Analyzer** | Upload PDFs/images for AI-powered analysis via Groq Vision API |
 | 💊 **Medicine Information** | OTC medicine recommendations, dosage info, and drug interaction checker |
 | 🔊 **Voice Input** | Web Speech API integration for hands-free symptom entry |
 | 👩‍⚕️ **ASHA Worker Dashboard** | Admin panel for community health workers with patient management and village-level analytics |
@@ -28,7 +28,7 @@ Built as a cloud-native application with React, FastAPI, MongoDB Atlas, and depl
 | **Frontend** | React 19, React Router, Axios, Leaflet Maps, TailwindCSS |
 | **Backend** | Python FastAPI, Pydantic, Motor (async MongoDB driver) |
 | **Database** | MongoDB Atlas |
-| **AI/ML** | Google Gemini 2.0 Flash (triage translation, report analysis, vision) |
+| **AI/ML** | Groq Llama 3.3 70B (triage translation, report analysis) + Llama 3.2 Vision |
 | **Auth** | JWT (python-jose), SHA256 + salt password hashing |
 | **Deployment** | Docker, Docker Compose, Nginx reverse proxy, AWS EC2 |
 | **APIs** | Web Speech API, Geolocation API, IP-based location fallback |
@@ -69,7 +69,40 @@ healthmitra/
 - Node.js 18+
 - Python 3.11+
 - MongoDB Atlas account (or local MongoDB)
-- Google Gemini API key
+- Groq API key (free at https://console.groq.com)
+
+---
+
+## Database
+
+MongoDB Atlas — `healthmitra` database · 4 collections · 10 indexes
+
+| Collection | Docs | Key Fields |
+|------------|------|------------|
+| `hospitals` | 20 | name, specialty, phone, GPS coords — **2dsphere indexed** |
+| `users` | 17 | profile, language preference, health history, emergency contact |
+| `triage_records` | 18 | input text, detected entities, triage level, advice, timestamp |
+| `reports` | 4 | S3 key, extracted text, medicines[], test results[], uploaded_at |
+
+---
+
+## Screenshots
+
+> 🌐 Live at **[http://13.232.60.226/](http://13.232.60.226/)**
+
+| Main Dashboard | AI Symptom Checker | Triage Result |
+|:-:|:-:|:-:|
+| ![dashboard](assets/main_dashboard.png) | ![symptom](assets/symptoms.png) | ![triage](assets/triage.png) |
+
+| Hospital Locator | PDF Report Analyzer | Emergency SOS |
+|:-:|:-:|:-:|
+| ![hospital](assets/hospitals.png) | ![pdf](assets/report_analyzer.png) | ![sos](assets/emergency.png) |
+
+---
+
+## Installation & Setup
+
+**Prerequisites:** Docker, Docker Compose
 
 ### Local Development
 
@@ -79,7 +112,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env          # Add your MongoDB URL and Gemini API key
+cp .env.example .env          # Add your MongoDB URL and Groq API key
 uvicorn main:app --reload --port 8000
 ```
 
@@ -119,9 +152,9 @@ Full API docs available at `/docs` (Swagger UI) when backend is running.
 ## 📝 Architecture Highlights
 
 - **Rule-based triage engine** with 60+ symptom patterns across 3 urgency tiers
-- **Multilingual NLP** — keyword dictionaries for 4 languages + Gemini fallback translation
+- **Multilingual NLP** — keyword dictionaries for 4 languages + Groq/Llama fallback translation
 - **Haversine distance** calculation for hospital proximity with 20+ seeded hospitals across India
-- **Gemini Vision API** for analyzing scanned medical reports and lab images
+- **Groq Vision API** for analyzing scanned medical reports and lab images
 - **Role-based RBAC** — separate Patient and ASHA Worker interfaces
 
 ---
