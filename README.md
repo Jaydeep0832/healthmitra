@@ -1,170 +1,230 @@
-# 🏥 HealthMitra — AI-Powered Rural Health Assistant
+# 🏥 HealthMitra — Production AI-Powered Rural Healthcare Platform
 
-HealthMitra is a full-stack healthcare application designed for rural India. It uses AI-powered symptom triage, multilingual support (English, Hindi, Gujarati, Tamil, Marathi), and GPS-based hospital discovery to bridge the gap between patients and healthcare access.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react)](https://reactjs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB%20Atlas-Async%20Motor-47A248.svg?logo=mongodb)](https://www.mongodb.com)
+[![Groq](https://img.shields.io/badge/Groq-Llama%203.3%20%2B%203.2%20Vision-orange.svg)](https://groq.com)
+[![Docker](https://img.shields.io/badge/Docker-Compose%20Ready-2496ED.svg?logo=docker)](https://www.docker.com)
+[![AWS](https://img.shields.io/badge/AWS-EC2%20Deployment-FF9900.svg?logo=amazon-aws)](https://aws.amazon.com)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v3-38BDF8.svg?logo=tailwindcss)](https://tailwindcss.com)
 
-Built as a cloud-native application with React, FastAPI, MongoDB Atlas, and deployed via Docker on AWS EC2.
+An **Enterprise-Grade AI-Powered Healthcare Platform** designed specifically for rural India. Built with **FastAPI**, **React 19**, **MongoDB Atlas**, **Groq Llama 3.3 70B & Llama 3.2 Vision**, **Nginx**, and **Docker**.
 
----
-
-## ✨ Key Features
-
-| Feature | Description |
-|---|---|
-| 🩺 **AI Symptom Checker** | Rule-based triage engine that classifies symptoms into 3 urgency levels: Self-Care, Visit Clinic, Emergency |
-| 🌐 **Multilingual Support** | Input symptoms in 5 Indian languages with Groq/Llama-powered translation |
-| 🏨 **Hospital Locator** | GPS-based nearest hospital finder using Haversine distance calculation |
-| 📄 **Medical Report Analyzer** | Upload PDFs/images for AI-powered analysis via Groq Vision API |
-| 💊 **Medicine Information** | OTC medicine recommendations, dosage info, and drug interaction checker |
-| 🔊 **Voice Input** | Web Speech API integration for hands-free symptom entry |
-| 👩‍⚕️ **ASHA Worker Dashboard** | Admin panel for community health workers with patient management and village-level analytics |
-| 🔐 **JWT Authentication** | Role-based access control (Patient / ASHA Worker) |
+Featuring **AI-Powered Symptom Triage**, **Multilingual NLP (English, Hindi, Gujarati, Tamil, Marathi)**, **GPS Geospatial Hospital Discovery (Haversine & 2dsphere)**, **Vision Medical Report Analyzer**, **ASHA Community Worker Dashboard**, **Bcrypt/JWT Security**, and **Full Microservice Containerization**.
 
 ---
 
-## 🛠️ Tech Stack
+## 🏗️ System Architecture & End-to-End Data Flow
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React 19, React Router, Axios, Leaflet Maps, TailwindCSS |
-| **Backend** | Python FastAPI, Pydantic, Motor (async MongoDB driver) |
-| **Database** | MongoDB Atlas |
-| **AI/ML** | Groq Llama 3.3 70B (triage translation, report analysis) + Llama 3.2 Vision |
-| **Auth** | JWT (python-jose), SHA256 + salt password hashing |
-| **Deployment** | Docker, Docker Compose, Nginx reverse proxy, AWS EC2 |
-| **APIs** | Web Speech API, Geolocation API, IP-based location fallback |
+The platform implements an asynchronous, microservice architecture spanning from hands-free voice and text input down to Groq Vision document analysis and geospatial hospital retrieval.
+
+```mermaid
+flowchart TD
+    A[👤 Patient / ASHA Worker Input\nText, Voice, PDF, GPS] --> B[⚡ Nginx Reverse Proxy Gateway]
+    
+    B --> C[🚀 FastAPI REST Backend]
+    
+    C --> D1[🩺 AI Symptom Triage Engine\n60+ Rules & Groq Llama 3.3 70B]
+    C --> D2[🌐 Multilingual Translator\nHindi, Gujarati, Tamil, Marathi]
+    C --> D3[🏨 Geospatial Hospital Finder\nHaversine + 2dsphere GeoJSON]
+    C --> D4[📄 Medical Report Analyzer\nGroq Llama 3.2 Vision API]
+    C --> D5[👩‍⚕️ ASHA Worker Admin Module\nVillage Analytics & Patient Management]
+    
+    D1 --> E[(🍃 MongoDB Atlas Database\nUsers, Triage, Hospitals, Reports)]
+    D2 --> E
+    D3 --> E
+    D4 --> E
+    D5 --> E
+    
+    E --> F[💬 React 19 Web Dashboard]
+    E --> G[🗺️ Interactive Leaflet Map Canvas]
+```
 
 ---
 
-## 📁 Project Structure
+## 🔥 Key Technical Highlights & Features
+
+### 1. 🩺 **AI-Powered Symptom Triage & Multilingual NLP**
+- **Rule-Based & LLM Fallback Engine**: Classifies symptoms into 3 urgency tiers (`Self-Care`, `Visit Clinic`, `Emergency`) across 60+ deterministic medical rules and Groq/Llama reasoning.
+- **Multilingual Support**: Supports 5 Indian languages (English, Hindi, Gujarati, Tamil, Marathi) using Groq Llama 3.3 70B for zero-shot medical translation and context retention.
+- **Voice Input Integration**: Web Speech API implementation enabling hands-free voice symptom entry for low-literacy users.
+
+### 2. 📄 **Medical Report & Lab Analyzer (Groq Llama 3.2 Vision)**
+- **Multi-Modal Document Parsing**: Upload PDF or image lab reports (CBC, Lipid Panel, Radiology).
+- **Vision Extraction Pipeline**: Powered by Groq Llama 3.2 Vision to extract medical entities, abnormal values, and plain-language patient explanations.
+
+### 3. 🏨 **Geospatial Hospital Discovery Engine**
+- **GPS Location Detection**: Browser Geolocation API with IP-based fallback mechanisms.
+- **Haversine Distance & 2dsphere Indexing**: Computes exact distance in kilometers to 20+ pre-seeded regional hospitals and health centers across India.
+- **Interactive Leaflet Canvas**: Visual map interface with distance sorting, emergency contact triggers, and navigation directions.
+
+### 4. 👩‍⚕️ **ASHA Community Worker Dashboard**
+- **Village Healthcare Management**: Specialized portal for Accredited Social Health Activists (ASHA) to monitor community health trends.
+- **Patient History & Analytics**: Role-based aggregated metrics, emergency alerts, and triage record management.
+
+### 5. 🛡️ **Role-Based Security & Auth Engine**
+- **JWT Authorization**: Cryptographically signed JSON Web Tokens (`python-jose`) enforcing `Patient` and `ASHA_Worker` role permissions.
+- **Bcrypt Password Security**: Direct salted password hashing protecting user data privacy.
+
+### 6. 💊 **OTC Medicine Information & Safety Engine**
+- **Over-the-Counter Guidance**: Database of essential OTC medications, dosages, and safety precautions.
+- **Drug Interaction Checker**: Basic interaction warnings preventing unsafe self-medication.
+
+---
+
+## 📁 Repository Folder Structure
 
 ```
 healthmitra/
-├── backend/
+├── backend/                        # FastAPI Backend Service
 │   ├── app/
-│   │   ├── models/          # Pydantic data models (user, triage, hospital, report)
-│   │   ├── routes/          # FastAPI route handlers (auth, users, triage, hospitals, medicines, reports, admin)
-│   │   ├── services/        # Business logic layer (triage engine, report analyzer, hospital finder)
-│   │   └── utils/           # JWT token handler
-│   ├── main.py              # FastAPI app entry point
-│   ├── requirements.txt     # Python dependencies
-│   └── Dockerfile
-├── frontend/
+│   │   ├── models/                 # Pydantic Data Models (User, Triage, Hospital, Report)
+│   │   ├── routes/                 # FastAPI REST Endpoints (Auth, Triage, Hospitals, Reports, Admin)
+│   │   ├── services/               # Business Logic Layer (Triage Engine, Hospital Finder, Vision Analyzer)
+│   │   └── utils/                  # JWT Security & Password Hashing
+│   ├── main.py                     # FastAPI Application Entry Point & CORS Setup
+│   ├── requirements.txt            # Python Dependencies
+│   └── Dockerfile                  # Production Uvicorn Container Specs
+├── frontend/                       # React 19 Web Dashboard
+│   ├── public/                     # Favicons & Static Assets
 │   ├── src/
-│   │   ├── components/      # Navbar
-│   │   ├── pages/           # Landing, Login, Register, Dashboard, SymptomChecker, Hospitals, Reports, History, Profile, AdminDashboard
-│   │   ├── services/        # Axios API client
-│   │   └── App.js           # Router + protected routes
-│   ├── package.json
-│   └── Dockerfile
-├── nginx/                   # Reverse proxy config
-├── docker-compose.yml       # Multi-container orchestration
-└── README.md
+│   │   ├── components/             # Reusable UI Components (Navbar, Cards, Modals)
+│   │   ├── pages/                  # Views (Landing, Dashboard, SymptomChecker, Hospitals, Reports, Admin)
+│   │   ├── services/               # Axios API Client Integration
+│   │   └── App.js                  # React Router Navigation & Protected Routes
+│   ├── nginx.conf                  # Frontend Nginx Server Config
+│   └── Dockerfile                  # Multi-Stage Build Container Specs
+├── nginx/                          # Reverse Proxy Gateway
+│   ├── nginx.conf                  # Request Routing (Frontend :80, Backend API /api)
+│   └── Dockerfile                  # Nginx Container Image Specs
+├── assets/                         # Interface Screenshots & Visual Assets
+├── docker-compose.yml              # Multi-Container Microservice Orchestration
+└── README.md                       # Main Project Documentation
 ```
 
 ---
 
-## 🚀 How to Run
+## 📸 Platform Interface Screenshots & Dashboards
 
-### Prerequisites
-- Node.js 18+
-- Python 3.11+
-- MongoDB Atlas account (or local MongoDB)
-- Groq API key (free at https://console.groq.com)
+> 🌐 Live Deployment: **[http://13.232.60.226/](http://13.232.60.226/)**
 
----
+### 1. 📊 Main Patient Dashboard
+![Main Dashboard](assets/main_dashboard.png)
 
-## Database
+### 2. 🩺 AI Symptom Checker Interface
+![Symptom Checker](assets/symptoms.png)
 
-MongoDB Atlas — `healthmitra` database · 4 collections · 10 indexes
+### 3. 🎯 Emergency & Urgency Triage Result
+![Triage Result](assets/triage.png)
 
-| Collection | Docs | Key Fields |
-|------------|------|------------|
-| `hospitals` | 20 | name, specialty, phone, GPS coords — **2dsphere indexed** |
-| `users` | 17 | profile, language preference, health history, emergency contact |
-| `triage_records` | 18 | input text, detected entities, triage level, advice, timestamp |
-| `reports` | 4 | S3 key, extracted text, medicines[], test results[], uploaded_at |
+### 4. 🏨 GPS Hospital Locator & Leaflet Map
+![Hospital Locator](assets/hospitals.png)
 
----
+### 5. 📄 AI PDF Medical Report Analyzer
+![Report Analyzer](assets/report_analyzer.png)
 
-## Screenshots
+### 6. 🚨 Emergency SOS & Helpline Panel
+![Emergency SOS](assets/emergency.png)
 
-> 🌐 Live at **[http://13.232.60.226/](http://13.232.60.226/)**
+### 7. 🔐 User Authentication Portal
+![Login Page](assets/login_page.png)
 
-| Main Dashboard | AI Symptom Checker | Triage Result |
-|:-:|:-:|:-:|
-| ![dashboard](assets/main_dashboard.png) | ![symptom](assets/symptoms.png) | ![triage](assets/triage.png) |
-
-| Hospital Locator | PDF Report Analyzer | Emergency SOS |
-|:-:|:-:|:-:|
-| ![hospital](assets/hospitals.png) | ![pdf](assets/report_analyzer.png) | ![sos](assets/emergency.png) |
+### 8. 🌐 Public Platform Landing Page
+![Landing Page](assets/landing_page.png)
 
 ---
 
-## Installation & Setup
+## 🚀 Quickstart & Installation
 
-**Prerequisites:** Docker, Docker Compose
+### Option A: Running with Docker Compose (Recommended)
 
-### Local Development
+```powershell
+# 1. Clone the repository
+git clone https://github.com/Jaydeep0832/healthmitra.git
+cd healthmitra
 
-**Backend:**
-```bash
+# 2. Configure environment variables in .env at project root
+# Add MONGO_URI and GROQ_API_KEY
+
+# 3. Build and launch all microservices in detached mode
+docker-compose up --build -d
+
+# 4. Verify running containers
+docker-compose ps
+```
+
+Access services:
+- **Frontend Dashboard**: [http://localhost](http://localhost)
+- **Backend REST API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### Option B: Running Locally
+
+#### 1. Backend Setup
+```powershell
 cd backend
 python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
+venv\Scripts\activate      # On Windows (source venv/bin/activate on Linux/Mac)
 pip install -r requirements.txt
-cp .env.example .env          # Add your MongoDB URL and Groq API key
+cp .env.example .env       # Configure MONGO_URI and GROQ_API_KEY
 uvicorn main:app --reload --port 8000
 ```
 
-**Frontend:**
-```bash
+#### 2. Frontend Setup
+```powershell
 cd frontend
 npm install
-npm start                     # Runs on http://localhost:3000
-```
-
-### Docker Deployment
-```bash
-# Set environment variables in .env at project root
-docker-compose up --build -d
-# App available at http://localhost (frontend) and http://localhost:8000 (API docs at /docs)
+npm start                  # Runs on http://localhost:3000
 ```
 
 ---
 
-## 🔗 API Endpoints
+## 🔗 REST API Reference
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login and get JWT token |
-| POST | `/api/triage/text` | Submit symptoms for AI triage |
-| GET | `/api/triage/history` | Get triage history |
-| GET | `/api/hospitals/nearby` | Find nearby hospitals by GPS |
-| POST | `/api/reports/upload` | Upload medical report for AI analysis |
-| GET | `/api/medicines/recommend` | Get medicine recommendations |
-| GET | `/api/admin/stats` | System statistics (admin only) |
+| `POST` | `/api/auth/register` | Register new patient or ASHA worker user |
+| `POST` | `/api/auth/login` | Authenticate user and issue JWT bearer token |
+| `POST` | `/api/triage/text` | Submit symptom description for AI urgency triage |
+| `GET` | `/api/triage/history` | Retrieve user triage history |
+| `GET` | `/api/hospitals/nearby` | Query nearest healthcare facilities by GPS coordinates |
+| `POST` | `/api/reports/upload` | Upload PDF/Image lab report for Groq Vision analysis |
+| `GET` | `/api/medicines/recommend` | Query OTC medicine information and safety advice |
+| `GET` | `/api/admin/stats` | Access system health metrics and village analytics (ASHA admin) |
 
-Full API docs available at `/docs` (Swagger UI) when backend is running.
+*Full interactive documentation available via Swagger UI at `/docs` when backend is running.*
 
 ---
 
-## 📝 Architecture Highlights
+## 📊 Database Architecture (MongoDB Atlas)
 
-- **Rule-based triage engine** with 60+ symptom patterns across 3 urgency tiers
-- **Multilingual NLP** — keyword dictionaries for 4 languages + Groq/Llama fallback translation
-- **Haversine distance** calculation for hospital proximity with 20+ seeded hospitals across India
-- **Groq Vision API** for analyzing scanned medical reports and lab images
-- **Role-based RBAC** — separate Patient and ASHA Worker interfaces
+Database: `healthmitra` · 4 Collections · 10 Indexes
+
+| Collection | Doc Count | Key Fields & Indexing |
+|---|---|---|
+| `hospitals` | 20 | name, specialty, phone, GPS coordinates — **`2dsphere` geospatial index** |
+| `users` | 17 | profile, language preference, health history, emergency contact — **`email` unique index** |
+| `triage_records` | 18 | input text, detected entities, triage level, advice, timestamp — **`user_id` index** |
+| `reports` | 4 | S3/storage key, extracted text, medicines[], test results[], uploaded_at |
+
+---
+
+## 🔮 Future Roadmap & Enhancements
+
+- 🌐 **Offline PWA Mode**: Progressive Web App caching for low-connectivity rural zones.
+- 📱 **WhatsApp & SMS Gateway**: Integration with Twilio/Gupshup for feature phone access.
+- 👨‍⚕️ **Telemedicine Scheduling**: Direct video/voice appointment booking with medical officers.
+- ⌚ **IoT Vitals Synchronization**: Integration with low-cost Bluetooth vitals monitors (SpO2, BP).
 
 ---
 
 ## ⚠️ Disclaimer
 
-HealthMitra provides AI-based preliminary health guidance only. It is **not** a substitute for professional medical diagnosis. Always consult a qualified healthcare provider. In emergencies, call **108** (ambulance) or **102** (medical helpline).
+HealthMitra provides AI-based preliminary health guidance only. It is **not** a substitute for professional medical diagnosis, advice, or treatment. Always consult a qualified healthcare provider for medical concerns. In life-threatening emergencies, immediately contact **108** (Ambulance) or **102** (Medical Helpline).
 
 ---
 
-## 📄 License
+## 📜 License
 
-This project is for educational and portfolio purposes.
+Distributed under the **MIT License**. See `LICENSE` for details.
