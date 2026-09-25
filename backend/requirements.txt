@@ -24,3 +24,5 @@ groq==0.4.1
 # Utilities
 pytest==7.4.3
 pytest-asyncio==0.23.2
+langdetect==1.0.9
+google-cloud-translate==3.12.1

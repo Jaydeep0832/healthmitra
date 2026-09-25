@@ -49,3 +49,21 @@ This document tracks the progress, architectural decisions, and detailed edit lo
 - **State Management:** Implemented Zustand `useAuthStore` at `src/store/useAuthStore.ts` to track login state.
 - **UI Pages:** Created beautifully styled Login (`src/pages/Login.tsx`) and Register (`src/pages/Register.tsx`) pages using Tailwind.
 - **Routing:** Created `AuthGuard` component at `src/components/Common/AuthGuard.tsx` to secure protected paths like `/dashboard`.
+
+---
+
+## Day 3: Multilingual Chatbot (Core Feature)
+**Date**: September 25, 2026
+
+### Backend Chatbot Service (Completed)
+- **Groq LLM Service:** Implemented `app/services/llm_service.py` to prompt Groq's Mixtral/Llama for empathetic, rural-focused healthcare with JSON schema enforcing confidence scores and emergency escalation flags.
+- **Multilingual Support:** Implemented `app/services/translation_service.py` using `langdetect` for user input, offloading response generation directly to the Groq LLM system prompt logic. Added new dependencies to `requirements.txt`.
+- **Chat History DB:** Defined schemas in `app/models/chat_history.py` and implemented saving history directly to the `patients` collection within MongoDB via `$push`.
+- **Chatbot Router:** Exposed `/message` and `/history` endpoints in `app/api/v1/chatbot.py`.
+
+### Frontend Chatbot UI (Completed)
+- **State Management:** Implemented `useChatStore.ts` in Zustand to manage conversation arrays, optimistic rendering, and language selection.
+- **Multilingual Input:** Created `MultilingualInput.tsx` that supports standard typing and utilizes the `webkitSpeechRecognition` browser API for voice-to-text input.
+- **Chat History Rendering:** Created `ChatHistory.tsx` to beautifully render AI and User messages, featuring custom alerts if `should_escalate` is true.
+- **Language Selector:** Created `LanguageSelector.tsx` for easy toggling between English, Hindi, Gujarati, Marathi, and Bengali.
+- **Chat Page:** Assembled the components into `Chatbot.tsx`.

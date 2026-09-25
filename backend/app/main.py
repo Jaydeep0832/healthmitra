@@ -6,6 +6,7 @@ import logging
 from app.api.health import router as health_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.audit import router as audit_router
+from app.api.v1.chatbot import router as chatbot_router
 from app.db.mongodb import connect_to_mongo, close_mongo_connection
 from app.services.audit_service import log_access
 from fastapi import Request
@@ -53,6 +54,7 @@ async def shutdown_db_client():
 app.include_router(health_router, prefix="/api", tags=["Health Check"])
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(audit_router, prefix="/api/v1/admin", tags=["Audit"])
+app.include_router(chatbot_router, prefix="/api/v1/chatbot", tags=["Chatbot"])
 
 @app.get("/")
 async def root():
