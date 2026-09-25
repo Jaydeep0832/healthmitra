@@ -1,8 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import logging
 
 from app.api.health import router as health_router
+from app.api.v1.auth import router as auth_router
+from app.api.v1.audit import router as audit_router
+from app.db.mongodb import connect_to_mongo, close_mongo_connection
+from app.services.audit_service import log_access
+from fastapi import Request
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="HealthMitra 2.0 API",
@@ -19,8 +27,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def audit_log_middleware(request: Request, call_next):
+    # Log access for every API request
+    response = await call_next(request)
+    
+    # Exclude health check from audit logging
+    if "/api/health" not in request.url.path:
+        await log_access(
+            action=request.method,
+            resource_type=request.url.path,
+            ip_address=request.client.host if request.client else None
+        )
+    return response
+
+@app.on_event("startup")
+async def startup_db_client():
+    await connect_to_mongo()
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    await close_mongo_connection()
+
 # Include Routers
 app.include_router(health_router, prefix="/api", tags=["Health Check"])
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(audit_router, prefix="/api/v1/admin", tags=["Audit"])
 
 @app.get("/")
 async def root():
