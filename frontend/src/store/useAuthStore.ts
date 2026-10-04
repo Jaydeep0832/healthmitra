@@ -22,14 +22,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       const user = await authService.getMe();
+      localStorage.setItem('user', JSON.stringify(user));
       set({ user, isAuthenticated: true, isLoading: false });
     } catch (error) {
+      localStorage.removeItem('user');
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
   logout: () => {
     authService.logout();
+    localStorage.removeItem('user');
     set({ user: null, isAuthenticated: false });
   },
 

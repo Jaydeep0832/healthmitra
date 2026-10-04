@@ -1,0 +1,101 @@
+name,type,address,latitude,longitude,contact,services,bed_count,ambulance,operating_hours,state,district,rating
+Apollo Hospital Ahmedabad,multispeciality,"Plot No 1A Bhat GIDC Estate Gandhinagar Highway Ahmedabad",23.0573,72.6340,+919876543001,"emergency,icu,cardiology,oncology,obstetrics,pediatrics,neurology,orthopedics",500,true,24/7,Gujarat,Ahmedabad,4.5
+Civil Hospital Ahmedabad,government,"Asarwa Ahmedabad",23.0469,72.6040,+919876543002,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery,orthopedics",2500,true,24/7,Gujarat,Ahmedabad,3.8
+Sterling Hospital Ahmedabad,multispeciality,"Sterling Hospital Road Off Gurukul Road Ahmedabad",23.0375,72.5430,+919876543003,"emergency,icu,cardiology,orthopedics,neurology,pediatrics,oncology",300,true,24/7,Gujarat,Ahmedabad,4.3
+Zydus Hospital Ahmedabad,multispeciality,"Nr Sola Bridge SG Highway Ahmedabad",23.0469,72.5290,+919876543004,"emergency,icu,cardiology,oncology,neurology,orthopedics,obstetrics",350,true,24/7,Gujarat,Ahmedabad,4.4
+CIMS Hospital Ahmedabad,superspeciality,"Nr Shukan Mall Off Science City Road Ahmedabad",23.0730,72.5120,+919876543005,"emergency,icu,cardiology,neurology,oncology,gastroenterology",300,true,24/7,Gujarat,Ahmedabad,4.6
+HCG Cancer Centre Ahmedabad,speciality,"Near Sola Overbridge SG Highway Ahmedabad",23.0490,72.5280,+919876543006,"oncology,radiation_therapy,chemotherapy",100,true,24/7,Gujarat,Ahmedabad,4.2
+SAL Hospital Ahmedabad,multispeciality,"Drive In Road Ahmedabad",23.0440,72.5370,+919876543007,"emergency,icu,orthopedics,general_medicine,pediatrics",200,true,24/7,Gujarat,Ahmedabad,4.1
+KD Hospital Ahmedabad,multispeciality,"Vaishnodevi Circle SG Highway Ahmedabad",23.0560,72.5270,+919876543008,"emergency,icu,cardiology,neurology,orthopedics,obstetrics",250,true,24/7,Gujarat,Ahmedabad,4.3
+Shalby Hospital Ahmedabad,speciality,"Opp Karnavati Club SG Highway Ahmedabad",23.0330,72.5080,+919876543009,"orthopedics,joint_replacement,spine_surgery,icu",300,true,24/7,Gujarat,Ahmedabad,4.4
+VS Hospital Ahmedabad,government,"Paldi Ahmedabad",23.0180,72.5640,+919876543010,"emergency,icu,general_medicine,surgery,obstetrics",800,true,24/7,Gujarat,Ahmedabad,3.5
+Sardar Patel Hospital Ahmedabad,government,"Naranpura Ahmedabad",23.0530,72.5550,+919876543011,"emergency,general_medicine,surgery,pediatrics",400,true,24/7,Gujarat,Ahmedabad,3.6
+LG Hospital Ahmedabad,government,"Maninagar Ahmedabad",22.9960,72.6120,+919876543012,"emergency,icu,obstetrics,pediatrics,general_medicine",600,true,24/7,Gujarat,Ahmedabad,3.4
+Gujarat Cancer Research Institute,government,"Asarwa Ahmedabad",23.0465,72.6045,+919876543013,"oncology,radiation_therapy,chemotherapy,surgery",400,true,24/7,Gujarat,Ahmedabad,4.0
+UN Mehta Institute of Cardiology,government,"Civil Hospital Campus Asarwa Ahmedabad",23.0471,72.6030,+919876543014,"cardiology,cardiac_surgery,icu,emergency",200,true,24/7,Gujarat,Ahmedabad,4.2
+Rajasthan Hospital Ahmedabad,private,"Shahibaug Ahmedabad",23.0600,72.5900,+919876543015,"emergency,icu,general_medicine,surgery,obstetrics",150,true,24/7,Gujarat,Ahmedabad,3.9
+GCS Medical College Hospital,government,"Naroda Road Ahmedabad",23.0800,72.6450,+919876543016,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",500,true,24/7,Gujarat,Ahmedabad,3.7
+GMERS Medical College Sola,government,"Sola Road Ahmedabad",23.0700,72.5200,+919876543017,"emergency,icu,general_medicine,surgery,obstetrics,pediatrics",600,true,24/7,Gujarat,Ahmedabad,3.6
+IVF Center Ahmedabad,speciality,"Navrangpura Ahmedabad",23.0380,72.5610,+919876543018,"obstetrics,ivf,gynecology",50,false,09:00-18:00,Gujarat,Ahmedabad,4.1
+Nirmal Hospital Ahmedabad,private,"Satellite Road Ahmedabad",23.0220,72.5100,+919876543019,"emergency,icu,general_medicine,surgery,orthopedics",120,true,24/7,Gujarat,Ahmedabad,3.8
+Divya Hospital Ahmedabad,private,"Ghatlodia Ahmedabad",23.0620,72.5340,+919876543020,"emergency,general_medicine,surgery,pediatrics",80,true,24/7,Gujarat,Ahmedabad,3.7
+SSG Hospital Vadodara,government,"Raopura Vadodara",22.3107,73.1953,+919876543021,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery,orthopedics",1500,true,24/7,Gujarat,Vadodara,3.7
+Bhailal Amin General Hospital Vadodara,private,"Gorwa Road Vadodara",22.3300,73.1700,+919876543022,"emergency,icu,cardiology,orthopedics,general_medicine,obstetrics",300,true,24/7,Gujarat,Vadodara,4.0
+Sterling Hospital Vadodara,multispeciality,"Race Course Circle Vadodara",22.3180,73.1800,+919876543023,"emergency,icu,cardiology,orthopedics,neurology,pediatrics",250,true,24/7,Gujarat,Vadodara,4.2
+Dhiraj Hospital Vadodara,multispeciality,"Piparia Vadodara",22.2800,73.2200,+919876543024,"emergency,icu,general_medicine,surgery,obstetrics,pediatrics",400,true,24/7,Gujarat,Vadodara,3.8
+Kailash Cancer Hospital Vadodara,speciality,"Munjmahuda Vadodara",22.3050,73.1800,+919876543025,"oncology,radiation_therapy,chemotherapy",200,true,24/7,Gujarat,Vadodara,4.1
+Baroda Medical College Hospital,government,"Anandpura Vadodara",22.3100,73.1950,+919876543026,"emergency,icu,general_medicine,surgery,obstetrics,pediatrics",800,true,24/7,Gujarat,Vadodara,3.5
+Inlaks Budhrani Hospital Vadodara,private,"Gotri Road Vadodara",22.3250,73.1550,+919876543027,"emergency,icu,orthopedics,neurology,general_medicine",150,true,24/7,Gujarat,Vadodara,3.9
+New Civil Hospital Surat,government,"Majura Gate Surat",21.1960,72.8260,+919876543028,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",1800,true,24/7,Gujarat,Surat,3.6
+Kiran Hospital Surat,multispeciality,"Adajan Surat",21.1780,72.7930,+919876543029,"emergency,icu,cardiology,orthopedics,neurology,obstetrics",300,true,24/7,Gujarat,Surat,4.3
+BAPS Pramukh Swami Hospital Surat,private,"Adajan Surat",21.1850,72.7870,+919876543030,"emergency,icu,cardiology,general_medicine,surgery",200,true,24/7,Gujarat,Surat,4.4
+Mahavir Hospital Surat,multispeciality,"Ring Road Surat",21.2050,72.8450,+919876543031,"emergency,icu,general_medicine,surgery,orthopedics,obstetrics",350,true,24/7,Gujarat,Surat,4.0
+SMIMER Hospital Surat,government,"Umarwada Surat",21.2100,72.8300,+919876543032,"emergency,icu,obstetrics,pediatrics,general_medicine",600,true,24/7,Gujarat,Surat,3.5
+Sterling Addlife Hospital Surat,multispeciality,"Vesu Surat",21.1450,72.7680,+919876543033,"emergency,icu,cardiology,orthopedics,neurology",250,true,24/7,Gujarat,Surat,4.2
+Aarohi Hospital Surat,private,"Athwa Gate Surat",21.1850,72.8200,+919876543034,"emergency,general_medicine,surgery,pediatrics",100,true,24/7,Gujarat,Surat,3.8
+Samarpan Hospital Surat,private,"Varachha Road Surat",21.2200,72.8550,+919876543035,"emergency,icu,general_medicine,surgery,obstetrics",120,true,24/7,Gujarat,Surat,3.7
+Rajkot Civil Hospital,government,"Jamnagar Road Rajkot",22.3050,70.7720,+919876543036,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",1000,true,24/7,Gujarat,Rajkot,3.5
+Sterling Hospital Rajkot,multispeciality,"Kalawad Road Rajkot",22.2850,70.7650,+919876543037,"emergency,icu,cardiology,orthopedics,neurology",200,true,24/7,Gujarat,Rajkot,4.2
+Wockhardt Hospital Rajkot,multispeciality,"Kalawad Road Rajkot",22.2900,70.7600,+919876543038,"emergency,icu,cardiology,general_medicine,surgery",180,true,24/7,Gujarat,Rajkot,4.1
+Synergy Hospital Rajkot,multispeciality,"University Road Rajkot",22.3100,70.7800,+919876543039,"emergency,icu,orthopedics,neurology,general_medicine",150,true,24/7,Gujarat,Rajkot,4.0
+Apple Hospital Rajkot,private,"Mavdi Road Rajkot",22.2750,70.7500,+919876543040,"emergency,icu,general_medicine,surgery,pediatrics",100,true,24/7,Gujarat,Rajkot,3.9
+Gokul Hospital Rajkot,private,"Bhaktinagar Rajkot",22.2950,70.7750,+919876543041,"emergency,general_medicine,surgery,obstetrics",80,true,24/7,Gujarat,Rajkot,3.7
+Sir T Hospital Bhavnagar,government,"Amba Chowk Bhavnagar",21.7600,72.1500,+919876543042,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",800,true,24/7,Gujarat,Bhavnagar,3.5
+Anand Hospital Bhavnagar,private,"Waghawadi Road Bhavnagar",21.7550,72.1450,+919876543043,"emergency,icu,general_medicine,surgery,orthopedics",150,true,24/7,Gujarat,Bhavnagar,3.9
+Bhavnagar University Hospital,government,"Vidyanagar Bhavnagar",21.7650,72.1550,+919876543044,"emergency,icu,general_medicine,surgery,obstetrics,pediatrics",500,true,24/7,Gujarat,Bhavnagar,3.6
+GG Hospital Jamnagar,government,"Jail Road Jamnagar",22.4700,70.0600,+919876543045,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",1000,true,24/7,Gujarat,Jamnagar,3.4
+Samarpan Hospital Jamnagar,private,"Teen Batti Jamnagar",22.4650,70.0650,+919876543046,"emergency,icu,general_medicine,surgery,orthopedics",120,true,24/7,Gujarat,Jamnagar,3.8
+Reliance Hospital Jamnagar,private,"Moti Khavdi Jamnagar",22.4200,69.9800,+919876543047,"emergency,icu,cardiology,neurology,orthopedics,general_medicine",300,true,24/7,Gujarat,Jamnagar,4.3
+Civil Hospital Gandhinagar,government,"Sector 12 Gandhinagar",23.2200,72.6500,+919876543048,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",400,true,24/7,Gujarat,Gandhinagar,3.6
+Apollo Hospital Gandhinagar,multispeciality,"GIFT City Road Gandhinagar",23.2100,72.6850,+919876543049,"emergency,icu,cardiology,orthopedics,neurology,oncology",250,true,24/7,Gujarat,Gandhinagar,4.4
+Sanjivani Hospital Gandhinagar,private,"Sector 21 Gandhinagar",23.2300,72.6600,+919876543050,"emergency,general_medicine,surgery,pediatrics",80,true,24/7,Gujarat,Gandhinagar,3.8
+Civil Hospital Junagadh,government,"MG Road Junagadh",21.5180,70.4680,+919876543051,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",500,true,24/7,Gujarat,Junagadh,3.4
+Lions Hospital Junagadh,private,"Zanzarda Road Junagadh",21.5250,70.4700,+919876543052,"emergency,icu,general_medicine,surgery,orthopedics",120,true,24/7,Gujarat,Junagadh,3.8
+Shree Krishna Hospital Junagadh,private,"Talala Road Junagadh",21.5100,70.4600,+919876543053,"emergency,general_medicine,surgery,obstetrics",80,true,24/7,Gujarat,Junagadh,3.7
+Civil Hospital Mehsana,government,"Modhera Highway Mehsana",23.5890,72.3810,+919876543054,"emergency,icu,obstetrics,pediatrics,general_medicine",400,true,24/7,Gujarat,Mehsana,3.5
+HG Hospital Mehsana,private,"Highway Road Mehsana",23.5950,72.3850,+919876543055,"emergency,icu,general_medicine,surgery,orthopedics",150,true,24/7,Gujarat,Mehsana,3.9
+Civil Hospital Anand,government,"Station Road Anand",22.5570,72.9550,+919876543056,"emergency,icu,obstetrics,pediatrics,general_medicine",350,true,24/7,Gujarat,Anand,3.5
+Shree Krishna Hospital Karamsad,multispeciality,"Karamsad Anand",22.5400,72.9100,+919876543057,"emergency,icu,cardiology,neurology,orthopedics,obstetrics,pediatrics",500,true,24/7,Gujarat,Anand,4.2
+PSM Hospital Anand,private,"College Road Anand",22.5600,72.9500,+919876543058,"emergency,general_medicine,surgery,pediatrics",80,true,24/7,Gujarat,Anand,3.7
+Civil Hospital Bharuch,government,"Station Road Bharuch",21.6940,72.9800,+919876543059,"emergency,icu,obstetrics,pediatrics,general_medicine",300,true,24/7,Gujarat,Bharuch,3.4
+Welcare Hospital Bharuch,private,"Zadeshwar Road Bharuch",21.7050,72.9900,+919876543060,"emergency,icu,general_medicine,surgery,orthopedics",120,true,24/7,Gujarat,Bharuch,3.8
+Civil Hospital Valsad,government,"Tithal Road Valsad",20.6100,72.9280,+919876543061,"emergency,icu,obstetrics,pediatrics,general_medicine",250,true,24/7,Gujarat,Valsad,3.3
+Vinoba Bhave Hospital Valsad,private,"Market Road Valsad",20.6050,72.9320,+919876543062,"emergency,general_medicine,surgery,pediatrics",80,true,24/7,Gujarat,Valsad,3.6
+Civil Hospital Navsari,government,"Station Road Navsari",20.9500,72.9200,+919876543063,"emergency,icu,obstetrics,pediatrics,general_medicine",300,true,24/7,Gujarat,Navsari,3.5
+Sayaji Hospital Navsari,private,"College Road Navsari",20.9550,72.9250,+919876543064,"emergency,general_medicine,surgery,orthopedics",100,true,24/7,Gujarat,Navsari,3.7
+Civil Hospital Godhra,government,"Station Road Godhra",22.7780,73.6160,+919876543065,"emergency,icu,obstetrics,pediatrics,general_medicine",300,true,24/7,Gujarat,Panchmahal,3.4
+Shree Laxmi Hospital Godhra,private,"College Road Godhra",22.7750,73.6200,+919876543066,"emergency,general_medicine,surgery,orthopedics",80,true,24/7,Gujarat,Panchmahal,3.6
+Civil Hospital Palanpur,government,"Station Road Palanpur",24.1720,72.4300,+919876543067,"emergency,icu,obstetrics,pediatrics,general_medicine",250,true,24/7,Gujarat,Banaskantha,3.3
+Jay Ambe Hospital Palanpur,private,"Highway Road Palanpur",24.1700,72.4350,+919876543068,"emergency,general_medicine,surgery,pediatrics",60,true,24/7,Gujarat,Banaskantha,3.5
+Civil Hospital Himmatnagar,government,"Highway Road Himmatnagar",23.5950,72.9600,+919876543069,"emergency,icu,obstetrics,pediatrics,general_medicine",300,true,24/7,Gujarat,Sabarkantha,3.4
+Swami Vivekanand Hospital Himmatnagar,private,"Station Road Himmatnagar",23.5980,72.9650,+919876543070,"emergency,general_medicine,surgery,orthopedics",100,true,24/7,Gujarat,Sabarkantha,3.7
+Civil Hospital Surendranagar,government,"Station Road Surendranagar",22.7280,71.6370,+919876543071,"emergency,icu,obstetrics,pediatrics,general_medicine",300,true,24/7,Gujarat,Surendranagar,3.3
+Life Care Hospital Surendranagar,private,"Highway Road Surendranagar",22.7300,71.6400,+919876543072,"emergency,general_medicine,surgery,pediatrics",80,true,24/7,Gujarat,Surendranagar,3.6
+Kutch Government Hospital,government,"Bhuj Kutch",23.2530,69.6690,+919876543073,"emergency,icu,obstetrics,pediatrics,general_medicine,surgery",500,true,24/7,Gujarat,Kutch,3.4
+GK General Hospital Bhuj,private,"Station Road Bhuj",23.2500,69.6660,+919876543074,"emergency,icu,general_medicine,surgery,orthopedics",150,true,24/7,Gujarat,Kutch,3.8
+Aashka Hospital Bhuj,private,"Madhapar Road Bhuj",23.2480,69.6700,+919876543075,"emergency,general_medicine,surgery,pediatrics",80,true,24/7,Gujarat,Kutch,3.6
+Civil Hospital Amreli,government,"Station Road Amreli",21.5940,71.2110,+919876543076,"emergency,icu,obstetrics,pediatrics,general_medicine",250,true,24/7,Gujarat,Amreli,3.3
+Gurukrupa Hospital Amreli,private,"Highway Road Amreli",21.5960,71.2150,+919876543077,"emergency,general_medicine,surgery,orthopedics",80,true,24/7,Gujarat,Amreli,3.6
+Civil Hospital Porbandar,government,"MG Road Porbandar",21.6420,69.6060,+919876543078,"emergency,icu,obstetrics,pediatrics,general_medicine",200,true,24/7,Gujarat,Porbandar,3.3
+Shiv Hospital Porbandar,private,"College Road Porbandar",21.6400,69.6080,+919876543079,"emergency,general_medicine,surgery,pediatrics",60,true,24/7,Gujarat,Porbandar,3.5
+Civil Hospital Dahod,government,"Station Road Dahod",22.8340,74.2570,+919876543080,"emergency,icu,obstetrics,pediatrics,general_medicine",250,true,24/7,Gujarat,Dahod,3.2
+Maa Hospital Dahod,private,"Highway Road Dahod",22.8360,74.2600,+919876543081,"emergency,general_medicine,surgery,orthopedics",60,true,24/7,Gujarat,Dahod,3.4
+Civil Hospital Morbi,government,"Station Road Morbi",22.8120,70.8370,+919876543082,"emergency,icu,obstetrics,pediatrics,general_medicine",200,true,24/7,Gujarat,Morbi,3.3
+Gayatri Hospital Morbi,private,"Highway Road Morbi",22.8150,70.8400,+919876543083,"emergency,general_medicine,surgery,pediatrics",60,true,24/7,Gujarat,Morbi,3.5
+Civil Hospital Patan,government,"Station Road Patan",23.8490,72.1260,+919876543084,"emergency,icu,obstetrics,pediatrics,general_medicine",250,true,24/7,Gujarat,Patan,3.3
+Sanjeevani Hospital Patan,private,"Highway Road Patan",23.8510,72.1290,+919876543085,"emergency,general_medicine,surgery,orthopedics",80,true,24/7,Gujarat,Patan,3.6
+Civil Hospital Veraval,government,"Station Road Veraval",20.9080,70.3630,+919876543086,"emergency,icu,obstetrics,pediatrics,general_medicine",200,true,24/7,Gujarat,Gir_Somnath,3.2
+Somnath Trust Hospital,private,"Somnath Gir Somnath",20.9050,70.3680,+919876543087,"emergency,general_medicine,surgery,pediatrics",100,true,24/7,Gujarat,Gir_Somnath,3.7
+Civil Hospital Botad,government,"Station Road Botad",22.1710,71.6670,+919876543088,"emergency,icu,obstetrics,pediatrics,general_medicine",150,true,24/7,Gujarat,Botad,3.2
+Shreeji Hospital Botad,private,"Highway Road Botad",22.1730,71.6700,+919876543089,"emergency,general_medicine,surgery,orthopedics",50,true,24/7,Gujarat,Botad,3.4
+Civil Hospital Narmada,government,"Station Road Rajpipla",21.8700,73.5030,+919876543090,"emergency,icu,obstetrics,pediatrics,general_medicine",200,true,24/7,Gujarat,Narmada,3.1
+Civil Hospital Tapi,government,"Station Road Vyara",21.1100,73.3900,+919876543091,"emergency,icu,obstetrics,pediatrics,general_medicine",200,true,24/7,Gujarat,Tapi,3.1
+Aravalli Hospital Modasa,government,"Station Road Modasa",23.4600,73.3000,+919876543092,"emergency,icu,obstetrics,pediatrics,general_medicine",200,true,24/7,Gujarat,Aravalli,3.2
+CHC Dhanera,government,"Highway Road Dhanera",24.5120,71.9750,+919876543093,"emergency,obstetrics,general_medicine",50,false,08:00-20:00,Gujarat,Banaskantha,3.0
+PHC Khambhaliya,government,"Main Road Khambhaliya",22.2100,69.6500,+919876543094,"emergency,obstetrics,general_medicine",30,false,08:00-20:00,Gujarat,Devbhumi_Dwarka,2.9
+CHC Mandvi,government,"Station Road Mandvi",22.8300,69.3500,+919876543095,"emergency,obstetrics,general_medicine,pediatrics",50,false,08:00-20:00,Gujarat,Kutch,3.0
+PHC Dediapada,government,"Highway Road Dediapada",21.6600,73.5800,+919876543096,"emergency,obstetrics,general_medicine",25,false,08:00-17:00,Gujarat,Narmada,2.8
+PHC Uchchhal,government,"Main Road Uchchhal",21.4200,73.6800,+919876543097,"emergency,obstetrics,general_medicine",25,false,08:00-17:00,Gujarat,Tapi,2.8
+Zydus Hospital Surat,multispeciality,"Canal Road Surat",21.2000,72.8350,+919876543098,"emergency,icu,cardiology,neurology,orthopedics,obstetrics",200,true,24/7,Gujarat,Surat,4.1
+Apollo Hospital Surat,multispeciality,"GIDC Sachin Surat",21.0900,72.8800,+919876543099,"emergency,icu,cardiology,oncology,neurology,orthopedics",200,true,24/7,Gujarat,Surat,4.3
+Venus Hospital Surat,private,"Citylight Road Surat",21.1600,72.7700,+919876543100,"emergency,icu,general_medicine,surgery,obstetrics",100,true,24/7,Gujarat,Surat,3.9

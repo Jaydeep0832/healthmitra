@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class HealthMitraLLM:
     def __init__(self):
         self.client = AsyncGroq(api_key=settings.GROQ_API_KEY)
-        self.model = "llama3-70b-8192" # Or mixtral-8x7b-32768
+        self.model = "openai/gpt-oss-20b"
         
     def set_system_prompt_for_healthcare(self, target_language: str) -> str:
         return f"""You are HealthMitra, a highly empathetic and knowledgeable healthcare AI assistant designed for rural India.
