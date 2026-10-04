@@ -7,7 +7,25 @@ from app.models.user import TokenData, UserInDB
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
+from typing import Optional
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login", auto_error=False)
+
+async def get_optional_current_user(
+    token: Optional[str] = Depends(oauth2_scheme_optional),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+) -> Optional[dict]:
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        email: str = payload.get("sub")
+        if not email:
+            return None
+        return await db["users"].find_one({"email": email})
+    except Exception:
+        return None
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
