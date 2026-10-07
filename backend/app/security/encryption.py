@@ -1,27 +1,27 @@
 from cryptography.fernet import Fernet
-import base64
+from cryptography.fernet import InvalidToken
 from app.config import settings
 
-def _get_fernet_key() -> bytes:
-    # Ensure the key is exactly 32 bytes, pad or truncate if necessary
-    key = settings.ENCRYPTION_KEY.encode('utf-8')
-    if len(key) < 32:
-        key = key.ljust(32, b'0')
-    elif len(key) > 32:
-        key = key[:32]
-    # Fernet requires a url-safe base64-encoded 32-byte key
-    return base64.urlsafe_b64encode(key)
+ENCRYPTED_PREFIX = "enc:"
 
-fernet = Fernet(_get_fernet_key())
+fernet = Fernet(settings.ENCRYPTION_KEY.encode("ascii"))
+
 
 def encrypt_sensitive_data(data: str) -> str:
     """Encrypt sensitive patient information."""
     if not data:
         return data
-    return fernet.encrypt(data.encode('utf-8')).decode('utf-8')
+    return ENCRYPTED_PREFIX + fernet.encrypt(data.encode("utf-8")).decode("utf-8")
+
 
 def decrypt_sensitive_data(encrypted_data: str) -> str:
     """Decrypt sensitive patient information."""
     if not encrypted_data:
         return encrypted_data
-    return fernet.decrypt(encrypted_data.encode('utf-8')).decode('utf-8')
+    token = encrypted_data
+    if token.startswith(ENCRYPTED_PREFIX):
+        token = token[len(ENCRYPTED_PREFIX):]
+    try:
+        return fernet.decrypt(token.encode("utf-8")).decode("utf-8")
+    except (InvalidToken, ValueError):
+        return encrypted_data

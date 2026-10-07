@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from app.config import settings
 from app.db.mongodb import get_database
 from app.models.user import TokenData, UserInDB
+from app.security.token_revocation import is_token_revoked
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
@@ -19,7 +20,9 @@ async def get_optional_current_user(
     if not token:
         return None
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if await is_token_revoked(db, token, payload):
+            return None
         email: str = payload.get("sub")
         if not email:
             return None
@@ -37,7 +40,9 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if await is_token_revoked(db, token, payload):
+            raise credentials_exception
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
