@@ -4,7 +4,11 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
+
+# Inject backend URL at build time (empty = use same-origin /api proxy)
+ARG REACT_APP_API_URL=""
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 COPY . .
 RUN npm run build
