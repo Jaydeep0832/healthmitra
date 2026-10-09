@@ -65,11 +65,11 @@ def test_hospital_seed_and_search():
     """Test hospital seeding and nearby search."""
     import requests
 
-    # Seed (idempotent)
-    resp = requests.post("http://localhost:8000/api/v1/hospitals/seed", timeout=15)
+    # Startup performs the seed; the mutation endpoint is admin-only.
+    resp = requests.get("http://localhost:8000/api/v1/hospitals/stats", timeout=15)
     assert resp.status_code == 200
     data = resp.json()
-    assert data["count"] > 0
+    assert data["total_hospitals"] > 0
 
     # Nearby search (Ahmedabad coordinates)
     resp = requests.get(
@@ -130,6 +130,14 @@ def test_chatbot_message():
     data = resp.json()
     assert "response" in data
 
+    history_resp = requests.get(
+        "http://localhost:8000/api/v1/patients/me/chat-history",
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=10,
+    )
+    assert history_resp.status_code == 200, history_resp.text
+    assert history_resp.json()["total"] == 1
+
 
 def test_patient_dashboard():
     """Test patient dashboard endpoint."""
@@ -169,6 +177,13 @@ def test_patient_dashboard():
         timeout=10,
     )
     assert resp.status_code == 200
+
+    chat_resp = requests.get(
+        "http://localhost:8000/api/v1/patients/me/chat-history",
+        headers=headers,
+        timeout=10,
+    )
+    assert chat_resp.status_code == 200
 
 
 if __name__ == "__main__":

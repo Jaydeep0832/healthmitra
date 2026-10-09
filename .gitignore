@@ -3,15 +3,29 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
+
+# Environment files — NEVER commit real secrets
 .env
+.env.local
+.env.production
+.env.staging
+backend/.env
+backend/.env.production
+backend/.env.local
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.env.production.local
 
 # Node
 node_modules/
 build/
-.env.local
 
 # Docker
 *.log
+
+# SSL certificates (production)
+ssl/
 
 # IDE
 .vscode/
