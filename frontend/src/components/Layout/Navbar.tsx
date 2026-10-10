@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import {
-  Activity,
-  LogOut,
   MessageSquare,
   Hospital,
   Home,
@@ -11,9 +9,9 @@ import {
   FileText,
   LayoutDashboard,
   ShieldAlert,
+  LogOut,
   Menu,
-  X,
-  User as UserIcon
+  X
 } from 'lucide-react';
 import EmergencyModal from '../Common/EmergencyModal';
 
@@ -45,26 +43,29 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-white/95 backdrop-blur border-b border-gray-100 shadow-xs sticky top-0 z-40 transition-all">
+      <nav className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0 z-40 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             {/* Logo */}
             <div className="flex items-center space-x-3">
               <Link to="/" className="flex items-center space-x-2.5 group">
-                <div className="p-2 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition transform">
-                  <Activity className="h-5 w-5" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-xl shadow-md shadow-emerald-500/20 group-hover:scale-105 transition transform">
+                  🏥
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-1">
-                    HealthMitra <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.2 rounded-md">2.0</span>
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-medium -mt-1">Rural Healthcare AI</span>
+                  <div className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-1">
+                    Health<span className="text-emerald-600">Mitra</span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-md border border-emerald-200">
+                      2.0
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-medium -mt-1">Rural Healthcare AI</span>
                 </div>
               </Link>
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1.5">
               {navLinks.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.to);
@@ -72,10 +73,10 @@ export default function Navbar() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className={`flex items-center px-3 py-2 rounded-xl text-xs font-bold transition ${
+                    className={`flex items-center px-3.5 py-2 rounded-xl text-xs font-bold transition ${
                       active
-                        ? 'bg-blue-50 text-blue-700 shadow-2xs'
-                        : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs'
+                        : 'text-slate-600 hover:text-emerald-600 hover:bg-slate-50'
                     }`}
                   >
                     <Icon className="h-4 w-4 mr-1.5 opacity-80" /> {item.label}
@@ -95,37 +96,40 @@ export default function Navbar() {
               </button>
 
               {isAuthenticated ? (
-                <div className="flex items-center space-x-3 pl-3 border-l border-gray-200">
+                <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
                   <Link
                     to="/dashboard"
-                    className="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-xs font-bold text-gray-700"
+                    className="flex items-center gap-2 py-1 px-3 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-xs font-bold text-emerald-900"
                   >
-                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] font-bold">
-                      {user?.full_name ? user.full_name[0].toUpperCase() : 'U'}
+                    <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-black">
+                      {user?.full_name ? user.full_name[0].toUpperCase() : 'P'}
                     </div>
                     <span className="max-w-[120px] truncate">{user?.full_name || user?.email}</span>
+                    <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full uppercase font-bold">
+                      {user?.role === 'asha_worker' ? 'ASHA' : user?.role === 'admin' ? 'ADMIN' : user?.role === 'doctor' ? 'DOCTOR' : 'PATIENT'}
+                    </span>
                   </Link>
                   <button
                     onClick={handleLogout}
                     title="Logout"
-                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2 pl-3 border-l border-gray-200">
+                <div className="flex items-center space-x-2 pl-3 border-l border-slate-200">
                   <Link
                     to="/login"
-                    className="text-xs font-bold text-gray-700 hover:text-blue-600 px-3 py-2 rounded-xl transition"
+                    className="text-xs font-bold text-slate-700 hover:text-emerald-600 px-3.5 py-2 rounded-xl transition"
                   >
                     Log in
                   </Link>
                   <Link
                     to="/register"
-                    className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 transition"
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:from-emerald-700 hover:to-teal-700 transition shadow-emerald-500/20"
                   >
-                    Sign up
+                    Sign up free
                   </Link>
                 </div>
               )}
@@ -141,7 +145,7 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition"
+                className="p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition"
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -151,7 +155,7 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-100 bg-white px-4 pt-3 pb-5 space-y-2 animate-in slide-in-from-top-2 duration-200 shadow-xl">
+          <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-2 animate-in slide-in-from-top-2 duration-200 shadow-xl">
             {navLinks.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.to);
@@ -161,7 +165,7 @@ export default function Navbar() {
                   to={item.to}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center px-3.5 py-2.5 rounded-xl text-sm font-bold transition ${
-                    active ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
+                    active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   <Icon className="h-4 w-4 mr-2" /> {item.label}
@@ -169,10 +173,10 @@ export default function Navbar() {
               );
             })}
 
-            <div className="pt-3 border-t border-gray-100">
+            <div className="pt-3 border-t border-slate-200">
               {isAuthenticated ? (
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-xs font-semibold text-gray-600">{user?.full_name || user?.email}</span>
+                  <span className="text-xs font-semibold text-slate-600">{user?.full_name || user?.email}</span>
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
@@ -188,14 +192,14 @@ export default function Navbar() {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-center py-2 text-xs font-bold text-gray-700 border border-gray-200 rounded-xl"
+                    className="text-center py-2 text-xs font-bold text-slate-700 border border-slate-200 rounded-xl"
                   >
                     Log in
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-center py-2 text-xs font-bold text-white bg-blue-600 rounded-xl"
+                    className="text-center py-2 text-xs font-bold text-white bg-emerald-600 rounded-xl"
                   >
                     Sign up
                   </Link>
