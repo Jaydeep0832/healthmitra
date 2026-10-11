@@ -11,6 +11,8 @@ export interface NearbyParams {
   service?: string;
   district?: string;
   type?: string;
+  facility_type?: string;
+  include_external?: boolean;
   sort_by?: string;
   limit?: number;
   page?: number;
@@ -29,6 +31,10 @@ export const locationService = {
     if (params.service) queryParams.service = params.service;
     if (params.district) queryParams.district = params.district;
     if (params.type) queryParams.type = params.type;
+    if (params.facility_type) queryParams.facility_type = params.facility_type;
+    if (params.include_external !== undefined) {
+      queryParams.include_external = params.include_external.toString();
+    }
     if (params.sort_by) queryParams.sort_by = params.sort_by;
     if (params.limit) queryParams.limit = params.limit.toString();
     if (params.page) queryParams.page = params.page.toString();
@@ -43,7 +49,7 @@ export const locationService = {
    */
   async searchByService(service: string, state: string = 'Gujarat') {
     const { data } = await api.get(
-      `/api/v1/hospitals/search?service=${service}&state=${state}`
+      `/api/v1/hospitals/search?service=${encodeURIComponent(service)}&state=${encodeURIComponent(state)}`
     );
     return data;
   },
@@ -70,6 +76,11 @@ export const locationService = {
   async getServices() {
     const { data } = await api.get('/api/v1/hospitals/services');
     return data.services;
+  },
+
+  async getFacilityTypes() {
+    const { data } = await api.get('/api/v1/hospitals/facility-types');
+    return data.facility_types;
   },
 
   /**

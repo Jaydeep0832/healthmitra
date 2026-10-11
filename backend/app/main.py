@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
 import uvicorn
 import logging
+from jose import JWTError, jwt
 
 from app.api.health import router as health_router
 from app.api.v1.auth import router as auth_router
@@ -11,39 +13,76 @@ from app.api.v1.hospitals import router as hospital_router
 from app.api.v1.patients import router as patient_router
 from app.api.v1.triage import router as triage_router
 from app.api.v1.reports import router as report_router
-from app.db.mongodb import connect_to_mongo, close_mongo_connection
+from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_database
+from app.config import settings
 from app.services.audit_service import log_access
-from fastapi import Request
 
 logging.basicConfig(level=logging.INFO)
 
+# Conditionally disable Swagger docs in production
+_docs_url = "/docs" if settings.show_docs else None
+_redoc_url = "/redoc" if settings.show_docs else None
+_openapi_url = "/openapi.json" if settings.show_docs else None
+
 app = FastAPI(
     title="HealthMitra 2.0 API",
-    description="Production-grade backend for HealthMitra",
-    version="2.0.0"
+    description="HealthMitra API backend",
+    version="2.0.0",
+    docs_url=_docs_url,
+    redoc_url=_redoc_url,
+    openapi_url=_openapi_url,
 )
 
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify exact origins
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 @app.middleware("http")
 async def audit_log_middleware(request: Request, call_next):
     # Log access for every API request
     response = await call_next(request)
-    
+
     # Exclude health check from audit logging
     if "/api/health" not in request.url.path:
-        await log_access(
-            action=request.method,
-            resource_type=request.url.path,
-            ip_address=request.client.host if request.client else None
-        )
+        user_id = None
+        authorization = request.headers.get("Authorization", "")
+        if authorization.lower().startswith("bearer "):
+            try:
+                payload = jwt.decode(
+                    authorization[7:],
+                    settings.SECRET_KEY,
+                    algorithms=[settings.ALGORITHM],
+                )
+                email = payload.get("sub")
+                db = get_database()
+                if email and db is not None:
+                    user = await db["users"].find_one(
+                        {"email": email}, {"_id": 1}
+                    )
+                    if user:
+                        user_id = str(user["_id"])
+            except (JWTError, ValueError, TypeError):
+                user_id = None
+
+        try:
+            await asyncio.wait_for(
+                log_access(
+                    action=request.method,
+                    resource_type=request.url.path,
+                    user_id=user_id,
+                    ip_address=request.client.host if request.client else None
+                ),
+                timeout=1.0,
+            )
+        except asyncio.TimeoutError:
+            logging.warning("Audit logging timed out; request completed without an audit entry")
+        except Exception:
+            logging.warning("Audit logging unavailable; request completed without an audit entry")
     return response
 
 @app.on_event("startup")

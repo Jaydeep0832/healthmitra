@@ -9,7 +9,6 @@ import {
   ShieldAlert,
   ArrowRight,
   Sparkles,
-  HeartPulse,
   PhoneCall,
   CheckCircle2,
   Lock,
@@ -38,7 +37,7 @@ const features = [
   {
     icon: FileText,
     title: 'AI Lab & Medical Report Analyzer',
-    desc: 'Upload PDF or photo blood reports (CBC, HbA1c, Lipid Profile). AI decodes biomarkers, highlights abnormalities, and prepares doctor questions.',
+    desc: 'Paste lab report values or upload a PDF/image for AI-assisted explanation.',
     color: 'from-purple-600 to-pink-600',
     link: '/reports',
     cta: 'Analyze Lab Report',
@@ -56,11 +55,11 @@ const features = [
   {
     icon: Activity,
     title: 'Personal Health Wellness Dashboard',
-    desc: 'Encrypted patient portal tracking health scores, consultation timelines, past clinical logs, and customized recovery roadmaps.',
+    desc: 'Patient portal for consultation history and profile details, with stronger privacy protections in progress.',
     color: 'from-amber-600 to-orange-600',
     link: '/dashboard',
     cta: 'View Health Records',
-    tag: 'HIPAA Encrypted'
+    tag: 'Privacy controls in progress'
   },
 ];
 
@@ -68,7 +67,7 @@ const stats = [
   { value: '100+', label: 'Gujarat Hospitals' },
   { value: '5', label: 'Indic Languages' },
   { value: '< 2s', label: 'Triage Response' },
-  { value: '256-bit', label: 'AES Encryption' },
+  { value: 'bcrypt', label: 'Password Hashing' },
 ];
 
 export default function Home() {
@@ -117,7 +116,7 @@ export default function Home() {
             </h1>
 
             <p className="text-base sm:text-lg text-blue-100/90 mb-8 leading-relaxed max-w-2xl font-normal">
-              HealthMitra bridges the healthcare divide across rural and urban India. Check symptoms, translate lab reports into plain language, find 100+ Gujarat hospitals with ICU beds, and track patient wellness securely.
+              HealthMitra is an early-stage prototype. Check symptoms, paste report values for an AI-assisted explanation, find Gujarat hospitals, and review consultation history.
             </p>
 
             <div className="flex flex-wrap gap-3.5">
@@ -217,7 +216,7 @@ export default function Home() {
               <div>
                 <h4 className="font-black text-gray-900 text-base mb-1">Clinical Safety Guardrails</h4>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Strictly non-prescriptive AI models that detect urgent red flags and automatically route to emergency hospital services.
+                  AI guidance is experimental and may fail to recognize urgent symptoms. Call 108/112 or seek medical care for urgent concerns.
                 </p>
               </div>
             </div>
@@ -227,9 +226,9 @@ export default function Home() {
                 <Lock className="h-6 w-6" />
               </div>
               <div>
-                <h4 className="font-black text-gray-900 text-base mb-1">HIPAA & DISHA Aligned</h4>
+                <h4 className="font-black text-gray-900 text-base mb-1">Security Controls in Progress</h4>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Personal health identifiers are cryptographically encrypted using 256-bit AES at rest and TLS in transit.
+                  The app uses authenticated APIs and audit logging. Encryption of stored health records is not yet implemented.
                 </p>
               </div>
             </div>

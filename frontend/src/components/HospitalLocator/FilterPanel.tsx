@@ -5,6 +5,7 @@ interface FilterPanelProps {
   serviceFilter: string | null;
   districtFilter: string | null;
   typeFilter: string | null;
+  facilityFilter: string | null;
   sortBy: string;
   districts: string[];
   services: string[];
@@ -12,8 +13,8 @@ interface FilterPanelProps {
   onServiceChange: (service: string | null) => void;
   onDistrictChange: (district: string | null) => void;
   onTypeChange: (type: string | null) => void;
+  onFacilityChange: (type: string | null) => void;
   onSortChange: (sort: string) => void;
-  onSearch: () => void;
 }
 
 const hospitalTypes = [
@@ -23,6 +24,13 @@ const hospitalTypes = [
   { value: 'superspeciality', label: '⭐ Super-Speciality' },
   { value: 'speciality', label: '🔬 Speciality' },
   { value: 'private', label: '🏢 Private' },
+];
+
+const facilityTypes = [
+  { value: '', label: 'All Facilities' },
+  { value: 'hospital', label: 'Hospitals' },
+  { value: 'clinic', label: 'Clinics' },
+  { value: 'pharmacy', label: 'Medical Stores' },
 ];
 
 const sortOptions = [
@@ -38,6 +46,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   serviceFilter,
   districtFilter,
   typeFilter,
+  facilityFilter,
   sortBy,
   districts,
   services,
@@ -45,8 +54,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   onServiceChange,
   onDistrictChange,
   onTypeChange,
+  onFacilityChange,
   onSortChange,
-  onSearch,
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
@@ -62,7 +71,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             {radiusOptions.map((r) => (
               <button
                 key={r}
-                onClick={() => { onRadiusChange(r); onSearch(); }}
+                onClick={() => onRadiusChange(r)}
                 className={`px-2 py-1 text-xs rounded-lg font-medium transition ${
                   searchRadius === r
                     ? 'bg-blue-500 text-white'
@@ -84,7 +93,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             {sortOptions.map((opt) => (
               <button
                 key={opt.value}
-                onClick={() => { onSortChange(opt.value); onSearch(); }}
+                onClick={() => onSortChange(opt.value)}
                 className={`px-2 py-1 text-xs rounded-lg font-medium transition ${
                   sortBy === opt.value
                     ? 'bg-emerald-500 text-white'
@@ -98,7 +107,24 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            Facility
+          </label>
+          <select
+            value={facilityFilter || ''}
+            onChange={(e) => onFacilityChange(e.target.value || null)}
+            className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+          >
+            {facilityTypes.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Service Filter */}
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -106,10 +132,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </label>
           <select
             value={serviceFilter || ''}
-            onChange={(e) => {
-              onServiceChange(e.target.value || null);
-              onSearch();
-            }}
+            onChange={(e) => onServiceChange(e.target.value || null)}
             className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
           >
             <option value="">All Services</option>
@@ -128,10 +151,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </label>
           <select
             value={districtFilter || ''}
-            onChange={(e) => {
-              onDistrictChange(e.target.value || null);
-              onSearch();
-            }}
+            onChange={(e) => onDistrictChange(e.target.value || null)}
             className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
           >
             <option value="">All Districts</option>
@@ -150,10 +170,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </label>
           <select
             value={typeFilter || ''}
-            onChange={(e) => {
-              onTypeChange(e.target.value || null);
-              onSearch();
-            }}
+            onChange={(e) => onTypeChange(e.target.value || null)}
             className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
           >
             {hospitalTypes.map((t) => (

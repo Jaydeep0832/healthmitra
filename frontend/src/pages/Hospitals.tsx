@@ -17,6 +17,7 @@ const HospitalsPage: React.FC = () => {
     error,
     searchRadius,
     serviceFilter,
+    facilityFilter,
     districtFilter,
     typeFilter,
     sortBy,
@@ -33,6 +34,7 @@ const HospitalsPage: React.FC = () => {
     setServiceFilter,
     setDistrictFilter,
     setTypeFilter,
+    setFacilityFilter,
     setSortBy,
     setDistricts,
     setServices,
@@ -40,7 +42,7 @@ const HospitalsPage: React.FC = () => {
 
   // Request user location
   useEffect(() => {
-    if (userLat && userLng) return; // Already have location
+    if (userLat !== null && userLng !== null) return; // Already have location
 
     setLocationLoading(true);
     if ('geolocation' in navigator) {
@@ -83,7 +85,7 @@ const HospitalsPage: React.FC = () => {
 
   // Search hospitals when location or filters change
   const searchHospitals = useCallback(async () => {
-    if (!userLat || !userLng) return;
+    if (userLat === null || userLng === null) return;
 
     setLoading(true);
     setError(null);
@@ -96,17 +98,19 @@ const HospitalsPage: React.FC = () => {
         service: serviceFilter || undefined,
         district: districtFilter || undefined,
         type: typeFilter || undefined,
+        facility_type: facilityFilter || undefined,
+        include_external: true,
         sort_by: sortBy,
         limit: 50,
       });
       setHospitals(result.hospitals, result.total);
     } catch (err: any) {
-      setError(err?.response?.data?.detail || 'Failed to load hospitals');
+      setError(err?.response?.data?.detail || 'Failed to load healthcare facilities');
       setHospitals([], 0);
     }
   }, [
     userLat, userLng, searchRadius, serviceFilter,
-    districtFilter, typeFilter, sortBy,
+    districtFilter, typeFilter, facilityFilter, sortBy,
     setLoading, setError, setHospitals,
   ]);
 
@@ -118,9 +122,9 @@ const HospitalsPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 pb-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-emerald-500 text-white px-6 py-6">
-        <h1 className="text-2xl font-bold">🏥 Hospital Locator</h1>
+        <h1 className="text-2xl font-bold">🏥 Healthcare Locator</h1>
         <p className="text-sm text-blue-100 mt-1">
-          Find nearby hospitals in Gujarat • Real-time geospatial search
+          Find nearby hospitals, clinics, and medical stores
         </p>
         {locationError && (
           <div className="mt-2 bg-yellow-400/20 text-yellow-100 text-xs px-3 py-1.5 rounded-lg inline-block">
@@ -141,6 +145,7 @@ const HospitalsPage: React.FC = () => {
           serviceFilter={serviceFilter}
           districtFilter={districtFilter}
           typeFilter={typeFilter}
+          facilityFilter={facilityFilter}
           sortBy={sortBy}
           districts={districts}
           services={services}
@@ -148,8 +153,8 @@ const HospitalsPage: React.FC = () => {
           onServiceChange={setServiceFilter}
           onDistrictChange={setDistrictFilter}
           onTypeChange={setTypeFilter}
+          onFacilityChange={setFacilityFilter}
           onSortChange={setSortBy}
-          onSearch={searchHospitals}
         />
       </div>
 
@@ -187,7 +192,7 @@ const HospitalsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Hospital List */}
+          {/* Healthcare facility list */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
               style={{ height: '550px', overflowY: 'auto' }}>
@@ -206,15 +211,18 @@ const HospitalsPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 mt-4">
         <div className="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3 text-xs text-gray-500">
           <span>
-            Showing {hospitals.length} hospitals
+            Showing {hospitals.length} healthcare facilities
             {userLat && userLng && ` within ${searchRadius}km`}
           </span>
           <span>
             {selectedHospital
               ? `Selected: ${selectedHospital.name}`
-              : 'Click a hospital to see details'}
+              : 'Click a facility to see details'}
           </span>
         </div>
+        <p className="mt-2 text-xs text-gray-400">
+          Facility data from OpenStreetMap contributors; coverage may be incomplete.
+        </p>
       </div>
     </div>
   );

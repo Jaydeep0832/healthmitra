@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import List
 
@@ -10,13 +10,13 @@ router = APIRouter()
 
 @router.get("/audit-logs", response_model=List[AuditLogResponse])
 async def get_audit_logs(
-    limit: int = 50,
-    skip: int = 0,
+    limit: int = Query(50, ge=1, le=200),
+    skip: int = Query(0, ge=0),
     current_user: dict = Depends(require_role("admin")),
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
     """
-    HIPAA Compliance: Fetch audit logs. Only admins can access this.
+    Fetch request audit logs. Only admins can access this.
     """
     cursor = db["audit_logs"].find().sort("timestamp", -1).skip(skip).limit(limit)
     logs = await cursor.to_list(length=limit)

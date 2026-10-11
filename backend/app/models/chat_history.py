@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, List
+from typing import Literal, Optional, List
 
 class ChatMessage(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -23,5 +23,5 @@ class ChatSessionResponse(ChatSessionCreate):
     id: str
 
 class ChatRequest(BaseModel):
-    text: str
-    language: str
+    text: str = Field(..., min_length=1, max_length=5000)
+    language: Literal["auto", "en", "hi", "gu", "mr", "bn"]

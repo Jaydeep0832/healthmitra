@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export interface Hospital {
   id: string;
   name: string;
+  facility_type: 'hospital' | 'clinic' | 'pharmacy' | string;
   hospital_type: string;
   address: string;
   location: {
@@ -39,6 +40,7 @@ interface LocationState {
   serviceFilter: string | null;
   districtFilter: string | null;
   typeFilter: string | null;
+  facilityFilter: string | null;
   sortBy: string;
 
   // Metadata
@@ -57,6 +59,7 @@ interface LocationState {
   setServiceFilter: (service: string | null) => void;
   setDistrictFilter: (district: string | null) => void;
   setTypeFilter: (type: string | null) => void;
+  setFacilityFilter: (type: string | null) => void;
   setSortBy: (sortBy: string) => void;
   setDistricts: (districts: string[]) => void;
   setServices: (services: string[]) => void;
@@ -78,6 +81,7 @@ export const useLocationStore = create<LocationState>((set) => ({
   serviceFilter: null,
   districtFilter: null,
   typeFilter: null,
+  facilityFilter: null,
   sortBy: 'distance',
 
   districts: [],
@@ -105,6 +109,8 @@ export const useLocationStore = create<LocationState>((set) => ({
     set({ districtFilter: district }),
   setTypeFilter: (type) =>
     set({ typeFilter: type }),
+  setFacilityFilter: (type) =>
+    set({ facilityFilter: type }),
   setSortBy: (sortBy) =>
     set({ sortBy }),
   setDistricts: (districts) =>

@@ -13,7 +13,6 @@ import {
   RefreshCw,
   PhoneCall,
   CheckCircle,
-  HelpCircle,
   MapPin
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -30,6 +29,7 @@ interface TriageResult {
   warning_signs: string[];
   recommended_specialist: string;
   emergency_contact: string;
+  disclaimer: string;
 }
 
 const COMMON_SYMPTOMS = [
@@ -378,6 +378,10 @@ export default function SymptomChecker() {
                   </div>
 
                   <p className="text-gray-700 text-sm leading-relaxed mb-6">{result.explanation}</p>
+
+                  <p className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+                    {result.disclaimer}
+                  </p>
 
                   {/* If Emergency alert */}
                   {result.is_emergency && (

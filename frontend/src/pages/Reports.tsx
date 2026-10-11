@@ -5,12 +5,10 @@ import {
   AlertCircle,
   CheckCircle2,
   AlertTriangle,
-  HelpCircle,
   Activity,
   FileCheck,
   RefreshCw,
   Sparkles,
-  ArrowRight,
   Stethoscope,
   Info
 } from 'lucide-react';
@@ -249,49 +247,54 @@ export default function Reports() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleFileUpload} className="space-y-5">
-              <div className="border-2 border-dashed border-purple-200 rounded-3xl p-8 text-center bg-purple-50/30 hover:bg-purple-50/60 transition cursor-pointer">
-                <input
-                  type="file"
-                  id="report-file"
-                  accept="application/pdf,image/jpeg,image/png"
-                  onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
-                  className="hidden"
-                />
-                <label htmlFor="report-file" className="cursor-pointer">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mx-auto mb-3">
-                    <Upload className="h-6 w-6" />
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-sm mb-1">
-                    {selectedFile ? selectedFile.name : 'Click to upload or drag & drop'}
-                  </h3>
-                  <p className="text-xs text-gray-500">Supports PDF, JPG, or PNG (Max: 10MB)</p>
-                </label>
+            <div>
+              <div role="status" className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                PDF text extraction and image OCR are supported. Review the extracted values with a qualified clinician.
               </div>
-
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>{error}</span>
+              <form onSubmit={handleFileUpload} className="space-y-5">
+                <div className="border-2 border-dashed border-purple-200 rounded-3xl p-8 text-center bg-purple-50/30 hover:bg-purple-50/60 transition cursor-pointer">
+                  <input
+                    type="file"
+                    id="report-file"
+                    accept="application/pdf,image/jpeg,image/png,image/webp"
+                    onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                    className="hidden"
+                  />
+                  <label htmlFor="report-file" className="cursor-pointer">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mx-auto mb-3">
+                      <Upload className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-sm mb-1">
+                      {selectedFile ? selectedFile.name : 'Click to upload or drag & drop'}
+                    </h3>
+                    <p className="text-xs text-gray-500">Supports PDF, JPG, PNG, or WebP (Max: 10MB)</p>
+                  </label>
                 </div>
-              )}
 
-              <button
-                type="submit"
-                disabled={loading || !selectedFile}
-                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-purple-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {loading ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 animate-spin" /> Scanning Document...
-                  </>
-                ) : (
-                  <>
-                    <FileCheck className="h-4 w-4" /> Process & Interpret Document
-                  </>
+                {error && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span>{error}</span>
+                  </div>
                 )}
-              </button>
-            </form>
+
+                <button
+                  type="submit"
+                  disabled={loading || !selectedFile}
+                  className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-purple-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" /> Scanning Document...
+                    </>
+                  ) : (
+                    <>
+                      <FileCheck className="h-4 w-4" /> Process & Interpret Document
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
           )}
         </div>
 

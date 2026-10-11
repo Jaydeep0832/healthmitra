@@ -1,35 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
-from typing import Optional, List
-import json
+from typing import Literal, Optional, List
 import logging
-from app.security.roles import get_optional_current_user
+from app.security.roles import get_current_user
 from app.services.llm_service import llm_service
-from app.config import settings
+from app.security.rate_limit import llm_rate_limiter
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 class TriageInput(BaseModel):
-    symptoms: str = Field(..., description="Description of patient symptoms")
-    language: str = Field(default="en", description="Target language: en, hi, gu, mr, bn")
-    age: Optional[int] = Field(default=None, description="Patient age in years")
-    gender: Optional[str] = Field(default=None, description="Patient gender")
-    duration: Optional[str] = Field(default=None, description="Duration of symptoms")
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-
-class BiomarkerResult(BaseModel):
-    parameter: str
-    value: str
-    reference_range: str
-    status: str
-    significance: str
+    symptoms: str = Field(..., min_length=3, max_length=5000, description="Description of patient symptoms")
+    language: Literal["en", "hi", "gu", "mr", "bn"] = Field(default="en", description="Target language")
+    age: Optional[int] = Field(default=None, ge=0, le=120, description="Patient age in years")
+    gender: Optional[str] = Field(default=None, max_length=32, description="Patient gender")
+    duration: Optional[str] = Field(default=None, max_length=128, description="Duration of symptoms")
+    latitude: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitude: Optional[float] = Field(default=None, ge=-180, le=180)
 
 class TriageOutput(BaseModel):
-    urgency_level: str
-    urgency_color: str
+    urgency_level: Literal["EMERGENCY", "URGENT", "ROUTINE", "SELF_CARE"]
+    urgency_color: Literal["red", "amber", "blue", "green"]
     is_emergency: bool
     title: str
     explanation: str
@@ -38,11 +30,13 @@ class TriageOutput(BaseModel):
     warning_signs: List[str]
     recommended_specialist: str
     emergency_contact: str
+    disclaimer: str
 
 @router.post("/check", response_model=TriageOutput)
 async def check_symptoms(
     triage_in: TriageInput,
-    current_user: Optional[dict] = Depends(get_optional_current_user)
+    current_user: dict = Depends(get_current_user),
+    _: None = Depends(llm_rate_limiter),
 ):
     """
     Perform clinical triage on patient symptoms with safety guardrails and multi-language support.
@@ -56,6 +50,35 @@ async def check_symptoms(
     
     text_lower = triage_in.symptoms.lower()
     is_critical = any(kw in text_lower for kw in emergency_keywords)
+
+    if is_critical:
+        return TriageOutput(
+            urgency_level="EMERGENCY",
+            urgency_color="red",
+            is_emergency=True,
+            title="Immediate medical attention required",
+            explanation=(
+                "These symptoms may indicate a life-threatening emergency. "
+                "Call 108 or 112 and seek immediate hospital care."
+            ),
+            immediate_actions=[
+                "Call 108 or 112 now",
+                "Do not drive yourself; ask someone to assist",
+                "Stay with the patient and keep them as comfortable as possible",
+            ],
+            home_care=["Do not delay emergency care for home treatment"],
+            warning_signs=[
+                "Worsening breathing difficulty",
+                "Loss of consciousness",
+                "Bluish lips or skin",
+            ],
+            recommended_specialist="Emergency Medicine / ICU",
+            emergency_contact="108 (Ambulance) / 112 (National Emergency)",
+            disclaimer=(
+                "This is AI-generated health guidance, not medical advice. "
+                "Consult a qualified healthcare professional."
+            ),
+        )
 
     prompt = f"""You are HealthMitra's Clinical Triage System designed for Indian healthcare settings.
 Evaluate these symptoms:
@@ -80,12 +103,13 @@ Respond ONLY as a valid JSON object matching this schema:
     "home_care": ["Home care tip 1 in {triage_in.language}", "Tip 2 in {triage_in.language}"],
     "warning_signs": ["Red flag symptom to watch for 1", "Red flag 2"],
     "recommended_specialist": "e.g. Emergency Physician / General Physician / Cardiologist",
-    "emergency_contact": "108 / 112"
+    "emergency_contact": "108 / 112",
+    "disclaimer": "This is AI-generated health guidance, not medical advice. Consult a qualified healthcare professional."
 }}
 """
 
     try:
-        if not settings.GROQ_API_KEY:
+        if not settings.GROQ_API_KEY or llm_service.client is None:
             raise ValueError("No Groq key configured")
 
         completion = await llm_service.client.chat.completions.create(
@@ -93,13 +117,17 @@ Respond ONLY as a valid JSON object matching this schema:
             model=llm_service.model,
             response_format={"type": "json_object"}
         )
-        data = json.loads(completion.choices[0].message.content)
+        data = TriageOutput.model_validate(
+            json.loads(completion.choices[0].message.content)
+        )
         
         # Override emergency if heuristic fired
         if is_critical:
-            data["urgency_level"] = "EMERGENCY"
-            data["urgency_color"] = "red"
-            data["is_emergency"] = True
+            data = data.model_copy(update={
+                "urgency_level": "EMERGENCY",
+                "urgency_color": "red",
+                "is_emergency": True,
+            })
 
         return data
 
@@ -121,22 +149,11 @@ Respond ONLY as a valid JSON object matching this schema:
                 home_care=["Do not take unprescribed heavy medications"],
                 warning_signs=["Loss of consciousness", "Worsening shortness of breath", "Cyanosis (bluish lips)"],
                 recommended_specialist="Emergency Medicine / ICU",
-                emergency_contact="108 (Ambulance) / 112 (National Emergency)"
+                emergency_contact="108 (Ambulance) / 112 (National Emergency)",
+                disclaimer="This is AI-generated health guidance, not medical advice. Consult a qualified healthcare professional."
             )
         else:
-            return TriageOutput(
-                urgency_level="ROUTINE",
-                urgency_color="blue",
-                is_emergency=False,
-                title="Medical Consultation Recommended",
-                explanation="Your symptoms appear stable but warrant consultation with a certified medical doctor.",
-                immediate_actions=[
-                    "Schedule an appointment with a General Physician",
-                    "Stay well hydrated with boiled or filtered water",
-                    "Monitor body temperature and vitals"
-                ],
-                home_care=["Adequate bed rest", "Light, digestible meals", "Warm salt water gargle if throat irritation"],
-                warning_signs=["Fever above 102°F (38.9°C)", "Difficulty breathing", "Persistent vomiting"],
-                recommended_specialist="General Physician",
-                emergency_contact="108 / 112"
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Automated triage is unavailable. If symptoms may be urgent, seek medical care or call 108/112.",
             )

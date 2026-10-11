@@ -172,7 +172,7 @@ export default function EmergencyModal({ isOpen, onClose }: EmergencyModalProps)
                   <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside mt-2">
                     <li>Have patient rest immediately in a comfortable seated position (W-position against wall).</li>
                     <li>Loosen tight clothing around neck and chest.</li>
-                    <li>If conscious and not allergic, give 300mg chewable Aspirin if previously advised by doctor.</li>
+                    <li>Only give aspirin if an emergency dispatcher or treating clinician specifically instructs you to do so.</li>
                     <li>Do not give heavy food, drink, or allow patient to walk or exert.</li>
                   </ul>
                 </div>

@@ -1,11 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
-from typing import Optional, List
-import json
+from typing import Literal, Optional, List
 import logging
-from app.security.roles import get_optional_current_user
+from app.security.roles import get_current_user
 from app.services.llm_service import llm_service
-from app.config import settings
+from app.security.rate_limit import llm_rate_limiter
+
+try:
+    import fitz
+    from PIL import Image
+    import pytesseract
+    Image.MAX_IMAGE_PIXELS = 20_000_000
+except ImportError:
+    fitz = None
+    Image = None
+    pytesseract = None
 
 logger = logging.getLogger(__name__)
 
@@ -16,13 +25,13 @@ class Biomarker(BaseModel):
     value: str
     unit: Optional[str] = None
     reference_range: str
-    status: str  # "NORMAL", "HIGH", "LOW", "ABNORMAL"
+    status: Literal["NORMAL", "HIGH", "LOW", "ABNORMAL"]
     clinical_note: str
 
 class ReportAnalysisResponse(BaseModel):
     title: str
-    risk_level: str  # "HIGH", "MODERATE", "LOW"
-    risk_color: str  # "red", "amber", "emerald"
+    risk_level: Literal["HIGH", "MODERATE", "LOW"]
+    risk_color: Literal["red", "amber", "emerald"]
     patient_summary: str
     biomarkers: List[Biomarker]
     critical_findings: List[str]
@@ -31,17 +40,10 @@ class ReportAnalysisResponse(BaseModel):
     disclaimer: str
 
 class TextReportInput(BaseModel):
-    report_text: str = Field(..., description="Raw text or copied values from lab report")
-    language: str = Field(default="en", description="Target language")
+    report_text: str = Field(..., min_length=1, max_length=10000, description="Raw text or copied values from lab report")
+    language: Literal["en", "hi", "gu", "mr", "bn"] = Field(default="en", description="Target language")
 
-@router.post("/analyze-text", response_model=ReportAnalysisResponse)
-async def analyze_report_text(
-    input_data: TextReportInput,
-    current_user: Optional[dict] = Depends(get_optional_current_user)
-):
-    """
-    Analyze textual medical lab report values and extract structured biomarkers with patient-friendly insights.
-    """
+async def _analyze_report_text(input_data: TextReportInput) -> ReportAnalysisResponse:
     prompt = f"""You are HealthMitra's AI Medical Report Analyzer for Indian clinical diagnostics.
 Analyze the following patient lab report / diagnostic text:
 "{input_data.report_text}"
@@ -88,83 +90,106 @@ Respond ONLY with a JSON object with this exact schema:
             model=llm_service.model,
             response_format={"type": "json_object"}
         )
-        data = json.loads(completion.choices[0].message.content)
+        data = ReportAnalysisResponse.model_validate(
+            json.loads(completion.choices[0].message.content)
+        )
         return data
 
-    except Exception as e:
-        logger.warning(f"Using default report analysis fallback: {e}")
-        # Deterministic rich medical report analysis
-        return ReportAnalysisResponse(
-            title="Diagnostic Lab Report Evaluation",
-            risk_level="MODERATE",
-            risk_color="amber",
-            patient_summary="The submitted report indicates minor biomarker variations that warrant evaluation with your treating physician. Overall vital parameters remain stable.",
-            biomarkers=[
-                Biomarker(
-                    name="Hemoglobin (Hb)",
-                    value="11.4",
-                    unit="g/dL",
-                    reference_range="12.0 - 15.5",
-                    status="LOW",
-                    clinical_note="Mildly low hemoglobin. May indicate mild nutritional anemia; consider iron and folate-rich foods."
-                ),
-                Biomarker(
-                    name="Fasting Blood Glucose",
-                    value="108",
-                    unit="mg/dL",
-                    reference_range="70 - 99",
-                    status="HIGH",
-                    clinical_note="Borderline elevated fasting glucose (impaired fasting glycemia). Dietary adjustment recommended."
-                ),
-                Biomarker(
-                    name="Total Leukocyte Count (WBC)",
-                    value="7,200",
-                    unit="/mcL",
-                    reference_range="4,500 - 11,000",
-                    status="NORMAL",
-                    clinical_note="White blood cell count is within healthy physiological limits with no active infection."
-                ),
-                Biomarker(
-                    name="Platelet Count",
-                    value="240,000",
-                    unit="/mcL",
-                    reference_range="150,000 - 450,000",
-                    status="NORMAL",
-                    clinical_note="Platelet volume is healthy and normal."
-                )
-            ],
-            critical_findings=[
-                "Mildly reduced hemoglobin levels indicative of borderline anemia",
-                "Fasting blood sugar slightly above pre-diabetic baseline threshold"
-            ],
-            questions_for_doctor=[
-                "Do I need an oral iron supplement or will dietary modification suffice?",
-                "Would you recommend an HbA1c test to monitor average 3-month blood sugar levels?",
-                "Are there specific physical exercise regimens suited for my current profile?"
-            ],
-            lifestyle_recommendations=[
-                "Increase dietary iron intake through green leafy vegetables (spinach, methi), beetroot, and lentils",
-                "Limit refined carbohydrates, sugary beverages, and deep-fried snacks",
-                "Maintain 30 minutes of moderate aerobic walking 5 days a week"
-            ],
-            disclaimer="HealthMitra AI provides clinical interpretation for information only. Always consult a qualified medical professional for diagnosis and prescription."
+    except Exception:
+        logger.exception("Report analysis failed")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Report analysis is temporarily unavailable. No result was generated.",
         )
 
+
+@router.post("/analyze-text", response_model=ReportAnalysisResponse)
+async def analyze_report_text(
+    input_data: TextReportInput,
+    current_user: dict = Depends(get_current_user),
+    _: None = Depends(llm_rate_limiter),
+):
+    """Analyze report text with structured, validated output."""
+    return await _analyze_report_text(input_data)
+
+
+def _extract_document_text(content: bytes, content_type: str) -> str:
+    if content_type == "application/pdf":
+        if fitz is None or Image is None or pytesseract is None:
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                detail="PDF extraction dependencies are not installed.",
+            )
+        if not content.startswith(b"%PDF"):
+            raise HTTPException(status_code=400, detail="The uploaded file is not a valid PDF.")
+
+        try:
+            document = fitz.open(stream=content, filetype="pdf")
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail="The uploaded PDF could not be opened.") from exc
+        try:
+            text = "\n".join(page.get_text() for page in document).strip()
+            if text:
+                return text[:10000]
+
+            ocr_chunks = []
+            try:
+                for page in list(document)[:5]:
+                    pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+                    image = Image.frombytes("RGB", [pixmap.width, pixmap.height], pixmap.samples)
+                    ocr_chunks.append(pytesseract.image_to_string(image, lang="eng"))
+            except Exception as exc:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="The uploaded PDF could not be processed for text extraction.",
+                ) from exc
+            return "\n".join(ocr_chunks).strip()[:10000]
+        finally:
+            document.close()
+
+    if Image is None or pytesseract is None:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Image extraction dependencies are not installed.",
+        )
+
+    try:
+        image = Image.open(BytesIO(content))
+        image.verify()
+        image = Image.open(BytesIO(content)).convert("RGB")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="The uploaded image is invalid.") from exc
+
+    try:
+        return pytesseract.image_to_string(image, lang="eng").strip()[:10000]
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The uploaded image could not be processed for text extraction.",
+        ) from exc
 @router.post("/upload")
 async def upload_file_report(
     file: UploadFile = File(...),
-    language: str = Form(default="en"),
-    current_user: Optional[dict] = Depends(get_optional_current_user)
+    language: Literal["en", "hi", "gu", "mr", "bn"] = Form(default="en"),
+    current_user: dict = Depends(get_current_user),
+    _: None = Depends(llm_rate_limiter),
 ):
-    """
-    Accepts file upload (PDF or Image) and extracts / analyzes report.
-    """
-    # Read text or sample
-    content = await file.read()
-    # Decode text if ascii or use filename context
-    text_preview = f"Uploaded file: {file.filename} (Size: {len(content)} bytes). Standard laboratory panel analysis."
-    
-    return await analyze_report_text(
-        TextReportInput(report_text=text_preview, language=language),
-        current_user=current_user
+    """Extract text from a PDF/image and analyze it without persisting the upload."""
+    allowed_types = {"application/pdf", "image/jpeg", "image/png", "image/webp"}
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=415, detail="Upload a PDF, JPEG, PNG, or WebP file.")
+
+    content = await file.read(10 * 1024 * 1024 + 1)
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File size exceeds the 10 MB limit.")
+
+    extracted_text = _extract_document_text(content, file.content_type)
+    if not extracted_text:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="No readable text was found in the uploaded document.",
+        )
+
+    return await _analyze_report_text(
+        TextReportInput(report_text=extracted_text, language=language)
     )

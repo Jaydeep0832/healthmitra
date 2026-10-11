@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { authService } from '../services/auth';
+import { getApiErrorMessage } from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Login() {
@@ -17,8 +18,8 @@ export default function Login() {
       await authService.login(email, password);
       await checkAuth();
       navigate('/dashboard');
-    } catch (err: any) {
-      setErrorMsg(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+    } catch (error: unknown) {
+      setErrorMsg(getApiErrorMessage(error, 'Login failed. Please check your credentials.'));
     }
   };
 

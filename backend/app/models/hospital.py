@@ -12,6 +12,7 @@ class GeoLocation(BaseModel):
 class HospitalBase(BaseModel):
     """Base hospital schema."""
     name: str
+    facility_type: str = "hospital"
     hospital_type: str = Field(..., alias="type")
     address: str
     location: GeoLocation

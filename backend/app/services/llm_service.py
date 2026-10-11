@@ -2,12 +2,33 @@ import json
 import logging
 from groq import AsyncGroq
 from app.config import settings
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
+EMERGENCY_PHRASES = (
+    "chest pain",
+    "cannot breathe",
+    "can't breathe",
+    "severe bleeding",
+    "unconscious",
+    "heart attack",
+    "stroke",
+    "convulsion",
+    "seizure",
+)
+
+
+class MedicalResponse(BaseModel):
+    response: str = Field(min_length=1, max_length=10000)
+    confidence: float = Field(ge=0, le=1)
+    should_escalate: bool = False
+    ai_diagnosis: str = Field(default="", max_length=500)
+    recommended_action: str = Field(default="", max_length=2000)
+
 class HealthMitraLLM:
     def __init__(self):
-        self.client = AsyncGroq(api_key=settings.GROQ_API_KEY)
+        self.client = AsyncGroq(api_key=settings.GROQ_API_KEY) if settings.GROQ_API_KEY else None
         self.model = "openai/gpt-oss-20b"
         
     def set_system_prompt_for_healthcare(self, target_language: str) -> str:
@@ -31,15 +52,29 @@ Guidelines:
 
     async def get_medical_response(self, text: str, language: str) -> dict:
         try:
+            normalized_text = text.casefold()
+            if any(phrase in normalized_text for phrase in EMERGENCY_PHRASES):
+                return MedicalResponse(
+                    response=(
+                        "These symptoms may be an emergency. Call 108 or 112 now, "
+                        "do not drive yourself, and seek immediate hospital care. "
+                        "This is AI-generated health guidance, not medical advice."
+                    ),
+                    confidence=1.0,
+                    should_escalate=True,
+                    ai_diagnosis="Possible medical emergency",
+                    recommended_action="Call 108 or 112 immediately",
+                ).model_dump()
+
             if not settings.GROQ_API_KEY:
                 # Mock response for development without API key
-                return {
-                    "response": f"This is a mock response in {language}. I am an AI. Please consult a doctor.",
-                    "confidence": 0.8,
-                    "should_escalate": False,
-                    "ai_diagnosis": "Mock Diagnosis",
-                    "recommended_action": "Mock action"
-                }
+                return MedicalResponse(
+                    response=f"This is a mock response in {language}. I am an AI. Please consult a doctor.",
+                    confidence=0.8,
+                    should_escalate=False,
+                    ai_diagnosis="Mock Diagnosis",
+                    recommended_action="Mock action",
+                ).model_dump()
 
             system_prompt = self.set_system_prompt_for_healthcare(language)
             
@@ -59,8 +94,8 @@ Guidelines:
             )
             
             result_str = chat_completion.choices[0].message.content
-            result_json = json.loads(result_str)
-            return result_json
+            result_json = MedicalResponse.model_validate(json.loads(result_str))
+            return result_json.model_dump()
             
         except Exception as e:
             logger.error(f"LLM Error: {str(e)}")

@@ -13,7 +13,7 @@ async def log_access(
     details: dict = None
 ):
     """
-    HIPAA Compliant Audit Logging.
+    Basic request audit logging; this is not a compliance certification.
     Logs who accessed what and when.
     """
     try:
@@ -27,7 +27,7 @@ async def log_access(
                 ip_address=ip_address,
                 details=details
             )
-            await db["audit_logs"].insert_one(audit_entry.dict())
+            await db["audit_logs"].insert_one(audit_entry.model_dump())
         else:
             logger.warning("Database not connected. Skipping audit log.")
     except Exception as e:

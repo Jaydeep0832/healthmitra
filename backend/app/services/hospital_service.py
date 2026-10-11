@@ -30,10 +30,16 @@ class HospitalService:
     async def ensure_indexes(self):
         """Create 2dsphere index on location field for geospatial queries."""
         collection = await self._get_collection()
+        await collection.update_many(
+            {"facility_type": {"$exists": False}},
+            {"$set": {"facility_type": "hospital", "source": "healthmitra_seed"}},
+        )
         await collection.create_index([("location", "2dsphere")])
         await collection.create_index("district")
         await collection.create_index("services")
         await collection.create_index("hospital_type")
+        await collection.create_index("facility_type")
+        await collection.create_index([("source", 1), ("source_id", 1)])
 
     # ── Seed Data ───────────────────────────────────────────────────
 
@@ -48,6 +54,7 @@ class HospitalService:
             )
 
         collection = await self._get_collection()
+        await self.ensure_indexes()
 
         # Check if already seeded
         count = await collection.count_documents({})
@@ -60,6 +67,7 @@ class HospitalService:
             for row in reader:
                 hospital = {
                     "name": row["name"].strip(),
+                    "facility_type": "hospital",
                     "hospital_type": row["type"].strip(),
                     "address": row["address"].strip(),
                     "location": {
@@ -79,14 +87,13 @@ class HospitalService:
                     "state": row["state"].strip(),
                     "district": row["district"].strip(),
                     "rating": float(row["rating"]),
+                    "source": "healthmitra_seed",
+                    "source_id": f"healthmitra:{row['name'].strip().lower()}",
                 }
                 hospitals.append(hospital)
 
         if hospitals:
             await collection.insert_many(hospitals)
-
-        # Ensure geospatial index exists
-        await self.ensure_indexes()
 
         return len(hospitals)
 
@@ -100,6 +107,8 @@ class HospitalService:
         service: Optional[str] = None,
         district: Optional[str] = None,
         hospital_type: Optional[str] = None,
+        facility_type: Optional[str] = None,
+        include_external: bool = True,
         sort_by: str = "distance",
         limit: int = 20,
         page: int = 1,
@@ -108,6 +117,15 @@ class HospitalService:
         Find hospitals within radius_km of the given coordinates.
         Uses MongoDB $geoNear aggregation pipeline with 2dsphere index.
         """
+        if include_external:
+            from app.services.openstreetmap_service import openstreetmap_service
+
+            openstreetmap_service.schedule_nearby(
+                latitude=latitude,
+                longitude=longitude,
+                radius_km=radius_km,
+            )
+
         collection = await self._get_collection()
         await self.ensure_indexes()
 
@@ -121,6 +139,8 @@ class HospitalService:
             match_filter["district"] = {"$regex": district, "$options": "i"}
         if hospital_type:
             match_filter["hospital_type"] = {"$regex": hospital_type, "$options": "i"}
+        if facility_type:
+            match_filter["facility_type"] = facility_type
 
         # $geoNear must be the first stage in the pipeline
         pipeline: List[Dict[str, Any]] = [
@@ -179,9 +199,14 @@ class HospitalService:
         from bson import ObjectId
 
         collection = await self._get_collection()
-        doc = await collection.find_one({"_id": ObjectId(hospital_id)})
+        try:
+            object_id = ObjectId(hospital_id)
+        except Exception:
+            return None
+        doc = await collection.find_one({"_id": object_id})
         if doc:
             doc["id"] = str(doc.pop("_id"))
+            doc.setdefault("facility_type", "hospital")
         return doc
 
     async def search_by_service(
@@ -215,6 +240,11 @@ class HospitalService:
         collection = await self._get_collection()
         return await collection.distinct("services")
 
+    async def get_facility_types(self) -> List[str]:
+        """Return all available healthcare facility categories."""
+        collection = await self._get_collection()
+        return await collection.distinct("facility_type")
+
     async def get_stats(self) -> Dict[str, Any]:
         """Return summary statistics."""
         collection = await self._get_collection()
@@ -230,9 +260,16 @@ class HospitalService:
 
         return {
             "total_hospitals": total,
+            "total_facilities": total,
             "districts": len(districts),
             "services": len(services),
             "by_type": type_counts,
+            "by_facility_type": {
+                item["_id"]: item["count"]
+                async for item in collection.aggregate([
+                    {"$group": {"_id": "$facility_type", "count": {"$sum": 1}}}
+                ])
+            },
         }
 
     # ── Helpers ─────────────────────────────────────────────────────

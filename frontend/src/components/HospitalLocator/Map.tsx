@@ -30,32 +30,27 @@ const userIcon = L.divIcon({
   iconAnchor: [10, 10],
 });
 
-const hospitalIcon = L.divIcon({
-  className: '',
-  html: `<div style="
-    width: 28px; height: 28px; border-radius: 50%;
-    background: #EF4444; border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: white;
-  ">🏥</div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-});
+const getFacilityIcon = (facilityType: string, selected: boolean) => {
+  const glyph = facilityType === 'pharmacy' ? '💊' : facilityType === 'clinic' ? '🩺' : '🏥';
+  const background = selected ? '#10B981' : facilityType === 'pharmacy' ? '#DB2777' : facilityType === 'clinic' ? '#059669' : '#EF4444';
+  const size = selected ? 36 : 28;
+  const border = selected ? 3 : 2;
+  return L.divIcon({
+    className: '',
+    html: `<div style="width: ${size}px; height: ${size}px; border-radius: 50%; background: ${background}; border: ${border}px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: ${selected ? 18 : 14}px; color: white;">${glyph}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+};
 
-const selectedIcon = L.divIcon({
-  className: '',
-  html: `<div style="
-    width: 36px; height: 36px; border-radius: 50%;
-    background: #10B981; border: 3px solid white;
-    box-shadow: 0 0 15px rgba(16,185,129,0.5);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; color: white;
-  ">🏥</div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 18],
-});
-
+const escapeHtml = (value: string | number | boolean | null | undefined) =>
+  String(value ?? '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character] as string);
 const HospitalMap: React.FC<MapProps> = ({
   hospitals,
   userLat,
@@ -73,7 +68,7 @@ const HospitalMap: React.FC<MapProps> = ({
 
     const defaultCenter: [number, number] = [23.0225, 72.5714]; // Ahmedabad
     const center: [number, number] =
-      userLat && userLng ? [userLat, userLng] : defaultCenter;
+      userLat !== null && userLng !== null ? [userLat, userLng] : defaultCenter;
 
     const map = L.map(containerRef.current, {
       center,
@@ -106,7 +101,7 @@ const HospitalMap: React.FC<MapProps> = ({
     markers.clearLayers();
 
     // Add user location marker
-    if (userLat && userLng) {
+    if (userLat !== null && userLng !== null) {
       L.marker([userLat, userLng], { icon: userIcon })
         .bindPopup('<strong>📍 Your Location</strong>')
         .addTo(markers);
@@ -119,22 +114,22 @@ const HospitalMap: React.FC<MapProps> = ({
       const isSelected = selectedHospital?.id === h.id;
 
       const marker = L.marker([lat, lng], {
-        icon: isSelected ? selectedIcon : hospitalIcon,
+        icon: getFacilityIcon(h.facility_type, isSelected),
       });
 
       const popupContent = `
         <div style="min-width: 200px; font-family: system-ui, sans-serif;">
-          <h3 style="margin: 0 0 4px; font-size: 14px; font-weight: 600;">${h.name}</h3>
-          <p style="margin: 0 0 4px; font-size: 12px; color: #6B7280;">${h.address}</p>
+          <h3 style="margin: 0 0 4px; font-size: 14px; font-weight: 600;">${escapeHtml(h.name)}</h3>
+          <p style="margin: 0 0 4px; font-size: 12px; color: #6B7280;">${escapeHtml(h.address)}</p>
           <div style="display: flex; gap: 8px; font-size: 11px; margin-bottom: 4px;">
-            <span style="background: #DBEAFE; color: #1D4ED8; padding: 2px 6px; border-radius: 4px;">${h.hospital_type}</span>
-            ${h.distance_km ? `<span style="color: #059669;">📏 ${h.distance_km} km</span>` : ''}
+            <span style="background: #DBEAFE; color: #1D4ED8; padding: 2px 6px; border-radius: 4px;">${escapeHtml(h.hospital_type)}</span>
+            ${h.distance_km ? `<span style="color: #059669;">📏 ${escapeHtml(h.distance_km)} km</span>` : ''}
           </div>
           <div style="font-size: 11px; color: #374151;">
-            ⭐ ${h.rating} · 🛏️ ${h.bed_count} beds · ${h.ambulance ? '🚑 Ambulance' : ''}
+            ⭐ ${escapeHtml(h.rating)} · 🛏️ ${escapeHtml(h.bed_count)} beds · ${h.ambulance ? '🚑 Ambulance' : ''}
           </div>
           <div style="margin-top: 6px;">
-            <a href="tel:${h.contact}" style="font-size: 11px; color: #2563EB; text-decoration: none;">📞 ${h.contact}</a>
+            <a href="tel:${escapeHtml(h.contact)}" style="font-size: 11px; color: #2563EB; text-decoration: none;">📞 ${escapeHtml(h.contact)}</a>
           </div>
         </div>
       `;
@@ -149,7 +144,7 @@ const HospitalMap: React.FC<MapProps> = ({
       h.location.coordinates[1],
       h.location.coordinates[0],
     ]);
-    if (userLat && userLng) allPoints.push([userLat, userLng]);
+    if (userLat !== null && userLng !== null) allPoints.push([userLat, userLng]);
 
     if (allPoints.length > 0) {
       const bounds = L.latLngBounds(allPoints.map((p) => L.latLng(p[0], p[1])));
