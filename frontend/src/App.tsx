@@ -46,8 +46,22 @@ export default function App() {
                   }
                 />
                 <Route path="/hospitals" element={<Hospitals />} />
-                <Route path="/symptoms" element={<SymptomChecker />} />
-                <Route path="/reports" element={<Reports />} />
+                <Route
+                  path="/symptoms"
+                  element={
+                    <AuthGuard>
+                      <SymptomChecker />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/reports"
+                  element={
+                    <AuthGuard>
+                      <Reports />
+                    </AuthGuard>
+                  }
+                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

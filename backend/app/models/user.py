@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 
@@ -8,7 +8,11 @@ class UserBase(BaseModel):
     full_name: Optional[str] = None
 
 class UserCreate(UserBase):
-    password: str
+    # Public registration allows patient or passcode-protected asha_worker
+    role: Literal['patient', 'asha_worker'] = 'patient'
+    password: str = Field(..., min_length=12, max_length=128)
+    asha_passcode: Optional[str] = Field(default=None, max_length=64)
+    asha_worker_id: Optional[str] = Field(default=None, max_length=64)
 
 class UserInDB(UserBase):
     id: str = Field(alias="_id")
