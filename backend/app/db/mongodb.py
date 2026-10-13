@@ -1,3 +1,4 @@
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.config import settings
 import logging
@@ -12,11 +13,22 @@ db_instance = Database()
 
 async def connect_to_mongo():
     logger.info("Connecting to MongoDB...")
+    client_kwargs = {
+        "serverSelectionTimeoutMS": 10000,
+        "connectTimeoutMS": 10000,
+        "socketTimeoutMS": 15000,
+    }
+    
+    # Use certifi CA file for MongoDB Atlas / TLS connections
+    if "mongodb+srv://" in settings.MONGODB_URI or "tls=true" in settings.MONGODB_URI.lower() or "ssl=true" in settings.MONGODB_URI.lower():
+        try:
+            client_kwargs["tlsCAFile"] = certifi.where()
+        except Exception as e:
+            logger.warning(f"Could not load certifi CA file: {e}")
+
     db_instance.client = AsyncIOMotorClient(
         settings.MONGODB_URI,
-        serverSelectionTimeoutMS=10000,
-        connectTimeoutMS=10000,
-        socketTimeoutMS=15000,
+        **client_kwargs,
     )
     db_instance.db = db_instance.client[settings.MONGODB_DB_NAME]
     await db_instance.client.admin.command("ping")
