@@ -6,6 +6,7 @@ import Footer from './components/Layout/Footer';
 import AuthGuard from './components/Common/AuthGuard';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import LoadingSpinner from './components/Common/LoadingSpinner';
+import { I18nProvider } from './i18n/I18nContext';
 
 // Lazy-loaded pages for code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -16,12 +17,14 @@ const Chatbot = lazy(() => import('./pages/Chatbot'));
 const Hospitals = lazy(() => import('./pages/Hospitals'));
 const SymptomChecker = lazy(() => import('./pages/SymptomChecker'));
 const Reports = lazy(() => import('./pages/Reports'));
+const Schemes = lazy(() => import('./pages/Schemes'));
 
 export default function App() {
   return (
     <ErrorBoundary>
-      <Router>
-        <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans">
+      <I18nProvider>
+        <Router>
+          <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans">
           <Navbar />
           <main className="flex-1">
             <Suspense fallback={<LoadingSpinner size="lg" message="Loading page..." />}>
@@ -62,6 +65,7 @@ export default function App() {
                     </AuthGuard>
                   }
                 />
+                <Route path="/schemes" element={<Schemes />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
@@ -69,6 +73,7 @@ export default function App() {
           <Footer />
         </div>
       </Router>
+      </I18nProvider>
     </ErrorBoundary>
   );
 }

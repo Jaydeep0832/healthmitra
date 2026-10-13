@@ -1,0 +1,127 @@
+{
+  "brand": {
+    "name": "HealthMitra",
+    "version": "2.0",
+    "tagline": "Rural Healthcare AI & Benefits"
+  },
+  "nav": {
+    "home": "Home",
+    "symptoms": "Symptom Triage",
+    "chatbot": "AI Assistant",
+    "hospitals": "Hospital Locator",
+    "reports": "Lab Reports",
+    "schemes": "Schemes & Benefits",
+    "dashboard": "My Health",
+    "emergency_sos": "Emergency SOS",
+    "login": "Log in",
+    "signup": "Sign up free",
+    "logout": "Logout"
+  },
+  "schemes": {
+    "badge": "Patient Protection & Yojanas",
+    "hero_title": "Government Health Schemes & Patient Benefits",
+    "hero_subtitle": "Discover verified central and state healthcare schemes, cashless hospitalization covers, and affordable health insurance designed to protect families from catastrophic illness expenses.",
+    "check_eligibility_btn": "Check My Eligibility",
+    "track_claim_btn": "Track Patient Claim",
+    "search_placeholder": "Search schemes by name, surgery, illness (e.g. Heart surgery, Cancer, Dialysis)...",
+    "all_states": "All India",
+    "filter_middle_class": "Middle-Class Friendly Only",
+    "tabs": {
+      "schemes": "Government Schemes",
+      "insurance": "Affordable Health Insurance",
+      "claims": "Patient Claims Status"
+    },
+    "categories": {
+      "all": "All Categories",
+      "operations_surgery": "Operations & Surgery",
+      "opd": "Outpatient (OPD)",
+      "hospitalization": "Hospitalization",
+      "critical_illness": "Critical Illness",
+      "medicines_diagnostics": "Medicines & Diagnostics",
+      "maternity_child": "Maternity & Child Health",
+      "chronic_diseases": "Chronic Diseases"
+    },
+    "card": {
+      "issuing_authority": "Issuing Authority",
+      "coverage": "Coverage Amount",
+      "income_limit": "Income Eligibility",
+      "last_verified": "Last Verified",
+      "verified_by": "Verified by",
+      "view_details": "View Full Details",
+      "apply_official": "Apply on Official Portal",
+      "helpline": "Toll-Free Helpline",
+      "middle_class_tag": "Middle-Class Eligible",
+      "covered_treatments": "Covered Treatments",
+      "required_documents": "Documents Required"
+    },
+    "insurance": {
+      "title": "Affordable Health Insurance for Middle-Class Families",
+      "subtitle": "IRDAI-regulated comprehensive health insurance policies with low waiting periods and high claim settlement ratios.",
+      "premium": "Approx Premium",
+      "sum_insured": "Sum Insured Range",
+      "waiting_periods": "Waiting Periods",
+      "csr": "Claim Settlement Ratio",
+      "entry_age": "Entry Age",
+      "irdai_reg": "IRDAI Reg",
+      "key_benefits": "Key Inclusions",
+      "official_link": "View Policy Details"
+    },
+    "claims": {
+      "title": "Patient Claims & Pre-Authorization Tracker",
+      "subtitle": "Track cashless hospitalization pre-authorizations and reimbursement claims with clear verification audit status.",
+      "verified_source": "Official TPA / PM-JAY API (Verified)",
+      "unverified_source": "User Submitted (Pending Verification)",
+      "claim_id": "Claim Reference",
+      "patient": "Patient Name",
+      "hospital": "Treating Hospital",
+      "type": "Claim Type",
+      "claimed": "Amount Claimed",
+      "approved": "Amount Approved",
+      "status": "Status",
+      "next_steps": "Next Action / Next Steps",
+      "submit_btn": "Submit Claim for Tracking",
+      "submit_title": "Submit a New Claim for Tracking",
+      "submit_desc": "Enter your hospital admission or claim details. User-submitted claims will be displayed with an 'Unverified' badge until matched with official TPA records.",
+      "status_active": "Active / In Review",
+      "status_verified": "Verified Pre-Auth",
+      "status_settled": "Settled & Discharged",
+      "status_rejected": "Rejected / Queried"
+    },
+    "eligibility": {
+      "title": "Smart Scheme Eligibility Checker",
+      "subtitle": "Enter your household profile to identify high-probability government healthcare covers and subsidies.",
+      "state_label": "Your Resident State",
+      "income_label": "Annual Family Income (₹)",
+      "income_hint": "e.g., 250000 for ₹2.5 Lakh",
+      "age_label": "Patient Age",
+      "illness_label": "Illness or Required Procedure",
+      "illness_placeholder": "e.g. Angioplasty, Cancer chemotherapy, Dialysis, Delivery",
+      "category_label": "Beneficiary Demographic Category",
+      "family_members_label": "Family Members Count",
+      "calculate_btn": "Find Matching Schemes",
+      "results_title": "Matching Healthcare Schemes",
+      "match_score": "Match Confidence",
+      "eligible": "Likely Eligible",
+      "needs_review": "Conditional / Requires Review",
+      "reasons": "Eligibility Criteria Met",
+      "warnings": "Important Considerations"
+    },
+    "disclaimer": {
+      "title": "Official Public Guidance Notice",
+      "body": "Scheme guidelines, package inclusions, and income thresholds are aggregated from official government portals (NHA, MoHFW, State Health Departments) and updated regularly. Hospital empanelment and final pre-authorization approvals are subject to official TPA verification and hospital desk review. Always verify details on official government portals."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "close": "Close",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "search": "Search",
+    "reset": "Reset Filters",
+    "active": "Active",
+    "verified": "Verified",
+    "under_review": "Under Review",
+    "expired": "Expired",
+    "emergency_call": "Emergency SOS Dial 108"
+  }
+}

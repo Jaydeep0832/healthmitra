@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useTranslation } from '../../i18n/I18nContext';
+import LanguageSelector from '../Common/LanguageSelector';
 import {
   MessageSquare,
   Hospital,
@@ -9,6 +11,7 @@ import {
   FileText,
   LayoutDashboard,
   ShieldAlert,
+  ShieldCheck,
   LogOut,
   Menu,
   X
@@ -17,6 +20,7 @@ import EmergencyModal from '../Common/EmergencyModal';
 
 export default function Navbar() {
   const { isAuthenticated, logout, user } = useAuthStore();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
@@ -28,15 +32,16 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { to: '/', label: 'Home', icon: Home },
-    { to: '/symptoms', label: 'Symptom Triage', icon: Stethoscope },
-    { to: '/chatbot', label: 'AI Assistant', icon: MessageSquare },
-    { to: '/hospitals', label: 'Hospital Locator', icon: Hospital },
-    { to: '/reports', label: 'Lab Reports', icon: FileText },
+    { to: '/', label: t('nav.home'), icon: Home },
+    { to: '/schemes', label: t('nav.schemes'), icon: ShieldCheck },
+    { to: '/symptoms', label: t('nav.symptoms'), icon: Stethoscope },
+    { to: '/chatbot', label: t('nav.chatbot'), icon: MessageSquare },
+    { to: '/hospitals', label: t('nav.hospitals'), icon: Hospital },
+    { to: '/reports', label: t('nav.reports'), icon: FileText },
   ];
 
   if (isAuthenticated) {
-    navLinks.push({ to: '/dashboard', label: 'My Health', icon: LayoutDashboard });
+    navLinks.push({ to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard });
   }
 
   const isActive = (path: string) => location.pathname === path;
@@ -54,18 +59,18 @@ export default function Navbar() {
                 </div>
                 <div className="flex flex-col">
                   <div className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-1">
-                    Health<span className="text-emerald-600">Mitra</span>
+                    {t('brand.name')}
                     <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-md border border-emerald-200">
                       2.0
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-medium -mt-1">Rural Healthcare AI</span>
+                  <span className="text-[10px] text-slate-500 font-medium -mt-1">{t('brand.tagline')}</span>
                 </div>
               </Link>
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center space-x-1.5">
+            <div className="hidden lg:flex items-center space-x-1">
               {navLinks.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.to);
@@ -73,9 +78,9 @@ export default function Navbar() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className={`flex items-center px-3.5 py-2 rounded-xl text-xs font-bold transition ${
+                    className={`flex items-center px-3 py-2 rounded-xl text-xs font-bold transition ${
                       active
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
                         : 'text-slate-600 hover:text-emerald-600 hover:bg-slate-50'
                     }`}
                   >
@@ -85,18 +90,21 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Emergency SOS & User Controls */}
-            <div className="hidden sm:flex items-center space-x-3">
+            {/* Language Selector, Emergency SOS & User Controls */}
+            <div className="hidden sm:flex items-center space-x-2.5">
+              {/* Language Selector */}
+              <LanguageSelector variant="navbar" />
+
               {/* Emergency SOS Trigger Button */}
               <button
                 onClick={() => setIsEmergencyOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-xs shadow-md shadow-red-500/25 hover:from-red-700 hover:to-rose-700 transition transform active:scale-95 animate-pulse"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-xs shadow-md shadow-red-500/25 hover:from-red-700 hover:to-rose-700 transition transform active:scale-95 animate-pulse"
               >
-                <ShieldAlert className="h-4 w-4" /> 🚨 Emergency SOS
+                <ShieldAlert className="h-4 w-4" /> 🚨 {t('nav.emergency_sos')}
               </button>
 
               {isAuthenticated ? (
-                <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
+                <div className="flex items-center space-x-2.5 pl-2.5 border-l border-slate-200">
                   <Link
                     to="/dashboard"
                     className="flex items-center gap-2 py-1 px-3 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-xs font-bold text-emerald-900"
@@ -111,35 +119,36 @@ export default function Navbar() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    title="Logout"
+                    title={t('nav.logout')}
                     className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2 pl-3 border-l border-slate-200">
+                <div className="flex items-center space-x-1.5 pl-2.5 border-l border-slate-200">
                   <Link
                     to="/login"
-                    className="text-xs font-bold text-slate-700 hover:text-emerald-600 px-3.5 py-2 rounded-xl transition"
+                    className="text-xs font-bold text-slate-700 hover:text-emerald-600 px-3 py-2 rounded-xl transition"
                   >
-                    Log in
+                    {t('nav.login')}
                   </Link>
                   <Link
                     to="/register"
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:from-emerald-700 hover:to-teal-700 transition shadow-emerald-500/20"
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:from-emerald-700 hover:to-teal-700 transition shadow-emerald-500/20"
                   >
-                    Sign up free
+                    {t('nav.signup')}
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* Mobile Hamburger Button */}
+            {/* Mobile Hamburger & Controls Button */}
             <div className="flex items-center gap-2 lg:hidden">
+              <LanguageSelector variant="compact" />
               <button
                 onClick={() => setIsEmergencyOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white font-extrabold text-xs animate-pulse"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-600 text-white font-extrabold text-xs animate-pulse"
               >
                 <ShieldAlert className="h-3.5 w-3.5" /> SOS
               </button>
@@ -184,7 +193,7 @@ export default function Navbar() {
                     }}
                     className="text-xs text-red-600 font-bold flex items-center gap-1"
                   >
-                    <LogOut className="h-3.5 w-3.5" /> Logout
+                    <LogOut className="h-3.5 w-3.5" /> {t('nav.logout')}
                   </button>
                 </div>
               ) : (
@@ -194,14 +203,14 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-center py-2 text-xs font-bold text-slate-700 border border-slate-200 rounded-xl"
                   >
-                    Log in
+                    {t('nav.login')}
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-center py-2 text-xs font-bold text-white bg-emerald-600 rounded-xl"
                   >
-                    Sign up
+                    {t('nav.signup')}
                   </Link>
                 </div>
               )}

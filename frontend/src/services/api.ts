@@ -9,6 +9,8 @@ export const api = axios.create({
   baseURL: cleanBaseUrl,
 });
 
+export default api;
+
 type ApiError = {
   response?: {
     data?: {

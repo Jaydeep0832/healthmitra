@@ -13,6 +13,7 @@ from app.api.v1.hospitals import router as hospital_router
 from app.api.v1.patients import router as patient_router
 from app.api.v1.triage import router as triage_router
 from app.api.v1.reports import router as report_router
+from app.api.v1.schemes import router as schemes_router
 from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_database
 from app.config import settings
 from app.services.audit_service import log_access
@@ -109,6 +110,7 @@ app.include_router(hospital_router, prefix="/api/v1", tags=["Hospitals"])
 app.include_router(patient_router, prefix="/api/v1", tags=["Patients"])
 app.include_router(triage_router, prefix="/api/v1/triage", tags=["Triage"])
 app.include_router(report_router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(schemes_router, prefix="/api/v1/schemes", tags=["Health Schemes & Benefits"])
 
 @app.get("/")
 async def root():
