@@ -65,22 +65,53 @@ export const locationService = {
   /**
    * Get all available districts.
    */
-  async getDistricts() {
-    const { data } = await api.get('/api/v1/hospitals/districts');
-    return data.districts;
+  async getDistricts(): Promise<string[]> {
+    try {
+      const { data } = await api.get('/api/v1/hospitals/districts');
+      if (Array.isArray(data?.districts) && data.districts.length > 0) {
+        return data.districts;
+      }
+    } catch (err) {
+      console.warn('Using default districts fallback:', err);
+    }
+    return [
+      "Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", "Bhavnagar", "Botad",
+      "Dahod", "Devbhumi_Dwarka", "Gandhinagar", "Gir_Somnath", "Jamnagar", "Junagadh", "Kutch",
+      "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal", "Patan", "Porbandar", "Rajkot",
+      "Sabarkantha", "Surat", "Surendranagar", "Tapi", "Vadodara", "Valsad"
+    ];
   },
 
   /**
    * Get all available service types.
    */
-  async getServices() {
-    const { data } = await api.get('/api/v1/hospitals/services');
-    return data.services;
+  async getServices(): Promise<string[]> {
+    try {
+      const { data } = await api.get('/api/v1/hospitals/services');
+      if (Array.isArray(data?.services) && data.services.length > 0) {
+        return data.services;
+      }
+    } catch (err) {
+      console.warn('Using default services fallback:', err);
+    }
+    return [
+      "cardiac_surgery", "cardiology", "chemotherapy", "emergency", "gastroenterology",
+      "general_medicine", "gynecology", "icu", "ivf", "joint_replacement", "neurology",
+      "obstetrics", "oncology", "orthopedics", "pediatrics", "radiation_therapy",
+      "spine_surgery", "surgery"
+    ];
   },
 
-  async getFacilityTypes() {
-    const { data } = await api.get('/api/v1/hospitals/facility-types');
-    return data.facility_types;
+  async getFacilityTypes(): Promise<string[]> {
+    try {
+      const { data } = await api.get('/api/v1/hospitals/facility-types');
+      if (Array.isArray(data?.facility_types) && data.facility_types.length > 0) {
+        return data.facility_types;
+      }
+    } catch (err) {
+      console.warn('Using default facility types fallback:', err);
+    }
+    return ["hospital", "clinic", "pharmacy", "diagnostic_center"];
   },
 
   /**

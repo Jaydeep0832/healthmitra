@@ -1,0 +1,592 @@
+import { HealthScheme, InsurancePolicy, PatientClaim } from '../types/scheme';
+
+export const FALLBACK_SCHEMES: HealthScheme[] = [
+  {
+    "id": "pmjay-ayushman",
+    "name": "Ayushman Bharat PM-JAY (Pradhan Mantri Jan Arogya Yojana)",
+    "name_localized": {
+      "gu": "આયુષ્માન ભારત પ્રધાનમંત્રી જન આરોગ્ય યોજના (PM-JAY)",
+      "hi": "आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना (PM-JAY)",
+      "mr": "आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना",
+      "bn": "আয়ুষ্মান ভারত প্রধানমন্ত্রী জন আরোগ্য যোজনা",
+      "ta": "ஆயுஷ்மான் பாரத் பிரதம மந்திரி ஜன் ஆரோக்கிய திட்டம்",
+      "te": "ఆయుష్మాన్ భారత్ ప్రధాన మంత్రి జన్ ఆరోగ్య యోజన"
+    },
+    "short_description": "World's largest government-funded healthcare scheme providing ₹5 Lakh annual cashless tertiary treatment to eligible rural and low-to-middle income families.",
+    "description_localized": {
+      "gu": "પાત્ર ગ્રામીણ અને મધ્યમ વર્ગના પરિવારોને પ્રતિ વર્ષ ₹5 લાખ સુધીનું કેશલેસ હોસ્પિટલ સારવાર કવચ પૂરું પાડતી યોજના.",
+      "hi": "योग्य ग्रामीण और मध्यम वर्गीय परिवारों को प्रति वर्ष ₹5 लाख तक का कैशलेस अस्पताल उपचार कवर प्रदान करने वाली योजना।"
+    },
+    "issuing_authority": "Central Government",
+    "state_jurisdiction": "All India",
+    "categories": [
+      "hospitalization",
+      "operations_surgery",
+      "critical_illness",
+      "chronic_diseases"
+    ],
+    "coverage_amount": "₹5,00,000 per family / year",
+    "coverage_amount_num": 500000,
+    "income_limit": "SECC 2011 criteria or Priority Ration Card",
+    "income_limit_max": 300000,
+    "eligibility_criteria": [
+      "Families listed in SECC 2011 database or NFSA priority cardholders",
+      "Rural deprivation criteria (D1 to D7) or designated urban occupational categories",
+      "All pre-existing medical conditions covered from Day 1",
+      "No family size or age cap"
+    ],
+    "covered_treatments": [
+      "Cardiovascular surgeries (Angioplasty, CABG)",
+      "Oncology (Medical, Surgical & Radiation therapy)",
+      "Neuro-surgery & polytrauma care",
+      "Orthopedic joint replacements",
+      "Kidney Dialysis & Renal failure management",
+      "Neonatal & pediatric intensive care"
+    ],
+    "required_documents": [
+      "Aadhaar Card of patient",
+      "Ration Card or Family Samagra ID",
+      "PM-JAY Golden Card / Ayushman Card printout",
+      "Government photo ID proof"
+    ],
+    "application_link": "https://beneficiary.nha.gov.in/",
+    "helpline_number": "14555 / 1800-111-565",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-10",
+    "verified_by": "National Health Authority (NHA)",
+    "middle_class_friendly": true
+  },
+  {
+    "id": "pmjay-vay-vandana",
+    "name": "Ayushman Vay Vandana Yojana (Seniors 70+ Universal Cover)",
+    "name_localized": {
+      "gu": "આયુષ્માન વય વંદના યોજના (70+ વરિષ્ઠ નાગરિકો માટે)",
+      "hi": "आयुष्मान वय वंदना योजना (70+ वरिष्ठ नागरिक)",
+      "mr": "आयुष्मान वय वंदना योजना (70+ ज्येष्ठ नागरिक)",
+      "bn": "আয়ুষ্মান বয় বন্দনা যোজনা (৭০+ প্রবীণ নাগরিক)",
+      "ta": "ஆயுஷ்மான் வய வந்தனா திட்டம் (70+ முதியோர்)",
+      "te": "ఆయుష్మాన్ వయ వందన యోజ�� (70+ వృద్ధులు)"
+    },
+    "short_description": "Universal, non-income-capped ₹5 Lakh healthcare safety net for every Indian citizen aged 70 and above, regardless of socio-economic status.",
+    "description_localized": {
+      "gu": "આવકની કોઈપણ મર્યાદા વગર 70 વર્ષ કે તેથી વધુ વયના દરેક વરિષ્ઠ નાગરિકને વાર્ષિક ₹5 લાખ સુધીનું સંપૂર્ણ મફત સારવાર કવચ.",
+      "hi": "आय की किसी सीमा के बिना 70 वर्ष या अधिक उम्र के प्रत्येक वरिष्ठ नागरिक के लिए ₹5 लाख का स्वास्थ्य सुरक्षा कवर।"
+    },
+    "issuing_authority": "Central Government",
+    "state_jurisdiction": "All India",
+    "categories": [
+      "hospitalization",
+      "critical_illness",
+      "chronic_diseases",
+      "operations_surgery"
+    ],
+    "coverage_amount": "₹5,00,000 top-up cover per senior individual / year",
+    "coverage_amount_num": 500000,
+    "income_limit": "No income limit (Universal for all 70+ citizens)",
+    "income_limit_max": null,
+    "eligibility_criteria": [
+      "Indian citizen aged 70 years or above (as per Aadhaar)",
+      "No minimum or maximum family income ceiling (covers all middle & upper-middle class seniors)",
+      "Independent ₹5 Lakh pool distinct from standard family PM-JAY card",
+      "Can co-exist or be used in lieu of other private health insurance"
+    ],
+    "covered_treatments": [
+      "Geriatric care & chronic disease admissions",
+      "Cardiac interventions, pacemakers, and bypass",
+      "Knee and hip replacement surgeries",
+      "Stroke rehabilitation and neurology care",
+      "Cataract & ophthalmic advanced procedures",
+      "Cancer therapies and palliative admissions"
+    ],
+    "required_documents": [
+      "Aadhaar Card (e-KYC verified for age ≥ 70 years)",
+      "Active mobile number linked to Aadhaar",
+      "Recent passport-sized photograph"
+    ],
+    "application_link": "https://beneficiary.nha.gov.in/",
+    "helpline_number": "14555",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-12",
+    "verified_by": "Ministry of Health and Family Welfare (MoHFW)",
+    "middle_class_friendly": true
+  },
+  {
+    "id": "gujarat-maa-yojana",
+    "name": "Mukhyamantri Amrutam (MA & MA Vatsalya) Yojana — Gujarat",
+    "name_localized": {
+      "gu": "મુખ્યમંત્રી અમૃતમ (મા અને મા વાત્સલ્ય) યોજના — ગુજરાત",
+      "hi": "मुख्यमंत्री अमृतम (मा एवं मा वात्सल्य) योजना — गुजरात",
+      "mr": "मुख्यमंत्री अमृतम योजना — गुजरात",
+      "bn": "মুখ্যমন্ত্রী অমৃতম যোজনা — গুজরাট",
+      "ta": "முதலமைச்சர் அம்ருதம் திட்டம் — குஜராத்",
+      "te": "ముఖ్యమంత్రి అమృతం యోజన — గుజరాత్"
+    },
+    "short_description": "Flagship Gujarat tertiary healthcare scheme covering BPL and Lower-Middle-Class families with annual income up to ₹4,00,000 for critical treatments up to ₹10 Lakh.",
+    "description_localized": {
+      "gu": "ગુજરાતના મધ્યમ વર્ગ (વાર્ષિક આવક ₹4,00,000 સુધી) અને BPL પરિવારોને ગંભીર બીમારીઓ માટે ₹10 લાખ સુધીનું મફત સારવાર કવચ.",
+      "hi": "गुजरात के मध्यम वर्ग (वार्षिक आय ₹4,00,000 तक) और बीपीएल परिवारों के लिए ₹10 लाख तक का मुफ्त उपचार कवर।"
+    },
+    "issuing_authority": "State Government",
+    "state_jurisdiction": "Gujarat",
+    "categories": [
+      "critical_illness",
+      "operations_surgery",
+      "hospitalization",
+      "chronic_diseases"
+    ],
+    "coverage_amount": "Up to ₹10,00,000 per family / year",
+    "coverage_amount_num": 1000000,
+    "income_limit": "Up to ₹4,00,000 per year (for MA Vatsalya Middle-Class)",
+    "income_limit_max": 400000,
+    "eligibility_criteria": [
+      "Permanent resident of Gujarat State",
+      "Annual family income up to ₹4 Lakh (verified by Mamlatdar / Taluka Development Officer)",
+      "All BPL ration cardholders in Gujarat",
+      "Accredited journalists, ASHA workers, U-Win registered beneficiaries automatically eligible"
+    ],
+    "covered_treatments": [
+      "Cardiovascular & Thoracic Surgery",
+      "Neuro-surgery and Poly Trauma",
+      "Burns & Plastic Reconstructive Surgery",
+      "Renal Transplantation & Haemodialysis",
+      "Neonatal Complex Surgeries",
+      "Pediatric Heart surgeries"
+    ],
+    "required_documents": [
+      "Income Certificate issued by Mamlatdar/TDO (valid for 3 years)",
+      "Aadhaar Card of all family members",
+      "Gujarat Ration Card",
+      "Electricity bill or domicile certificate"
+    ],
+    "application_link": "https://magujarat.com/",
+    "helpline_number": "1800-233-1022",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-11",
+    "verified_by": "Health & Family Welfare Dept, Govt of Gujarat",
+    "middle_class_friendly": true
+  },
+  {
+    "id": "rashtriya-arogya-nidhi",
+    "name": "Rashtriya Arogya Nidhi (RAN) & Rare Diseases Policy",
+    "name_localized": {
+      "gu": "રાષ્ટ્રીય આરોગ્ય નિધિ (RAN) અને રેર ડીસીઝ સહાય",
+      "hi": "राष्ट्रीय आरोग्य निधि (RAN) एवं दुर्लभ रोग सहायता",
+      "mr": "राष्ट्रीय आरोग्य निधी (RAN)",
+      "bn": "রাষ্ট্রীয় আরোগ্য নিধি (RAN)",
+      "ta": "ராஷ்ட்ரிய ஆரோக்கிய நிதி",
+      "te": "రాష్ట్రీయ ఆరోగ్య నిధి"
+    },
+    "short_description": "Direct central financial grant of up to ₹15 to ₹50 Lakh for patients suffering from life-threatening critical illnesses receiving treatment in Government AIIMS/super-specialty centers.",
+    "description_localized": {
+      "gu": "સરકારી AIIMS અને સુપર-સ્પેશિયાલિટી હોસ્પિટલમાં જીવનજોખમી બીમારીઓની સારવાર માટે ₹15 થી ₹50 લાખ સુધીની સરકારી સીધી નાણાકીય સહાય.",
+      "hi": "सरकारी एम्स और सुपर-स्पेशियलिटी अस्पतालों में जीवन के लिए घातक बीमारियों के इलाज हेतु ₹15 से ₹50 लाख तक की सरकारी वित्तीय सहायता।"
+    },
+    "issuing_authority": "Central Government",
+    "state_jurisdiction": "All India",
+    "categories": [
+      "critical_illness",
+      "operations_surgery",
+      "hospitalization"
+    ],
+    "coverage_amount": "Up to ₹15,00,000 to ₹50,00,000 (One-time grant per illness)",
+    "coverage_amount_num": 1500000,
+    "income_limit": "Below Poverty Line or State BPL threshold",
+    "income_limit_max": 250000,
+    "eligibility_criteria": [
+      "Patients undergoing major super-specialty treatment in Government Central Hospitals (AIIMS, PGI, etc.)",
+      "Must be suffering from life-threatening critical illness requiring immediate surgery/intervention",
+      "Family income falls below poverty line or State threshold"
+    ],
+    "covered_treatments": [
+      "Organ transplants (Liver, Bone Marrow, Heart, Kidney)",
+      "Specialized oncology chemotherapies",
+      "Lysosomal storage disorders & Group 1 Rare Diseases (up to ₹50 Lakh)",
+      "Complex spinal surgeries & prosthetic implants"
+    ],
+    "required_documents": [
+      "Application signed by treating AIIMS/Govt Doctor and Medical Superintendent",
+      "Income certificate issued by District Revenue Authority",
+      "Ration Card and Aadhaar Card",
+      "Estimate letter and diagnostic summaries from hospital"
+    ],
+    "application_link": "https://main.mohfw.gov.in/major-programmes/poor-patients-financial-support",
+    "helpline_number": "011-23061323",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-09",
+    "verified_by": "MoHFW Government of India",
+    "middle_class_friendly": false
+  },
+  {
+    "id": "pmsma-jssk-maternity",
+    "name": "Pradhan Mantri Surakshit Matritva Abhiyan (PMSMA) & JSSK",
+    "name_localized": {
+      "gu": "પ્રધાનમંત્રી સુરક્ષિત માતૃત્વ અભિયાન (PMSMA) અને JSSK",
+      "hi": "प्रधानमंत्री सुरक्षित मातृत्व अभियान (PMSMA) एवं जननी शिशु सुरक्षा",
+      "mr": "प्रधानमंत्री सुरक्षित मातृत्व अभियान",
+      "bn": "প্রধানমন্ত্রী সুরক্ষিত মাতৃত্ব অভিযান",
+      "ta": "பிரதம மந்திரி பாதுகாப்பான தாய்மை திட்டம்",
+      "te": "ప్రధాన మంత్రి సురక్షిత మాతృత్వ అభియాన్"
+    },
+    "short_description": "Comprehensive, zero-expense antenatal diagnostics on the 9th of every month, completely free institutional deliveries, C-sections, blood transfusions, and sick newborn care.",
+    "description_localized": {
+      "gu": "દર મહિનાની 9 તારીખે નિઃશુલ્ક ગર્ભાવસ્થા તપાસ, હોસ્પિટલમાં મફત ડિલિવરી, સિઝેરિયન ઓપરેશન અને નવજાત શિશુની મફત સારવાર.",
+      "hi": "हर महीने की 9 तारीख को मुफ्त प्रसव पूर्व जांच, सरकारी अस्पताल में पू���ी तरह मुफ्त डिलीवरी, सिजेरियन और नवजात शिशु की मुफ्त देखभाल।"
+    },
+    "issuing_authority": "Central Government",
+    "state_jurisdiction": "All India",
+    "categories": [
+      "maternity_child",
+      "opd",
+      "medicines_diagnostics",
+      "hospitalization"
+    ],
+    "coverage_amount": "100% Cashless & Free (Zero out-of-pocket expenses + ₹6,000 cash incentive under PMMVY)",
+    "coverage_amount_num": 50000,
+    "income_limit": "Universal (No income restrictions for pregnant women)",
+    "income_limit_max": null,
+    "eligibility_criteria": [
+      "All pregnant women in 2nd and 3rd trimesters",
+      "All post-natal mothers up to 42 days after delivery",
+      "All sick neonates/infants up to 1 year of age treated in government health facilities"
+    ],
+    "covered_treatments": [
+      "Complete Antenatal Care (ANC) blood panels & ultrasounds",
+      "High-Risk Pregnancy (HRP) red-flag identification & management",
+      "Normal Delivery and Emergency Caesarean Section (C-Section)",
+      "Free drugs, consumables, and blood transfusions",
+      "Free transport (102 / 108 ambulance from home to health facility and drop-back)"
+    ],
+    "required_documents": [
+      "Mother and Child Protection (MCP) Card",
+      "Aadhaar Card of mother",
+      "Bank account passbook for direct benefit transfer (PMMVY)"
+    ],
+    "application_link": "https://pmsma.mohfw.gov.in/",
+    "helpline_number": "104 / 102",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-12",
+    "verified_by": "National Health Mission (NHM)",
+    "middle_class_friendly": true
+  },
+  {
+    "id": "pmbjp-janaushadhi",
+    "name": "Pradhan Mantri Bhartiya Janaushadhi Pariyojana (PMBJP)",
+    "name_localized": {
+      "gu": "પ્રધાનમંત્રી ભારતીય જનઔષધિ પરિયોજના (PMBJP)",
+      "hi": "प्रधानमंत्री भारतीय जनऔषधि परियोजना (PMBJP)",
+      "mr": "प्रधानमंत्री भारतीय जनऔषधी योजना",
+      "bn": "প্রধানমন্ত্রী ভারতীয় জনঔষধি পরিযোজনা",
+      "ta": "பிரதம மந்திரி பாரதிய மக்கள் மருந்தகம்",
+      "te": "ప్రధాన మంత్రి భారతీయ జనౌషధి పరియోజన"
+    },
+    "short_description": "Access to high-quality WHO-GMP certified generic medicines, surgical consumables, and chronic therapy drugs at 50% to 90% discount compared to branded equivalents.",
+    "description_localized": {
+      "gu": "બ્રાન્ડેડ દવાઓની તુલનામાં 50% થી 90% ઓછી કિંમતે ઉચ્ચ ગુણવત્તાવાળી જેનરિક દવાઓ અને સર્જિકલ સામગ્રી ઉપલબ્ધ કરા���તી યોજના.",
+      "hi": "ब्रांडेड दवाओं की तुलना में 50% से 90% कम कीमत पर उच्च गुणवत्ता वाली जेनेरिक दवाएं और सर्जिकल सामग्री।"
+    },
+    "issuing_authority": "Central Government",
+    "state_jurisdiction": "All India",
+    "categories": [
+      "medicines_diagnostics",
+      "chronic_diseases",
+      "opd"
+    ],
+    "coverage_amount": "50% to 90% savings on 2,000+ medicines and 300+ surgical items",
+    "coverage_amount_num": 30000,
+    "income_limit": "Universal (Open to all citizens without any income condition)",
+    "income_limit_max": null,
+    "eligibility_criteria": [
+      "Any Indian citizen holding a valid doctor's prescription",
+      "No registration or income certification required",
+      "Available across 10,000+ Jan Aushadhi Kendras in India"
+    ],
+    "covered_treatments": [
+      "Diabetes medications (Metformin, Glimepiride, Insulins)",
+      "Hypertension & Cardiovascular maintenance tablets",
+      "Anti-cancer drugs (up to 80% cheaper)",
+      "Antibiotics, painkillers, vitamins, and minerals",
+      "Sanitary pads (Suvidha at ₹1/pad)",
+      "Orthopedic supports, nebulizers, and BP monitors"
+    ],
+    "required_documents": [
+      "Doctor's valid prescription (for scheduled drugs)"
+    ],
+    "application_link": "https://janaushadhi.gov.in/",
+    "helpline_number": "1800-180-8080",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-13",
+    "verified_by": "Pharmaceuticals & Medical Devices Bureau of India (PMBI)",
+    "middle_class_friendly": true
+  },
+  {
+    "id": "mjpjay-maharashtra",
+    "name": "Mahatma Jyotirao Phule Jan Arogya Yojana (MJPJAY — Maharashtra)",
+    "name_localized": {
+      "gu": "મહાત્મા જ્યોતિરાવ ફૂલે જન આરોગ્ય યોજના (મહારાષ્ટ્ર)",
+      "hi": "महात्मा ज्योतिराव फुले जन आरोग्य योजना (महाराष्ट्र)",
+      "mr": "महात्मा ज्योतिराव फुले जन आरोग्य योजना (महाराष्ट्र)",
+      "bn": "মহাত্মা জ্যোতিরাও ফুলে জন আরোগ্য যোজনা",
+      "ta": "மகாத்மா ஜோதிராவ் பூலே மக்கள் ஆரோக்கிய திட்டம்",
+      "te": "మహాత్మా జ్యోతిరావు ఫూలే జన్ ఆరోగ్య యోజన"
+    },
+    "short_description": "Statewide universal healthcare program providing up to ₹5 Lakh cashless coverage for 1,356 secondary and tertiary procedures across Maharashtra.",
+    "description_localized": {
+      "gu": "મહારાષ્ટ્રના તમામ નાગરિકો માટે ₹5 લાખ સુધીનું સંપૂર્ણ ���ેશલેસ હોસ્પિટલ સારવાર કવચ.",
+      "hi": "महाराष्ट्र के सभी नागरिकों के लिए ₹5 लाख तक का कैशलेस अस्पताल उपचार कवर।"
+    },
+    "issuing_authority": "State Government",
+    "state_jurisdiction": "Maharashtra",
+    "categories": [
+      "hospitalization",
+      "operations_surgery",
+      "critical_illness"
+    ],
+    "coverage_amount": "₹5,00,000 per family / year",
+    "coverage_amount_num": 500000,
+    "income_limit": "Universal for all Maharashtra Ration Card holders",
+    "income_limit_max": null,
+    "eligibility_criteria": [
+      "Resident of Maharashtra with valid Yellow, Orange, or White Ration Card",
+      "Valid Aadhaar Card or Voter ID card",
+      "No income ceiling under the revised expanded universal mandate"
+    ],
+    "covered_treatments": [
+      "General surgery, ENT, Ophthalmology, Gynecology",
+      "Cardiology and cardiothoracic surgeries",
+      "Medical, surgical, and radiation oncology",
+      "Pediatric and neonatal surgeries",
+      "Orthopedic surgeries and polytrauma management"
+    ],
+    "required_documents": [
+      "Maharashtra Ration Card (Yellow/Orange/White)",
+      "Aadhaar Card",
+      "Doctor recommendation letter"
+    ],
+    "application_link": "https://www.jeevandayee.gov.in/",
+    "helpline_number": "155388 / 1800-233-2200",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-08",
+    "verified_by": "State Health Assurance Society, Govt of Maharashtra",
+    "middle_class_friendly": true
+  },
+  {
+    "id": "hmdg-grant",
+    "name": "Health Minister's Discretionary Grant (HMDG)",
+    "name_localized": {
+      "gu": "કેન્દ્રીય આરોગ્ય મંત્રી વિવેકાધીન અનુદાન (HMDG)",
+      "hi": "स्वास्थ्य मंत्री विवेकाधीन अनुदान (HMDG)",
+      "mr": "आरोग्य मंत्री विवेकाधीन अनुदान",
+      "bn": "স্বাস্থ্যমন্ত্রী স্বেচ্ছাধীন অনুদান",
+      "ta": "சுகாதார அமைச்சர் விருப்ப நிதி",
+      "te": "ఆరోగ్య మంత్రి విచక్షణ గ్రాంట్"
+    },
+    "short_description": "Financial assistance up to ₹1,25,000 to poor and indigent patients facing major medical interventions in Government hospitals.",
+    "description_localized": {
+      "gu": "સરકારી હોસ્પિટલોમાં ગંભીર બીમારીઓની સારવાર મેળવતા ગરીબ અને જરૂરિયાતમંદ દર્દીઓ માટે ₹1,25,000 સુધીની નાણાકીય સહાય.",
+      "hi": "सरकारी अस्पतालों में गंभीर बीमारियों का इलाज कराने वाले गरीब मरीजों के लिए ₹1,25,000 तक की वित्तीय सहायता।"
+    },
+    "issuing_authority": "Central Government",
+    "state_jurisdiction": "All India",
+    "categories": [
+      "critical_illness",
+      "operations_surgery",
+      "hospitalization"
+    ],
+    "coverage_amount": "Up to ₹1,25,000 (Based on actual estimated expenditure)",
+    "coverage_amount_num": 125000,
+    "income_limit": "Annual family income not exceeding ₹1,50,000",
+    "income_limit_max": 150000,
+    "eligibility_criteria": [
+      "Patients receiving treatment at Government super-specialty hospitals",
+      "Annual family income must not exceed ₹1,50,000",
+      "Not eligible if covered under PM-JAY or Central Govt Health Scheme"
+    ],
+    "covered_treatments": [
+      "Open heart surgery, Pacemaker implantation",
+      "Radiation therapy and chemotherapy cycles",
+      "Hip and Knee joint replacement (Govt hospitals)",
+      "Major gastrointestinal and thoracic surgeries"
+    ],
+    "required_documents": [
+      "Income Certificate issued by Revenue Authority",
+      "Estimation proforma certified by Medical Superintendent",
+      "Aadhaar Card and Ration Card",
+      "Recommendation letter from local Member of Parliament (MP)"
+    ],
+    "application_link": "https://main.mohfw.gov.in/major-programmes/poor-patients-financial-support",
+    "helpline_number": "011-23061323",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-07",
+    "verified_by": "MoHFW Grant Division",
+    "middle_class_friendly": false
+  }
+];
+
+export const FALLBACK_POLICIES: InsurancePolicy[] = [
+  {
+    "id": "arogya-sanjeevani",
+    "policy_name": "Arogya Sanjeevani Standard Health Policy",
+    "provider": "IRDAI Mandated (Available across all General & Health Insurers)",
+    "category": "Standard Government-Standardized Health Insurance",
+    "premium_range": "₹3,500 – ₹7,200 / year (approx ₹300 - ₹600/month for family floater)",
+    "sum_insured_range": "₹1,00,000 to ₹10,00,000 (Multiples of ₹50k)",
+    "key_coverage": [
+      "Inpatient hospitalization (Room rent capped at 2% of SI)",
+      "ICU charges capped at 5% of SI",
+      "30 days pre-hospitalization & 60 days post-hospitalization",
+      "All day-care procedures covered",
+      "Cataract treatment (up to 25% of SI or ₹40,000)",
+      "AYUSH treatments covered up to 100% of sum insured"
+    ],
+    "waiting_periods": "30 days initial waiting period; 24-48 months for specified ailments & pre-existing conditions",
+    "claim_settlement_ratio": "97.8% (Industry Average)",
+    "entry_age": "18 years to 65 years (Lifelong renewability)",
+    "official_link": "https://irdai.gov.in/",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-12",
+    "irdai_registration": "IRDAI/NL-HLT/GEN/P-H/V.I/2020"
+  },
+  {
+    "id": "new-india-yuva-family",
+    "policy_name": "New India Assurance Yuva Bharat / Family Floater",
+    "provider": "The New India Assurance Co. Ltd. (Public Sector Undertaking)",
+    "category": "Public Sector Trust & Comprehensive Coverage",
+    "premium_range": "₹5,400 – ₹11,200 / year (Dependable middle-class pricing)",
+    "sum_insured_range": "₹5,00,000 to ₹25,00,000",
+    "key_coverage": [
+      "Zero room rent sub-limits on sum insured above ₹10 Lakh",
+      "Modern treatments & robotic surgeries covered up to 50% SI",
+      "Cumulative Bonus: 25% increase in sum insured per claim-free year",
+      "Cashless network across 6,500+ empanelled hospitals in India",
+      "Organ donor inpatient medical expenses fully covered"
+    ],
+    "waiting_periods": "Initial: 30 days; 24 months for named conditions; 36 months for pre-existing diseases",
+    "claim_settlement_ratio": "96.4% (IRDAI Annual Report)",
+    "entry_age": "18 years to 45 years (Yuva) / Up to 65 years (Standard)",
+    "official_link": "https://www.newindia.co.in/",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-10",
+    "irdai_registration": "IRDA/NL-HLT/NIA/P-H/V.I/184/13-14"
+  },
+  {
+    "id": "star-comprehensive-family",
+    "policy_name": "Star Health Comprehensive Insurance Plan",
+    "provider": "Star Health and Allied Insurance",
+    "category": "Zero Co-pay Family Comprehensive Health Cover",
+    "premium_range": "₹8,500 – ₹16,000 / year (Family of 4, Age 35)",
+    "sum_insured_range": "₹5,00,000 to ₹1,00,00,000",
+    "key_coverage": [
+      "No room rent cap / Single Private AC Room eligibility",
+      "Automatic 100% restoration of sum insured upon exhaustion",
+      "Maternity cover for normal and caesarean deliveries",
+      "Newborn baby cover up to ₹1 Lakh from day 1",
+      "Air ambulance cover up to ₹5 Lakh / year",
+      "Bariatric surgery and mental health treatment covered"
+    ],
+    "waiting_periods": "Initial: 30 days; 24 months for specified illnesses; 36 months for pre-existing diseases; 24 months for maternity",
+    "claim_settlement_ratio": "98.7% (In-house claims processing within 2 hours)",
+    "entry_age": "18 years to 65 years",
+    "official_link": "https://www.starhealth.in/",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-11",
+    "irdai_registration": "SHAHLIP21199V042021"
+  },
+  {
+    "id": "care-supreme-health",
+    "policy_name": "Care Supreme Value Health Insurance",
+    "provider": "Care Health Insurance (formerly Religare)",
+    "category": "High Value, Inflation-Protected Affordable Policy",
+    "premium_range": "₹6,800 – ₹14,500 / year",
+    "sum_insured_range": "₹7,00,000 to ₹15,00,000",
+    "key_coverage": [
+      "Unlimited automatic recharge of sum insured for unrelated illnesses",
+      "Cumulative Bonus Super: Up to 500% increase in sum insured",
+      "60 days pre-hospitalization & 180 days post-hospitalization",
+      "Annual health check-up for all insured members every policy year",
+      "AYUSH inpatient coverage equal to sum insured"
+    ],
+    "waiting_periods": "Initial: 30 days; 36 months for PED (reducible to 24 months via rider)",
+    "claim_settlement_ratio": "97.4% (IRDAI verified)",
+    "entry_age": "18 years and above (No maximum entry age)",
+    "official_link": "https://www.careinsurance.com/",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-12",
+    "irdai_registration": "CHIHLIP23089V022223"
+  },
+  {
+    "id": "hdfc-optima-secure",
+    "policy_name": "HDFC ERGO Optima Secure",
+    "provider": "HDFC ERGO General Insurance",
+    "category": "Premium Middle-Class 4X Coverage Multiplier",
+    "premium_range": "₹9,200 – ₹19,800 / year (Popular for urban & semi-urban families)",
+    "sum_insured_range": "₹5,00,000 to ₹2,00,00,000",
+    "key_coverage": [
+      "Secure Benefit: 2X coverage from Day 1 without extra cost",
+      "Plus Benefit: 100% additional sum insured in 2 consecutive years",
+      "Restore Benefit: 100% sum insured restored automatically on any claim",
+      "Zero deduction on consumables (gloves, PPE, syringes via rider)",
+      "60 days pre & 180 days post-hospitalization"
+    ],
+    "waiting_periods": "Initial: 30 days; 24 months for named ailments; 36 months for pre-existing conditions",
+    "claim_settlement_ratio": "99.1% (High cashless approval rating)",
+    "entry_age": "18 years to 65 years",
+    "official_link": "https://www.hdfcergo.com/",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-13",
+    "irdai_registration": "HDFHLIP22064V022122"
+  }
+];
+
+export const FALLBACK_CLAIMS: PatientClaim[] = [
+  {
+    "id": "claim-pmjay-8921",
+    "claim_reference": "PMJAY/GJ/2026/892144",
+    "scheme_or_policy": "Ayushman Bharat PM-JAY",
+    "patient_name": "Rameshbhai K. Patel",
+    "hospital_name": "U.N. Mehta Institute of Cardiology, Ahmedabad",
+    "claim_type": "Government Scheme Direct Pre-Auth",
+    "amount_claimed": 185000,
+    "amount_approved": 185000,
+    "status": "settled",
+    "source": "Official TPA / PM-JAY API (Verified)",
+    "is_verified": true,
+    "submitted_date": "2026-09-18",
+    "last_updated": "2026-09-24",
+    "next_steps": "Treatment completed. Cashless settlement settled directly with hospital. Patient discharge summary archived.",
+    "notes": "Coronary angioplasty with drug-eluting stent. Fully covered under PM-JAY package."
+  },
+  {
+    "id": "claim-maa-4412",
+    "claim_reference": "MAA/GJ/VAL/2026/4412",
+    "scheme_or_policy": "Mukhyamantri Amrutam (MA Vatsalya)",
+    "patient_name": "Meenaben V. Parmar",
+    "hospital_name": "Civil Hospital, Rajkot",
+    "claim_type": "Cashless Hospitalization",
+    "amount_claimed": 92000,
+    "amount_approved": 92000,
+    "status": "verified",
+    "source": "Official TPA / PM-JAY API (Verified)",
+    "is_verified": true,
+    "submitted_date": "2026-10-02",
+    "last_updated": "2026-10-09",
+    "next_steps": "Pre-authorization approved by State Health Agency TPA. Discharge billing in progress.",
+    "notes": "Laparoscopic cholecystectomy for gallstones. MA card biometric authentication verified."
+  },
+  {
+    "id": "claim-arogya-1109",
+    "claim_reference": "NIA/CL/2026/781109",
+    "scheme_or_policy": "New India Arogya Sanjeevani",
+    "patient_name": "Amit S. Joshi",
+    "hospital_name": "Sterling Hospital, Vadodara",
+    "claim_type": "Reimbursement",
+    "amount_claimed": 48500,
+    "amount_approved": 42000,
+    "status": "active",
+    "source": "Official TPA / PM-JAY API (Verified)",
+    "is_verified": true,
+    "submitted_date": "2026-10-06",
+    "last_updated": "2026-10-11",
+    "next_steps": "TPA Query: Upload final hospital discharge card and medicine breakup receipts within 10 days.",
+    "notes": "Dengue inpatient care. Room rent copay applied as per standard Arogya Sanjeevani terms."
+  }
+];

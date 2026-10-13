@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const rawBaseUrl = process.env.REACT_APP_API_URL || '';
+let defaultBackendUrl = '';
+if (typeof window !== 'undefined') {
+  if (window.location.hostname.includes('onrender.com')) {
+    defaultBackendUrl = 'https://healthmitra-backend-mu58.onrender.com';
+  } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    defaultBackendUrl = 'http://localhost:8000';
+  }
+}
+
+const rawBaseUrl = process.env.REACT_APP_API_URL || defaultBackendUrl;
 const cleanBaseUrl = rawBaseUrl.endsWith('/api')
   ? rawBaseUrl.slice(0, -4)
   : rawBaseUrl.replace(/\/$/, '');

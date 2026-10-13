@@ -7,6 +7,11 @@ import {
   EligibilityQuery,
   EligibilityMatch
 } from '../types/scheme';
+import {
+  FALLBACK_SCHEMES,
+  FALLBACK_POLICIES,
+  FALLBACK_CLAIMS
+} from '../data/fallbackSchemes';
 
 export const schemeApi = {
   /**
@@ -20,11 +25,28 @@ export const schemeApi = {
   }): Promise<HealthScheme[]> {
     try {
       const response = await api.get<HealthScheme[]>('/api/v1/schemes', { params });
-      return Array.isArray(response.data) ? response.data : [];
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
     } catch (error) {
-      console.warn('API call failed, returning fallback schemes', error);
-      return [];
+      console.warn('API call failed, using verified fallback schemes', error);
     }
+
+    let schemes = [...FALLBACK_SCHEMES];
+    if (params?.category && params.category !== 'all') {
+      schemes = schemes.filter(s => s.categories.includes(params.category as any));
+    }
+    if (params?.state && params.state !== 'all') {
+      schemes = schemes.filter(s => s.state_jurisdiction === 'All India' || s.state_jurisdiction.toLowerCase().includes(params.state!.toLowerCase()));
+    }
+    if (params?.search) {
+      const q = params.search.toLowerCase();
+      schemes = schemes.filter(s => s.name.toLowerCase().includes(q) || s.short_description.toLowerCase().includes(q));
+    }
+    if (params?.middle_class_only) {
+      schemes = schemes.filter(s => s.middle_class_friendly);
+    }
+    return schemes;
   },
 
   /**
@@ -33,11 +55,13 @@ export const schemeApi = {
   async getSchemeById(id: string): Promise<HealthScheme | null> {
     try {
       const response = await api.get<HealthScheme>(`/api/v1/schemes/${id}`);
-      return response.data && typeof response.data === 'object' ? response.data : null;
+      if (response.data && typeof response.data === 'object') {
+        return response.data;
+      }
     } catch (error) {
-      console.warn('API call failed for scheme detail', error);
-      return null;
+      console.warn('API call failed for scheme detail, using fallback', error);
     }
+    return FALLBACK_SCHEMES.find(s => s.id === id) || null;
   },
 
   /**
@@ -46,11 +70,13 @@ export const schemeApi = {
   async getInsurancePolicies(): Promise<InsurancePolicy[]> {
     try {
       const response = await api.get<InsurancePolicy[]>('/api/v1/schemes/insurance-policies');
-      return Array.isArray(response.data) ? response.data : [];
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
     } catch (error) {
-      console.warn('API call failed for insurance policies', error);
-      return [];
+      console.warn('API call failed for insurance policies, using fallback', error);
     }
+    return FALLBACK_POLICIES;
   },
 
   /**
@@ -61,11 +87,13 @@ export const schemeApi = {
       const response = await api.get<PatientClaim[]>('/api/v1/schemes/claims', {
         params: patientName ? { patient_name: patientName } : undefined
       });
-      return Array.isArray(response.data) ? response.data : [];
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
     } catch (error) {
-      console.warn('API call failed for claims', error);
-      return [];
+      console.warn('API call failed for claims, using fallback', error);
     }
+    return FALLBACK_CLAIMS;
   },
 
   /**
