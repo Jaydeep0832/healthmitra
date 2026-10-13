@@ -6,8 +6,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 
-# Inject backend URL at build time (empty = use same-origin /api proxy)
-ARG REACT_APP_API_URL=""
+# Inject backend URL at build time (defaults to production live backend)
+ARG REACT_APP_API_URL="https://healthmitra-backend-mu58.onrender.com"
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 COPY . .
