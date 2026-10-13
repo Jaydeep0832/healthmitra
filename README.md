@@ -17,10 +17,17 @@
 
 </div>
 
+<div align="center">
+
+<img src="docs/screenshots/01_landing_page.png" alt="HealthMitra 2.0 Web Platform Overview" width="100%" />
+
+</div>
+
 ---
 
 ## 📑 Table of Contents
 
+- [Platform Facilities & Visual Showcase](#-platform-facilities--visual-showcase)
 - [Problem Statement](#-problem-statement)
 - [Proposed Solution](#-proposed-solution)
 - [System Architecture](#-system-architecture)
@@ -34,6 +41,81 @@
 - [Testing & Quality Assurance](#-testing--quality-assurance)
 - [Project Directory Layout](#-project-directory-layout)
 - [Ethical AI & Clinical Disclaimer](#-ethical-ai--clinical-disclaimer)
+
+---
+
+## 📸 Platform Facilities & Visual Showcase
+
+HealthMitra 2.0 provides an end-to-end digital health infrastructure designed for citizens, patients, and frontline community health workers across India. Explore the key facilities and live platform interfaces below:
+
+### 1. 👩‍⚕️ ASHA Community Health Worker Field Portal
+> **Frontline healthcare operational dashboard** allowing ASHA workers to manage rural cohorts, track antenatal care (ANC) vitals, flag high-risk pregnancies, and generate official National Health Mission (NHM) referral slips.
+
+<p align="center">
+  <img src="docs/screenshots/03_asha_worker_dashboard.png" alt="ASHA Worker Community Portal Dashboard" width="100%" />
+</p>
+
+---
+
+### 2. 🗺️ Geospatial Medical Facilities & Hospital Locator
+> **Interactive OpenStreetMap geospatial engine** indexing 1,000+ verified health facilities across all 33 districts of Gujarat. Filter by ICU beds, oxygen availability, 24/7 Jan Aushadhi pharmacies, and instant driving directions.
+
+<p align="center">
+  <img src="docs/screenshots/04_hospital_facilities.png" alt="Geospatial Hospital Locator & Facilities" width="100%" />
+</p>
+
+---
+
+### 3. 🤖 Vernacular AI Symptom Triage & Red-Flag Checker
+> **Sub-second clinical triage powered by Groq & LLaMA 3.3 (70B)** supporting English, Hindi, Gujarati, Marathi, and Bengali. Analyzes symptoms, computes urgency levels, and detects life-threatening conditions immediately.
+
+<p align="center">
+  <img src="docs/screenshots/05_symptom_triage.png" alt="Multilingual AI Symptom Triage" width="100%" />
+</p>
+
+---
+
+### 4. 🏛️ Government Health Schemes & Patient Benefits Directory
+> **Comprehensive benefits finder** helping middle-class and rural families discover central & state healthcare schemes (Ayushman Bharat PM-JAY, MA Yojana, Critical Illness Funds) with eligibility calculators, claims tracking, and direct application links.
+
+<p align="center">
+  <img src="docs/screenshots/06_government_schemes.png" alt="Government Health Schemes Directory" width="100%" />
+</p>
+
+---
+
+### 5. 🧪 Multimodal Diagnostic Lab Report Interpreter
+> **Vision AI diagnostic engine (LLaMA 3.2 Vision)** that parses blood tests, lipid panels, and pathology reports, normalizes lab values against clinical reference standards, and explains results in simple vernacular language.
+
+<p align="center">
+  <img src="docs/screenshots/07_lab_reports_analyzer.png" alt="AI Diagnostic Lab Report Analyzer" width="100%" />
+</p>
+
+---
+
+### 6. 👤 Patient Health Record & Wellness Dashboard
+> **Personalized longitudinal health portal** featuring vital signs tracking (BP, pulse, glucose, SpO2), health risk scores, upcoming checkups, and encrypted medical consultation history.
+
+<p align="center">
+  <img src="docs/screenshots/03_patient_dashboard.png" alt="Patient Health Dashboard" width="100%" />
+</p>
+
+---
+
+### 7. 🚨 Instant Emergency SOS Response Modal
+> **One-touch critical dispatch modal** with emergency dialers (108 Ambulance, 102 Maternal, 112 National Emergency, 104 Helpline), live GPS broadcast, and nearest emergency hospital routing.
+
+<p align="center">
+  <img src="docs/screenshots/09_emergency_sos.png" alt="Emergency Medical SOS System" width="100%" />
+</p>
+
+---
+
+### 8. 💬 Vernacular AI Healthcare Assistant & Dual-Role Onboarding
+
+| 💬 24/7 Vernacular Medical Chatbot | 🔐 Dual-Role Patient & ASHA Onboarding |
+| :---: | :---: |
+| <img src="docs/screenshots/08_ai_chatbot.png" alt="AI Chatbot Assistant" width="100%" /> | <img src="docs/screenshots/02_onboarding_register.png" alt="User Registration & Role Selection" width="100%" /> |
 
 ---
 
@@ -167,6 +249,8 @@ Patients upload photographs of laboratory reports (CBC, Lipid Panel, Blood Gluco
 - Auto-detects conversational tone, emotional stress, and localized medical colloquialisms.
 - Formulates differential risk summaries with lifestyle, dietary, and physician follow-up advisories.
 
+![Vernacular AI Symptom Checker](docs/screenshots/05_symptom_triage.png)
+
 ### 2. 🚨 Instant Emergency SOS System
 - One-click trigger for national emergency services:
   - **108** — Emergency Ambulance Service
@@ -174,6 +258,8 @@ Patients upload photographs of laboratory reports (CBC, Lipid Panel, Blood Gluco
   - **112** — Integrated National Emergency
   - **104** — National Health Helpline
 - Immediate nearby ICU and emergency trauma hospital filtering.
+
+![Instant Emergency SOS](docs/screenshots/09_emergency_sos.png)
 
 ### 3. 🗺️ Geospatial Facility Locator
 - High-performance Leaflet-based interactive mapping.
@@ -183,10 +269,28 @@ Patients upload photographs of laboratory reports (CBC, Lipid Panel, Blood Gluco
   - Private Multi-Specialty Clinics
   - 24/7 Emergency Pharmacies & Jan Aushadhi Kendras
 
+![Geospatial Facility Locator](docs/screenshots/04_hospital_facilities.png)
+
 ### 4. 👤 Patient Health Record Dashboard
 - Complete timeline of clinical consultations and past symptom triage sessions.
 - Secure vitals logging: Blood Pressure, Pulse, Blood Glucose, SpO2, BMI.
 - Downloadable consultation summaries for physical hospital visits.
+
+![Patient Health Record Dashboard](docs/screenshots/03_patient_dashboard.png)
+
+### 5. 🏛️ Government Health Schemes & Benefits Directory
+- Direct discovery of Indian healthcare safety nets: **Ayushman Bharat PM-JAY**, **Mukhyamantri Amrutam (MA)**, **Janani Suraksha Yojana (JSY)**, **Rashtriya Arogya Nidhi (RAN)**, and PM National Relief Fund.
+- Smart eligibility checker (BPL card, annual income limits, disease categorization).
+- Complete procedure coverage details, required document checklists, and verified application portals.
+
+![Government Health Schemes](docs/screenshots/06_government_schemes.png)
+
+### 6. 🧪 Multimodal Diagnostic Lab Report Interpreter
+- Optical parsing and diagnostic inference via **LLaMA 3.2 11B Vision**.
+- Automatic out-of-range biomarker flagging (e.g., HbA1c, fasting glucose, platelets, hemoglobin).
+- Plain vernacular patient summaries and clinical questions for the next physician visit.
+
+![Lab Report Analyzer](docs/screenshots/07_lab_reports_analyzer.png)
 
 ---
 
@@ -208,6 +312,8 @@ HealthMitra 2.0 introduces an enterprise-grade frontline operations center desig
 - **Home Visit Vitals Capture**: Log gestational age, blood pressure, hemoglobin, and fetal movements directly in the field.
 - **NHM Referral Slip Generator**: Automatically generates formal referral slips with clinical history, provisional triage severity, and referring sub-center metadata for CHC/District Hospital admissions.
 - **Offline CSV Export**: Instant roster export for district health administration reporting.
+
+![ASHA Community Health Portal](docs/screenshots/03_asha_worker_dashboard.png)
 
 ---
 
