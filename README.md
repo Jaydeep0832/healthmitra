@@ -27,11 +27,11 @@
 
 ## 📑 Table of Contents
 
-- [Platform Facilities & Visual Showcase](#-platform-facilities--visual-showcase)
 - [Problem Statement](#-problem-statement)
 - [Proposed Solution](#-proposed-solution)
+- [Platform Facilities & Visual Showcase](#-platform-facilities--visual-showcase)
 - [System Architecture](#-system-architecture)
-- [AI & Clinical Engine](#-ai--clinical-decision-engine)
+- [AI & Clinical Decision Engine](#-ai--clinical-decision-engine)
 - [Core Features & Modules](#-core-features--modules)
 - [ASHA Community Health Portal](#-asha-community-health-portal)
 - [Technology Stack](#-technology-stack)
@@ -39,14 +39,50 @@
 - [Getting Started](#-getting-started)
 - [API Reference](#-api-reference)
 - [Testing & Quality Assurance](#-testing--quality-assurance)
-- [Project Directory Layout](#-project-directory-layout)
 - [Ethical AI & Clinical Disclaimer](#-ethical-ai--clinical-disclaimer)
+
+---
+
+## 🚨 Problem Statement
+
+Over **65% of India's population** resides in rural and semi-urban regions, yet **nearly 75% of doctors and healthcare infrastructure are concentrated in urban metros**. This profound disparity leads to several critical healthcare delivery bottlenecks:
+
+1. **Linguistic & Literacy Barriers**: Rural citizens often cannot describe symptoms or interpret complex diagnostic lab reports printed in medical English.
+2. **Delayed Emergency & Triage Response**: Patients with acute conditions (myocardial infarction, acute sepsis, high-risk pre-eclampsia) fail to recognize early warning signs, delaying critical hospital transfers.
+3. **Information Darkness in Facility Accessibility**: Locating nearby functional sub-centers, Community Health Centers (CHCs), oxygen-equipped facilities, or emergency pharmacies across remote districts remains fragmented and unreliable.
+4. **Overburdened Frontline Healthcare Workers**: Accredited Social Health Activists (ASHA workers) manage hundreds of rural households using manual paper registers, leading to unmonitored high-risk pregnancies, missed immunization windows, and referral delays.
+
+---
+
+## 💡 Proposed Solution
+
+**HealthMitra 2.0** bridges the urban-rural healthcare divide by uniting state-of-the-art Generative AI with localized public health infrastructure:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        HEALTHMITRA 2.0 ECOSYSTEM                       │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+         ┌──────────────────────────┼──────────────────────────┐
+         ▼                          ▼                          ▼
+ 🗣️ Vernacular AI Triage   🏥 Geospatial Discovery   👩‍⚕️ ASHA Field Portal
+   • Hindi, Gujarati,         • 33 Gujarat Districts    • NHM Referral Slips
+     Marathi, Bengali           OpenStreetMap Sync      • Antenatal Risk Flags
+   • Emergency Red-Flags      • GeoJSON 2dsphere        • Offline-ready CSV
+   • Vision Lab Parser          Proximity Search          Demographic Sync
+```
+
+- **Instant Multilingual Clinical Triage**: Conversational symptom assessment powered by Groq-accelerated Meta LLaMA 3.3 (70B) in 5 Indian languages (Hindi, Gujarati, Marathi, Bengali, English) with strict clinical safety guardrails.
+- **Multimodal Diagnostic Lab Report Analysis**: Optical & vision parsing (LLaMA 3.2 Vision) that translates blood tests, lipid panels, and radiology impressions into plain, empathetic vernacular explanations.
+- **Geospatial Healthcare Network**: Live Overpass OpenStreetMap synchronization indexing 1,000+ government hospitals, private clinics, and pharmacies across 33 districts of Gujarat with route calculations.
+- **Dedicated ASHA Worker Community Suite**: Passcode-gated field dashboard (`ASHA2026`) enabling village demographic tracking, maternal antenatal vitals logging, urgent risk stratification, and auto-generated National Health Mission (NHM) referral slips.
+- **Defense-in-Depth Healthcare Security**: Zero-leakage field-level AES-256 encryption for demographic and diagnostic records, token blacklisting, and immutable audit trails.
 
 ---
 
 ## 📸 Platform Facilities & Visual Showcase
 
-HealthMitra 2.0 provides an end-to-end digital health infrastructure designed for citizens, patients, and frontline community health workers across India. Explore the key facilities and live platform interfaces below:
+HealthMitra 2.0 provides an end-to-end digital health infrastructure designed for citizens, patients, and frontline community health workers across India. Explore the live platform interfaces and key facilities below:
 
 ### 1. 👩‍⚕️ ASHA Community Health Worker Field Portal
 > **Frontline healthcare operational dashboard** allowing ASHA workers to manage rural cohorts, track antenatal care (ANC) vitals, flag high-risk pregnancies, and generate official National Health Mission (NHM) referral slips.
@@ -116,43 +152,6 @@ HealthMitra 2.0 provides an end-to-end digital health infrastructure designed fo
 | 💬 24/7 Vernacular Medical Chatbot | 🔐 Dual-Role Patient & ASHA Onboarding |
 | :---: | :---: |
 | <img src="docs/screenshots/08_ai_chatbot.png" alt="AI Chatbot Assistant" width="100%" /> | <img src="docs/screenshots/02_onboarding_register.png" alt="User Registration & Role Selection" width="100%" /> |
-
----
-
-## 🚨 Problem Statement
-
-Over **65% of India's population** resides in rural and semi-urban regions, yet **nearly 75% of doctors and healthcare infrastructure are concentrated in urban metros**. This profound disparity leads to several critical healthcare delivery bottlenecks:
-
-1. **Linguistic & Literacy Barriers**: Rural citizens often cannot describe symptoms or interpret complex diagnostic lab reports printed in medical English.
-2. **Delayed Emergency & Triage Response**: Patients with acute conditions (myocardial infarction, acute sepsis, high-risk pre-eclampsia) fail to recognize early warning signs, delaying critical hospital transfers.
-3. **Information Darkness in Facility Accessibility**: Locating nearby functional sub-centers, Community Health Centers (CHCs), oxygen-equipped facilities, or emergency pharmacies across remote districts remains fragmented and unreliable.
-4. **Overburdened Frontline Healthcare Workers**: Accredited Social Health Activists (ASHA workers) manage hundreds of rural households using manual paper registers, leading to unmonitored high-risk pregnancies, missed immunization windows, and referral delays.
-
----
-
-## 💡 Proposed Solution
-
-**HealthMitra 2.0** bridges the urban-rural healthcare divide by uniting state-of-the-art Generative AI with localized public health infrastructure:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        HEALTHMITRA 2.0 ECOSYSTEM                       │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-         ┌──────────────────────────┼──────────────────────────┐
-         ▼                          ▼                          ▼
- 🗣️ Vernacular AI Triage   🏥 Geospatial Discovery   👩‍⚕️ ASHA Field Portal
-   • Hindi, Gujarati,         • 33 Gujarat Districts    • NHM Referral Slips
-     Marathi, Bengali           OpenStreetMap Sync      • Antenatal Risk Flags
-   • Emergency Red-Flags      • GeoJSON 2dsphere        • Offline-ready CSV
-   • Vision Lab Parser          Proximity Search          Demographic Sync
-```
-
-- **Instant Multilingual Clinical Triage**: Conversational symptom assessment powered by Groq-accelerated Meta LLaMA 3.3 (70B) in 5 Indian languages (Hindi, Gujarati, Marathi, Bengali, English) with strict clinical safety guardrails.
-- **Multimodal Diagnostic Lab Report Analysis**: Optical & vision parsing (LLaMA 3.2 Vision) that translates blood tests, lipid panels, and radiology impressions into plain, empathetic vernacular explanations.
-- **Geospatial Healthcare Network**: Live Overpass OpenStreetMap synchronization indexing 1,000+ government hospitals, private clinics, and pharmacies across 33 districts of Gujarat with route calculations.
-- **Dedicated ASHA Worker Community Suite**: Passcode-gated field dashboard (`ASHA2026`) enabling village demographic tracking, maternal antenatal vitals logging, urgent risk stratification, and auto-generated National Health Mission (NHM) referral slips.
-- **Defense-in-Depth Healthcare Security**: Zero-leakage field-level AES-256 encryption for demographic and diagnostic records, token blacklisting, and immutable audit trails.
 
 ---
 
@@ -511,46 +510,6 @@ Test suite highlights:
 ```bash
 cd frontend
 npm run test
-```
-
----
-
-## 📁 Project Directory Layout
-
-```
-healthmitra/
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/               # Clean REST routers (auth, triage, hospitals, reports)
-│   │   ├── db/                   # MongoDB motor connection and geospatial init
-│   │   ├── models/               # Pydantic schemas (User, Hospital, Triage, Report)
-│   │   ├── security/             # AES-256 field encryption, JWT handlers, RBAC
-│   │   ├── services/             # LLM orchestration, OSM syncing, patient records
-│   │   ├── config.py             # Typed application settings (Pydantic BaseSettings)
-│   │   └── main.py               # FastAPI ASGI entrypoint & middleware setup
-│   ├── scripts/                  # Encryption rotation and Gujarat OSM sync scripts
-│   ├── tests/                    # Pytest test suites (security, auth, triage)
-│   ├── Dockerfile                # Lightweight Python 3.11 production container
-│   └── requirements.txt          # Frozen backend dependencies
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Common/           # EmergencyModal, ErrorBoundary, Glassmorphic Cards
-│   │   │   ├── Dashboard/        # ProfileCard, AshaCommunityPortal, VitalsTrack
-│   │   │   ├── HospitalLocator/  # Map, HospitalList, FilterPanel, GPS Locator
-│   │   │   └── Layout/           # Responsive Navbar, Footers, LangSwitcher
-│   │   ├── pages/                # Home, Dashboard, Hospitals, Symptoms, Reports, Auth
-│   │   ├── services/             # Typed Axios HTTP client with auto-refresh tokens
-│   │   ├── store/                # Zustand stores (useAuthStore, useLocationStore)
-│   │   ├── types/                # Strict TypeScript clinical interfaces
-│   │   ├── App.tsx               # Client router & authentication guards
-│   │   └── index.css             # Healthcare design system tokens & animations
-│   ├── Dockerfile                # Multi-stage optimized Nginx frontend image
-│   └── package.json              # React 19 dependencies & scripts
-├── docker-compose.yml            # Multi-service local composition
-├── docker-compose.prod.yml       # Production composition with TLS & restart policies
-├── nginx.conf                    # Nginx gateway reverse proxy rules
-└── README.md                     # Comprehensive technical documentation
 ```
 
 ---
