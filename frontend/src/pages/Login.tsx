@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { authService } from '../services/auth';
 import { getApiErrorMessage } from '../services/api';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -10,6 +10,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('');
   const { checkAuth } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +18,8 @@ export default function Login() {
       setErrorMsg('');
       await authService.login(email, password);
       await checkAuth();
-      navigate('/dashboard');
+      const destination = (location.state as any)?.from?.pathname || '/dashboard';
+      navigate(destination, { replace: true });
     } catch (error: unknown) {
       setErrorMsg(getApiErrorMessage(error, 'Login failed. Please check your credentials.'));
     }

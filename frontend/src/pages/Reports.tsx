@@ -13,6 +13,7 @@ import {
   Info
 } from 'lucide-react';
 import { api } from '../services/api';
+import { useTranslation } from '../i18n/I18nContext';
 
 interface Biomarker {
   name: string;
@@ -51,6 +52,7 @@ const PRESET_REPORTS = [
 ];
 
 export default function Reports() {
+  const { language } = useTranslation();
   const [activeTab, setActiveTab] = useState<'text' | 'upload'>('text');
   const [reportText, setReportText] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -69,9 +71,10 @@ export default function Reports() {
     setError(null);
 
     try {
+    const targetLang = ['en', 'hi', 'gu', 'mr', 'bn'].includes(language) ? language : 'en';
       const response = await api.post<ReportResult>('/api/v1/reports/analyze-text', {
         report_text: text,
-        language: 'en'
+        language: targetLang
       });
       setResult(response.data);
     } catch (err: any) {
@@ -93,7 +96,8 @@ export default function Reports() {
 
     const formData = new FormData();
     formData.append('file', selectedFile);
-    formData.append('language', 'en');
+    const targetLang = ['en', 'hi', 'gu', 'mr', 'bn'].includes(language) ? language : 'en';
+    formData.append('language', targetLang);
 
     try {
       const response = await api.post<ReportResult>('/api/v1/reports/upload', formData, {
