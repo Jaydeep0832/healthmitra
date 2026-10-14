@@ -413,12 +413,257 @@ export const FALLBACK_SCHEMES: HealthScheme[] = [
       "Aadhaar Card and Ration Card",
       "Recommendation letter from local Member of Parliament (MP)"
     ],
+    "how_to_apply": "Submit official application form along with physician's estimate proforma to the Medical Superintendent of the treating Government hospital, endorsed by the local MP.",
     "application_link": "https://main.mohfw.gov.in/major-programmes/poor-patients-financial-support",
     "helpline_number": "011-23061323",
     "verification_status": "Verified",
     "last_verified_on": "2026-10-07",
     "verified_by": "MoHFW Grant Division",
-    "middle_class_friendly": false
+    "middle_class_friendly": false,
+    "verification_flag": undefined
+  },
+  {
+    "id": "gujarat-chiranjeevi-yojana",
+    "name": "Chiranjeevi Yojana (Government of Gujarat)",
+    "name_localized": {
+      "gu": "ચિરંજીવી યોજના (ગુજરાત સરકાર)",
+      "hi": "चिरंजीवी योजना (गुजरात सरकार)",
+      "mr": "चिरंजीवी योजना (गुजरात)",
+      "bn": "চিরঞ্জীবি যোজনা (গুজরাট)",
+      "ta": "சிரஞ்சீவி திட்டம் (குஜராத்)",
+      "te": "చిరంజీవి యోజన (గుజరాత్)"
+    },
+    "short_description": "Pioneering public-private partnership ensuring 100% cashless, safe institutional childbirth and emergency C-sections for BPL and tribal mothers in empanelled private hospitals across Gujarat.",
+    "description_localized": {
+      "gu": "ગુજરાતના BPL અને આદિવાસી પરિવારોની સગર્ભા માતાઓને ખાનગી ગાયનેકોલોજિસ્ટ હોસ્પિટલોમાં સંપૂર્ણ મફત ડિલિવરી અને સિઝેરિયન સારવાર.",
+      "hi": "गुजरात के बीपीएल और आदिवासी परिवारों की गर्भवती महिलाओं के लिए निजी अस्पतालों में पूर्णतः कैशलेस डिलीवरी और सिजेरियन ऑपरेशन।"
+    },
+    "issuing_authority": "State Government",
+    "state_jurisdiction": "Gujarat",
+    "categories": [
+      "maternity_child",
+      "hospitalization",
+      "operations_surgery"
+    ],
+    "coverage_amount": "100% Cashless Institutional Delivery + ₹200 Patient Travel Cash Incentive",
+    "coverage_amount_num": 15000,
+    "income_limit": "BPL Cardholders or Non-Taxpaying APL Tribal Families",
+    "income_limit_max": 250000,
+    "eligibility_criteria": [
+      "Pregnant women belonging to Below Poverty Line (BPL) families in Gujarat",
+      "Above Poverty Line (APL) tribal pregnant women not paying income tax",
+      "Enrolled with local ASHA or ANM worker with active Mamta (MCP) Card"
+    ],
+    "benefits": [
+      "Completely free normal delivery and emergency C-section by qualified Obstetricians",
+      "Free pre-operative and post-operative medications, diagnostics, and blood transfusions",
+      "₹200 direct travel assistance to mother to reach the accredited healthcare facility",
+      "₹200 companion incentive for accompanying ASHA / ANM volunteer"
+    ],
+    "covered_treatments": [
+      "Normal Vaginal Delivery",
+      "Complicated / High-Risk Delivery",
+      "Emergency Caesarean Section (C-Section)",
+      "Pre-eclampsia & Post-partum Hemorrhage emergency management",
+      "Neonatal resuscitation at birth"
+    ],
+    "required_documents": [
+      "BPL Ration Card (or Mamlatdar/Taluka Development Officer Income/Tribal Certificate)",
+      "Mother and Child Protection (Mamta) Card",
+      "Aadhaar Card of pregnant mother",
+      "Referral or certification slip from local Sub-centre / PHC ANM"
+    ],
+    "how_to_apply": "Register during routine ANC checkups at your local Gujarat Gram Panchayat / Sub-Centre with the ASHA worker. Upon labor onset, present the Mamta Card and BPL proof at any empanelled private Chiranjeevi hospital for instant cashless admission.",
+    "application_link": "https://gujhealth.gujarat.gov.in/chiranjeevi-yojana.htm",
+    "helpline_number": "104 / 108",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-14",
+    "verified_by": "Department of Health & Family Welfare, Govt of Gujarat",
+    "middle_class_friendly": false,
+    "verification_flag": "Active state program. Please note: In urban districts, services have been progressively unified under PM-JAY MA maternity packages; in rural and tribal talukas, private gynecologist empanelment continues."
+  },
+  {
+    "id": "gujarat-bal-sakha-yojana",
+    "name": "Bal Sakha Yojana (Partner for Child Health — Gujarat)",
+    "name_localized": {
+      "gu": "બાલ સખા યોજના (નવજાત શિશુ સંભાળ — ગુજરાત)",
+      "hi": "बाल सखा योजना (शिशु स्वास्थ्य सुरक्षा — गुजरात)",
+      "mr": "बाल सखा योजना (गुजरात)",
+      "bn": "বাল সখা যোজনা (গুজরাট)",
+      "ta": "பால் சகா திட்டம் (குஜராத்)",
+      "te": "బాల్ సఖా యోజన (గుజరాత్)"
+    },
+    "short_description": "Comprehensive neonatal and infant intensive care scheme providing cashless treatment by empanelled private pediatricians for sick, low birth weight, and premature newborns.",
+    "description_localized": {
+      "gu": "ઓછા વજનવાળા અને બીમાર નવજાત શિશુઓને ખાનગી બાળરોગ નિષ્ણાત (Pediatrician) પાસે NICU અને આઇસીયુ સહિત મફત સારવાર.",
+      "hi": "कम वजन और बीमार नवजात शिशुओं के लिए निजी बाल रोग विशेषज्ञों द्वारा एनआईसीयू और जीवन रक्षक उपचार की मुफ्त सुविधा।"
+    },
+    "issuing_authority": "State Government",
+    "state_jurisdiction": "Gujarat",
+    "categories": [
+      "maternity_child",
+      "critical_illness",
+      "hospitalization"
+    ],
+    "coverage_amount": "Up to ₹10,000 cashless NICU / pediatric care per sick newborn",
+    "coverage_amount_num": 10000,
+    "income_limit": "BPL and APL Tribal Families of Gujarat",
+    "income_limit_max": 250000,
+    "eligibility_criteria": [
+      "All newborns born to BPL mothers in Gujarat",
+      "APL tribal newborns born in Chiranjeevi or government health centers",
+      "Infants requiring Level 1 (basic checkup), Level 2 (jaundice/phototherapy), or Level 3 (NICU/incubator) pediatric care"
+    ],
+    "benefits": [
+      "Zero out-of-pocket costs for specialized pediatrician consultations",
+      "Free phototherapy for neonatal jaundice and incubator warming",
+      "Free medicines, IV fluids, and laboratory blood investigations",
+      "Emergency transport reimbursement up to ₹200 for moving infant to NICU"
+    ],
+    "covered_treatments": [
+      "Neonatal Respiratory Distress Syndrome & Asphyxia management",
+      "Severe Hyperbilirubinemia (Neonatal Jaundice Phototherapy)",
+      "Low Birth Weight (< 2,500g) and Extreme Preterm Infant Nursery Care",
+      "Neonatal Sepsis & Congenital infections",
+      "Level 3 Neonatal Intensive Care (NICU) admission"
+    ],
+    "required_documents": [
+      "Mother's Mamta Card / Chiranjeevi discharge card",
+      "BPL Ration Card or Caste / Tribal certificate",
+      "Birth registration slip from hospital",
+      "Aadhaar Card of parents"
+    ],
+    "how_to_apply": "When a newborn is diagnosed with medical distress at birth, the attending obstetrician or ASHA refers the child immediately to the nearest empanelled Bal Sakha private pediatrician or hospital for instant cashless admission.",
+    "application_link": "https://gujhealth.gujarat.gov.in/bal-sakha-yojana.htm",
+    "helpline_number": "104",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-14",
+    "verified_by": "Commissionerate of Health, Medical Services & Medical Education (Gujarat)",
+    "middle_class_friendly": false,
+    "verification_flag": "Active state program. Empanelled private pediatricians operate across 33 districts; emergency cases are directly linked with 108 Emergency Ambulance neonate pods."
+  },
+  {
+    "id": "gujarat-kpsy-yojana",
+    "name": "Kasturba Poshan Sahay Yojana (KPSY — Gujarat)",
+    "name_localized": {
+      "gu": "કસ્તુરબા પોષણ સહાય યોજના (KPSY — ગુજરાત)",
+      "hi": "कस्तूरबा पोषण सहाय योजना (KPSY — गुजरात)",
+      "mr": "कस्तुरबा पोषण सहाय योजना",
+      "bn": "কস্তুরবা পোষণ সহায় যোজনা",
+      "ta": "கஸ்தூர்பா போஷன் சகாய் திட்டம்",
+      "te": "కస్తూర్బా పోషణ్ సహాయ్ యోజన"
+    },
+    "short_description": "Direct Benefit Transfer (DBT) maternal nutrition scheme providing ₹6,000 cash assistance in three stages to BPL pregnant women to combat maternal anemia and undernutrition.",
+    "description_localized": {
+      "gu": "ગુજરાતની BPL સગર્ભા માતાઓને કુપોષણ અને એનિમિયા નિવારણ માટે ત્રણ તબક્કામાં સીધા બેંક ખાતામાં ₹6,000 પોષણ સહાય.",
+      "hi": "गुजरात की बीपीएल गर्भवती महिलाओं को कुपोषण और एनीमिया से बचाव हेतु सीधे बैंक खाते में तीन किस्तों में ₹6,000 की वित्तीय सहायता।"
+    },
+    "issuing_authority": "State Government",
+    "state_jurisdiction": "Gujarat",
+    "categories": [
+      "maternity_child",
+      "medicines_diagnostics"
+    ],
+    "coverage_amount": "₹6,000 Direct Benefit Transfer (DBT) Cash Nutrition Grant",
+    "coverage_amount_num": 6000,
+    "income_limit": "Below Poverty Line (BPL) Families in Gujarat",
+    "income_limit_max": 200000,
+    "eligibility_criteria": [
+      "BPL pregnant mothers residing in Gujarat State",
+      "Registration during first trimester (within 12 weeks of pregnancy) at Anganwadi/PHC",
+      "Undergoing mandatory ANC checkups, iron-folic acid supplementation, and tetanus immunization",
+      "Institutional delivery at a government hospital or accredited private facility",
+      "Primary immunization of child completed (BCG, Polio, Pentavalent, Measles)"
+    ],
+    "benefits": [
+      "Installment 1 (₹2,000): Transferred upon 1st trimester ANC registration & health checkup",
+      "Installment 2 (₹2,000): Transferred upon institutional delivery and registration of birth",
+      "Installment 3 (₹2,000): Transferred when infant completes primary immunizations at 9 months",
+      "Free Iron, Calcium, and Folic Acid supplements through Anganwadis"
+    ],
+    "covered_treatments": [
+      "Maternal Nutrition counseling and anthropometric tracking",
+      "Full ANC blood, urine, and ultrasound diagnostics",
+      "Complete infant childhood vaccination schedules",
+      "Iron deficiency anemia correction"
+    ],
+    "required_documents": [
+      "Valid Gujarat BPL Ration Card",
+      "Mamta Card (MCP Card) with registration number",
+      "Aadhaar Card linked to mobile number",
+      "Active Single Bank Account Passbook with IFSC code (DBT enabled)"
+    ],
+    "how_to_apply": "Enroll at your local village Anganwadi Centre or Urban Primary Health Centre (U-PHC). The ANM records your details on the Gujarat TeCHO+ (Technology for Community Health Operations) digital portal, triggering automatic DBT transfers.",
+    "application_link": "https://wcd.gujarat.gov.in/",
+    "helpline_number": "104 / 155214",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-14",
+    "verified_by": "Health & Family Welfare and Women & Child Development Dept, Gujarat",
+    "middle_class_friendly": false,
+    "verification_flag": "Active state program. Supplements the Central PMMVY scheme, processed digitally via TeCHO+."
+  },
+  {
+    "id": "gujarat-rbsk-school-health",
+    "name": "Rashtriya Bal Swasthya Karyakram (RBSK / School Health — Gujarat)",
+    "name_localized": {
+      "gu": "રાષ્ટ્રીય બાળ સ્વાસ્થ્ય કાર્યક્રમ (શાળા આરોગ્ય તપાસ — ગુજરાત)",
+      "hi": "राष्ट्रीय बाल स्वास्थ्य कार्यक्रम (स्कूल हेल्थ प्रोग्राम — गुजरात)",
+      "mr": "राष्ट्रीय बाल स्वास्थ्य कार्यक्रम (गुजरात)",
+      "bn": "রাষ্ট্রীয় বাল স্বাস্থ্য কার্যক্রম (গুজরাট)",
+      "ta": "ராஷ்ட்ரிய பால் ஸ்வஸ்த்ய காரியக்ரம்",
+      "te": "రాష్ట్రీయ బాల స్వాస్థ్య కార్యక్రమం"
+    },
+    "short_description": "Universal statewide health safety net providing 100% free medical screening and complex super-specialty surgeries for all Gujarat children aged 0 to 18 years for 4Ds (Defects, Diseases, Deficiencies, Developmental Delays).",
+    "description_localized": {
+      "gu": "ગુજરાતના તમામ બાળકો (0 થી 18 વર્ષ) માટે હૃદય રોગ, કિડની, કેન્સર અને જન્મજાત ખામીઓનું સંપૂર્ણ મફત ઓપરેશન અને સારવાર.",
+      "hi": "गुजरात के सभी बच्चों (0 से 18 वर्ष) के लिए जन्मजात विकारों, हृदय रोग, कैंसर और गंभीर बीमारियों का 100% मुफ्त ऑपरेशन व उपचार।"
+    },
+    "issuing_authority": "Central & State Joint",
+    "state_jurisdiction": "Gujarat",
+    "categories": [
+      "maternity_child",
+      "operations_surgery",
+      "critical_illness",
+      "hospitalization"
+    ],
+    "coverage_amount": "100% Free Complete Medical & Surgical Treatment (No Upper Financial Limit)",
+    "coverage_amount_num": 1000000,
+    "income_limit": "Universal (No Income Ceiling for any child aged 0-18 in Gujarat)",
+    "income_limit_max": null,
+    "eligibility_criteria": [
+      "All children aged 0 to 6 years enrolled in Gujarat Anganwadis",
+      "All students aged 6 to 18 years in government, grant-in-aid, and private schools",
+      "Out-of-school children and adolescents living in Gujarat",
+      "Diagnosed with any of the designated 30+ health conditions and birth defects"
+    ],
+    "benefits": [
+      "Completely free Congenital Heart Defect surgeries (ASD, VSD, Tetralogy of Fallot) at U.N. Mehta Heart Institute",
+      "Free Cochlear Implant surgeries for deaf infants (worth ₹6 to 8 Lakh)",
+      "Free Cleft Lip and Cleft Palate reconstructive plastic surgery",
+      "Free pediatric renal transplants, clubfoot correction, and pediatric oncology chemotherapy",
+      "Free spectacles, hearing aids, and orthopedic assistive prosthetics"
+    ],
+    "covered_treatments": [
+      "Pediatric Cardiac Surgery & Catheterization",
+      "Cochlear Implantation & Auditory Habilitation",
+      "Pediatric Oncology (Leukemia, Lymphoma)",
+      "Kidney Transplants & Dialysis for children",
+      "Neuro-developmental and autism early intervention therapy"
+    ],
+    "required_documents": [
+      "RBSK Mobile Health Team screening reference card",
+      "Child's Birth Certificate or School/Anganwadi ID Card",
+      "Aadhaar Card of Child or Parent/Guardian",
+      "Government Hospital Doctor referral"
+    ],
+    "how_to_apply": "RBSK mobile medical teams visit all schools and Anganwadis across Gujarat twice every year. Any child identified with a critical condition is given an RBSK Referral Card for free priority admission at District Early Intervention Centres (DEIC) or state super-specialty hospitals.",
+    "application_link": "https://gujhealth.gujarat.gov.in/school-health-programme.htm",
+    "helpline_number": "104 / 1800-233-1022",
+    "verification_status": "Verified",
+    "last_verified_on": "2026-10-14",
+    "verified_by": "National Health Mission (NHM) & Govt of Gujarat",
+    "middle_class_friendly": true,
+    "verification_flag": "Fully verified and operational across all 33 Gujarat districts. Major surgical packages executed at Ahmedabad Civil Campus, U.N. Mehta, GCRI, and GMERS medical colleges."
   }
 ];
 

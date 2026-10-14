@@ -21,6 +21,17 @@ class HospitalService:
     def __init__(self):
         self.collection_name = "hospitals"
 
+    @staticmethod
+    def _haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+        """Calculate great-circle distance in kilometers between two points."""
+        r = EARTH_RADIUS_KM
+        p1, p2 = math.radians(lat1), math.radians(lat2)
+        dp = math.radians(lat2 - lat1)
+        dl = math.radians(lon2 - lon1)
+        a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return r * c
+
     async def _get_collection(self):
         db = get_database()
         return db[self.collection_name]
@@ -140,7 +151,11 @@ class HospitalService:
         if hospital_type:
             match_filter["hospital_type"] = {"$regex": hospital_type, "$options": "i"}
         if facility_type:
-            match_filter["facility_type"] = facility_type
+            clean_ft = facility_type.strip().lower()
+            if clean_ft in ("pharmacy", "medical_store"):
+                match_filter["facility_type"] = {"$in": ["pharmacy", "medical_store"]}
+            else:
+                match_filter["facility_type"] = clean_ft
 
         # $geoNear must be the first stage in the pipeline
         pipeline: List[Dict[str, Any]] = [
@@ -186,6 +201,24 @@ class HospitalService:
         pipeline.append({"$limit": limit})
 
         hospitals = await collection.aggregate(pipeline).to_list(limit)
+
+        # Fallback: If 0 results found via radius but user filtered by district/service/facility_type,
+        # perform a direct database query so facilities in distant districts are never hidden.
+        if total == 0 and match_filter:
+            cursor = collection.find(match_filter)
+            if sort_by == "rating":
+                cursor = cursor.sort("rating", -1)
+            elif sort_by == "bed_count":
+                cursor = cursor.sort("bed_count", -1)
+            total = await collection.count_documents(match_filter)
+            raw_docs = await cursor.skip(skip).limit(limit).to_list(limit)
+            hospitals = []
+            for d in raw_docs:
+                d["id"] = str(d.pop("_id"))
+                if "location" in d and "coordinates" in d["location"]:
+                    h_lng, h_lat = d["location"]["coordinates"]
+                    d["distance_km"] = round(self._haversine(latitude, longitude, h_lat, h_lng), 2)
+                hospitals.append(d)
 
         return {
             "hospitals": hospitals,

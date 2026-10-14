@@ -29,6 +29,17 @@ type ApiError = {
 };
 
 export function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (!error) return fallback;
+
+  // Check network error (no response from backend)
+  const isAxios = (error as any)?.isAxiosError;
+  if (isAxios && !(error as any)?.response) {
+    if ((error as any)?.code === 'ECONNABORTED') {
+      return 'Request timed out. Please try again.';
+    }
+    return 'Unable to connect to the healthcare server. Please retry in a few seconds (free cloud instances may take ~30s to wake up).';
+  }
+
   const detail = (error as ApiError)?.response?.data?.detail;
 
   if (typeof detail === 'string') {

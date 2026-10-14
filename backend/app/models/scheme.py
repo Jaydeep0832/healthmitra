@@ -52,14 +52,17 @@ class HealthScheme(BaseModel):
     income_limit: str
     income_limit_max: Optional[int] = Field(default=None, description="Max annual family income in INR, None if no income cap")
     eligibility_criteria: List[str]
+    benefits: Optional[List[str]] = Field(default_factory=list, description="Key benefits provided")
     covered_treatments: List[str]
     required_documents: List[str]
+    how_to_apply: Optional[str] = Field(default=None, description="Step-by-step application instructions")
     application_link: str
     helpline_number: str
     verification_status: SchemeVerificationStatus = SchemeVerificationStatus.VERIFIED
     last_verified_on: str = Field(..., description="YYYY-MM-DD date when information was last verified")
     verified_by: str = Field(default="National Health Authority / State Health Mission")
     middle_class_friendly: bool = Field(default=True, description="Highlighted for middle-class accessibility")
+    verification_flag: Optional[str] = Field(default=None, description="Flag for any details requiring verification")
 
 class InsurancePolicy(BaseModel):
     id: str

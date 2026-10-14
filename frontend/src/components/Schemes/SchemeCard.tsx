@@ -62,6 +62,12 @@ export default function SchemeCard({ scheme, onViewDetails }: SchemeCardProps) {
               {t('schemes.card.middle_class_tag')}
             </span>
           )}
+
+          {scheme.verification_flag && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200" title={scheme.verification_flag}>
+              ⚠️ Verification Note
+            </span>
+          )}
         </div>
 
         {/* Short Description */}

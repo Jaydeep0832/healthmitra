@@ -26,14 +26,17 @@ export interface HealthScheme {
   income_limit: string;
   income_limit_max?: number | null;
   eligibility_criteria: string[];
+  benefits?: string[];
   covered_treatments: string[];
   required_documents: string[];
+  how_to_apply?: string;
   application_link: string;
   helpline_number: string;
   verification_status: SchemeVerificationStatus;
   last_verified_on: string;
   verified_by: string;
   middle_class_friendly: boolean;
+  verification_flag?: string;
 }
 
 export interface InsurancePolicy {

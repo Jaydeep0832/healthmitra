@@ -126,18 +126,20 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-1.5 pl-2.5 border-l border-slate-200">
+                <div className="flex items-center space-x-2 pl-3 border-l border-slate-200">
                   <Link
                     to="/login"
-                    className="text-xs font-bold text-slate-700 hover:text-emerald-600 px-3 py-2 rounded-xl transition"
+                    id="nav-login-btn"
+                    className="text-xs font-extrabold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 px-3.5 py-2 rounded-xl transition border border-transparent hover:border-emerald-200 active:scale-95"
                   >
                     {t('nav.login')}
                   </Link>
                   <Link
                     to="/register"
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:from-emerald-700 hover:to-teal-700 transition shadow-emerald-500/20"
+                    id="nav-signup-btn"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-800 transition transform active:scale-95"
                   >
-                    {t('nav.signup')}
+                    <span>{t('nav.signup')}</span>
                   </Link>
                 </div>
               )}
@@ -201,14 +203,14 @@ export default function Navbar() {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-center py-2 text-xs font-bold text-slate-700 border border-slate-200 rounded-xl"
+                    className="text-center py-2.5 text-xs font-extrabold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition"
                   >
                     {t('nav.login')}
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-center py-2 text-xs font-bold text-white bg-emerald-600 rounded-xl"
+                    className="text-center py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-xl shadow-sm shadow-emerald-600/20 active:scale-95 transition"
                   >
                     {t('nav.signup')}
                   </Link>

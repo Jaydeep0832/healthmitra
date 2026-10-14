@@ -149,16 +149,61 @@ export default function SchemeDetailModal({ scheme, onClose }: SchemeDetailModal
             </div>
           </div>
 
+          {/* Verification Flag Notice (if applicable) */}
+          {scheme.verification_flag && (
+            <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 text-amber-900 text-xs flex items-start gap-2.5">
+              <span className="text-base leading-none">⚠️</span>
+              <div>
+                <span className="font-extrabold text-amber-950 block mb-0.5">Verification Note</span>
+                <span className="text-amber-900 leading-relaxed">{scheme.verification_flag}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Key Benefits */}
+          {scheme.benefits && scheme.benefits.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-2.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                Key Benefits & Entitlements
+              </h3>
+              <div className="space-y-1.5">
+                {scheme.benefits.map((benefit, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-2.5 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100 text-xs text-slate-800"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
+                    <span className="leading-relaxed">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* How to Apply */}
+          {scheme.how_to_apply && (
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-2.5">
+                <FileCheck2 className="h-4 w-4 text-blue-600" />
+                How to Apply & Enrollment Steps
+              </h3>
+              <div className="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 text-xs text-slate-800 leading-relaxed">
+                {scheme.how_to_apply}
+              </div>
+            </div>
+          )}
+
           {/* Helpline & Guidance */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-200/70 text-xs text-amber-900">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-slate-100 border border-slate-200 text-xs text-slate-800">
             <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-amber-700 shrink-0" />
+              <Phone className="h-4 w-4 text-emerald-700 shrink-0" />
               <div>
                 <span className="font-bold">{t('schemes.card.helpline')}: </span>
                 <span className="font-extrabold">{scheme.helpline_number}</span>
               </div>
             </div>
-            <span className="text-[11px] text-amber-800">Available 24x7 in multiple Indian languages</span>
+            <span className="text-[11px] text-slate-600">Available 24x7 in multiple Indian languages</span>
           </div>
         </div>
 

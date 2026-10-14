@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
@@ -61,12 +61,41 @@ async def register_user(
 
 @router.post("/login", response_model=Token)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    request: Request,
     db: AsyncIOMotorDatabase = Depends(get_database),
     _: None = Depends(login_rate_limiter),
 ):
-    user = await db["users"].find_one({"email": form_data.username.strip().lower()})
-    if not user or not verify_password(form_data.password, user["hashed_password"]):
+    content_type = request.headers.get("content-type", "").lower()
+    username = ""
+    password = ""
+
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            username = str(body.get("username") or body.get("email") or "").strip()
+            password = str(body.get("password") or "")
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid JSON payload in login request"
+            )
+    else:
+        try:
+            form_data = await request.form()
+            username = str(form_data.get("username") or form_data.get("email") or "").strip()
+            password = str(form_data.get("password") or "")
+        except Exception:
+            username = ""
+            password = ""
+
+    if not username or not password:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Email/username and password are required",
+        )
+
+    user = await db["users"].find_one({"email": username.lower()})
+    if not user or not verify_password(password, user.get("hashed_password", "")):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
