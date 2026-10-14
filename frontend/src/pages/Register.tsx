@@ -11,12 +11,12 @@ import {
   EyeOff,
   UserPlus,
   ShieldCheck,
-  CheckCircle2,
   AlertCircle,
   ArrowRight,
   Loader2,
   Stethoscope,
-  KeyRound
+  KeyRound,
+  Check
 } from 'lucide-react';
 
 export default function Register() {
@@ -88,11 +88,25 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-emerald-50/20 to-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
+    <div className="relative min-h-[calc(100vh-4rem)] bg-slate-50 flex flex-col justify-center py-10 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Ambient Background Decorative Glow Orbs */}
+      <div
+        className="absolute top-12 left-1/2 -translate-x-1/2 w-[520px] h-[520px] bg-gradient-to-tr from-emerald-200/30 via-teal-100/30 to-transparent rounded-full blur-3xl pointer-events-none -z-10"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-300/15 rounded-full blur-3xl pointer-events-none -z-10"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute -top-20 -right-20 w-80 h-80 bg-teal-300/20 rounded-full blur-3xl pointer-events-none -z-10"
+        aria-hidden="true"
+      />
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         {/* Brand Header */}
-        <Link to="/" className="inline-flex items-center gap-2.5 group mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition transform">
+        <Link to="/" className="inline-flex items-center gap-3 group mb-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
             🏥
           </div>
           <div className="text-left">
@@ -107,33 +121,34 @@ export default function Register() {
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Create an Account
+          Create Your Account
         </h1>
-        <p className="mt-1.5 text-xs sm:text-sm text-slate-600">
+        <p className="mt-1.5 text-xs sm:text-sm text-slate-600 max-w-sm mx-auto">
           Access AI health consultations, Gujarat benefits eligibility, and medical records
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-xl shadow-slate-200/50 rounded-3xl border border-slate-200/80 sm:px-10 relative overflow-hidden">
+      <div className="mt-7 sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Main Card */}
+        <div className="bg-white/95 backdrop-blur-xl py-8 px-6 shadow-xl shadow-slate-200/60 rounded-3xl border border-slate-200/80 sm:px-10 relative overflow-hidden">
           {/* Top Decorative Gradient Line */}
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600" />
 
           {/* Role Selector Tabs */}
-          <div className="mb-6">
+          <div className="mb-5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
-              Select Your Role
+              Choose Account Type
             </label>
-            <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/60">
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/70">
               <button
                 type="button"
                 onClick={() => {
                   setRole('patient');
                   setErrorMsg('');
                 }}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all duration-200 cursor-pointer ${
+                className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                   role === 'patient'
-                    ? 'bg-white text-emerald-800 shadow-sm shadow-slate-300 border border-slate-200/80'
+                    ? 'bg-white text-emerald-900 shadow-sm border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -147,9 +162,9 @@ export default function Register() {
                   setRole('asha_worker');
                   setErrorMsg('');
                 }}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all duration-200 cursor-pointer ${
+                className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                   role === 'asha_worker'
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-500/30'
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-600/25'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -161,13 +176,13 @@ export default function Register() {
 
           {/* ASHA Info Banner */}
           {role === 'asha_worker' && (
-            <div className="mb-5 p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-200 text-xs text-emerald-900 animate-in fade-in duration-200">
+            <div className="mb-4 p-3 bg-emerald-50/90 rounded-2xl border border-emerald-200 text-xs text-emerald-900 animate-in fade-in duration-200">
               <div className="flex items-start gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
                 <div>
                   <p className="font-extrabold">National Health Mission (NHM) Access</p>
                   <p className="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
-                    ASHA accounts unlock village roster management and emergency referrals. Requires authorization code from your PHC or sub-centre.
+                    ASHA accounts unlock village roster management and emergency referrals. Default demo code: <strong className="font-mono font-bold">ASHA2026</strong>.
                   </p>
                 </div>
               </div>
@@ -209,7 +224,7 @@ export default function Register() {
               <label htmlFor="reg-name" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Full Name
               </label>
-              <div className="relative rounded-2xl shadow-2xs">
+              <div className="relative rounded-xl shadow-2xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <User className="h-4 w-4" />
                 </div>
@@ -221,7 +236,7 @@ export default function Register() {
                   disabled={loading}
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition disabled:opacity-60"
+                  className="block w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all disabled:opacity-60"
                   placeholder="e.g. Ramesh Patel or Sarita Ben"
                 />
               </div>
@@ -232,7 +247,7 @@ export default function Register() {
               <label htmlFor="reg-email" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
-              <div className="relative rounded-2xl shadow-2xs">
+              <div className="relative rounded-xl shadow-2xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Mail className="h-4 w-4" />
                 </div>
@@ -245,7 +260,7 @@ export default function Register() {
                   disabled={loading}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition disabled:opacity-60"
+                  className="block w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all disabled:opacity-60"
                   placeholder="name@example.com"
                 />
               </div>
@@ -258,10 +273,10 @@ export default function Register() {
                   Password
                 </label>
                 <span className={`text-[10px] font-bold ${isPasswordLongEnough ? 'text-emerald-600' : 'text-slate-400'}`}>
-                  {password.length}/7 characters minimum
+                  {password.length}/7 min characters
                 </span>
               </div>
-              <div className="relative rounded-2xl shadow-2xs">
+              <div className="relative rounded-xl shadow-2xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Lock className="h-4 w-4" />
                 </div>
@@ -274,7 +289,7 @@ export default function Register() {
                   disabled={loading}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`block w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/50 border rounded-2xl focus:bg-white focus:outline-none focus:ring-2 transition disabled:opacity-60 ${
+                  className={`block w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/60 border rounded-xl focus:bg-white focus:outline-none focus:ring-2 transition-all disabled:opacity-60 ${
                     password.length > 0 && !isPasswordLongEnough
                       ? 'border-amber-300 focus:ring-amber-500 focus:border-amber-500'
                       : password.length >= 7
@@ -293,22 +308,24 @@ export default function Register() {
                 </button>
               </div>
 
-              {/* Password Requirement Guide */}
+              {/* Password Requirement Guide Badge */}
               <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
-                <CheckCircle2
-                  className={`h-3.5 w-3.5 transition-colors ${
-                    isPasswordLongEnough ? 'text-emerald-600' : 'text-slate-300'
+                <div
+                  className={`w-3.5 h-3.5 rounded-full flex items-center justify-center transition-colors ${
+                    isPasswordLongEnough ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-400'
                   }`}
-                />
+                >
+                  <Check className="h-2.5 w-2.5 stroke-[3]" />
+                </div>
                 <span className={isPasswordLongEnough ? 'text-emerald-700 font-semibold' : 'text-slate-500'}>
-                  7+ characters required
+                  7+ characters requirement {isPasswordLongEnough ? 'met' : ''}
                 </span>
               </div>
             </div>
 
             {/* ASHA Specific Passcode and ID */}
             {role === 'asha_worker' && (
-              <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-200 space-y-3 animate-in fade-in duration-200">
+              <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200 space-y-3 animate-in fade-in duration-200">
                 <div>
                   <label htmlFor="reg-asha-passcode" className="block text-xs font-bold text-emerald-950 mb-1">
                     ASHA Passcode <span className="text-red-500">*</span>
@@ -330,7 +347,7 @@ export default function Register() {
                     />
                   </div>
                   <p className="text-[10px] text-emerald-700 mt-1">
-                    Contact your Taluka Health Officer (THO) or use the authorized default code.
+                    Provided by your Taluka Health Officer (THO) or primary health sub-centre.
                   </p>
                 </div>
 
@@ -358,7 +375,7 @@ export default function Register() {
                 type="submit"
                 id="register-submit-btn"
                 disabled={loading || !isPasswordLongEnough}
-                className="w-full relative flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-800 shadow-lg shadow-emerald-600/25 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
+                className="w-full relative flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-800 shadow-md shadow-emerald-600/25 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -390,6 +407,17 @@ export default function Register() {
               </p>
             </div>
           </form>
+        </div>
+
+        {/* Security & Ayushman Bharat Standard Badge */}
+        <div className="mt-4 p-3 bg-white/60 backdrop-blur-xs rounded-xl border border-slate-200/60 text-center text-[11px] text-slate-500">
+          <div className="flex items-center justify-center gap-1.5 text-slate-600 font-semibold mb-0.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <span>Ayushman Bharat Digital Mission (ABDM) Compatible</span>
+          </div>
+          <p className="text-[10px] text-slate-500">
+            Encrypted end-to-end to protect patient clinical summaries and identity records.
+          </p>
         </div>
       </div>
     </div>

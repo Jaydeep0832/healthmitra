@@ -13,6 +13,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   LogOut,
+  LogIn,
+  UserPlus,
   Menu,
   X
 } from 'lucide-react';
@@ -91,54 +93,56 @@ export default function Navbar() {
             </div>
 
             {/* Language Selector, Emergency SOS & User Controls */}
-            <div className="hidden sm:flex items-center space-x-2.5">
+            <div className="hidden lg:flex items-center space-x-2.5 shrink-0">
               {/* Language Selector */}
               <LanguageSelector variant="navbar" />
 
               {/* Emergency SOS Trigger Button */}
               <button
                 onClick={() => setIsEmergencyOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-xs shadow-md shadow-red-500/25 hover:from-red-700 hover:to-rose-700 transition transform active:scale-95 animate-pulse"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-xs shadow-md shadow-red-500/25 hover:from-red-700 hover:to-rose-700 transition transform active:scale-95 animate-pulse whitespace-nowrap shrink-0"
               >
                 <ShieldAlert className="h-4 w-4" /> 🚨 {t('nav.emergency_sos')}
               </button>
 
               {isAuthenticated ? (
-                <div className="flex items-center space-x-2.5 pl-2.5 border-l border-slate-200">
+                <div className="flex items-center space-x-2.5 pl-2.5 border-l border-slate-200 shrink-0">
                   <Link
                     to="/dashboard"
-                    className="flex items-center gap-2 py-1 px-3 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-xs font-bold text-emerald-900"
+                    className="flex items-center gap-2 py-1 px-3 rounded-full bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition text-xs font-bold text-emerald-900 shrink-0"
                   >
-                    <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-black">
+                    <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-black shrink-0">
                       {user?.full_name ? user.full_name[0].toUpperCase() : 'P'}
                     </div>
                     <span className="max-w-[120px] truncate">{user?.full_name || user?.email}</span>
-                    <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full uppercase font-bold">
+                    <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full uppercase font-bold shrink-0">
                       {user?.role === 'asha_worker' ? 'ASHA' : user?.role === 'admin' ? 'ADMIN' : user?.role === 'doctor' ? 'DOCTOR' : 'PATIENT'}
                     </span>
                   </Link>
                   <button
                     onClick={handleLogout}
                     title={t('nav.logout')}
-                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition shrink-0"
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2 pl-3 border-l border-slate-200">
+                <div className="flex items-center space-x-2 pl-3 border-l border-slate-200 shrink-0">
                   <Link
                     to="/login"
                     id="nav-login-btn"
-                    className="text-xs font-extrabold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 px-3.5 py-2 rounded-xl transition border border-transparent hover:border-emerald-200 active:scale-95"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50/80 px-3.5 py-1.5 rounded-full transition-all duration-200 border border-slate-200/80 hover:border-emerald-300 active:scale-95 whitespace-nowrap shrink-0 shadow-2xs"
                   >
-                    {t('nav.login')}
+                    <LogIn className="h-3.5 w-3.5 text-slate-500" />
+                    <span>{t('nav.login')}</span>
                   </Link>
                   <Link
                     to="/register"
                     id="nav-signup-btn"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-800 transition transform active:scale-95"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-4 py-1.5 text-xs font-extrabold text-white shadow-sm shadow-emerald-600/25 hover:shadow-md hover:from-emerald-700 hover:to-teal-800 transition-all duration-200 active:scale-95 whitespace-nowrap shrink-0"
                   >
+                    <UserPlus className="h-3.5 w-3.5" />
                     <span>{t('nav.signup')}</span>
                   </Link>
                 </div>
@@ -199,20 +203,22 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="grid grid-cols-2 gap-2.5 pt-2">
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-center py-2.5 text-xs font-extrabold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition"
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200/80 rounded-xl transition active:scale-95 whitespace-nowrap"
                   >
-                    {t('nav.login')}
+                    <LogIn className="h-3.5 w-3.5 text-slate-600" />
+                    <span>{t('nav.login')}</span>
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-center py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-xl shadow-sm shadow-emerald-600/20 active:scale-95 transition"
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 text-xs font-extrabold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-xl shadow-sm shadow-emerald-600/20 active:scale-95 transition whitespace-nowrap"
                   >
-                    {t('nav.signup')}
+                    <UserPlus className="h-3.5 w-3.5" />
+                    <span>{t('nav.signup')}</span>
                   </Link>
                 </div>
               )}
