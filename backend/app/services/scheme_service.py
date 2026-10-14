@@ -687,6 +687,362 @@ VERIFIED_SCHEMES_DATA: List[Dict[str, Any]] = [
         "verified_by": "National Health Mission (NHM) & Govt of Gujarat",
         "middle_class_friendly": True,
         "verification_flag": "Fully verified and operational across all 33 Gujarat districts. Major surgical packages executed at Ahmedabad Civil Campus, U.N. Mehta, GCRI, and GMERS medical colleges."
+    },
+    {
+        "id": "nikshay-poshan-yojana",
+        "name": "Nikshay Poshan Yojana (Direct Benefit Transfer for TB Patients)",
+        "name_localized": {
+            "gu": "નિક્ષય પોષણ યોજના (ટીબી દર્દીઓ માટે પોષણ સહાય ડીબીટી)",
+            "hi": "निक्षय पोषण योजना (टीबी रोगियों के लिए पोषण सहायता)",
+            "mr": "निक्षय पोषण योजना (टीबी रुग्णांसाठी पोषण सहाय्य)",
+            "bn": "নিশ্চয় পোষণ যোজনা (যক্ষ্মা রোগীদের পুষ্টি সহায়তা)",
+            "ta": "நிக்ஷய் போஷன் திட்டம்",
+            "te": "నిక్షయ్ పోషణ్ యోజన"
+        },
+        "short_description": "Direct Benefit Transfer (DBT) of ₹1,000 to ₹3,000 per month for nutritional support to all notified Tuberculosis (TB) patients throughout their treatment duration across Gujarat.",
+        "description_localized": {
+            "gu": "ગુજરાત સહિત દેશભરના તમામ નોંધાયેલા ટીબી દર્દીઓને સારવાર દરમિયાન માસિક ₹1,000 થી ₹3,000 સીધા બેંક ખાતામાં પોષક સહાય તરીકે ચૂકવતી યોજના.",
+            "hi": "उपचार अवधि के दौरान सभी अधिसूचित टीबी रोगियों को पोषण सहायता के लिए प्रति माह ₹1,000 से ₹3,000 का प्रत्यक्ष बैंक हस्तांतरण (DBT)।"
+        },
+        "issuing_authority": IssuingAuthorityType.CENTRAL,
+        "state_jurisdiction": "All India",
+        "categories": [
+            SchemeCategory.MEDICINES_DIAGNOSTICS,
+            SchemeCategory.CHRONIC_DISEASES
+        ],
+        "coverage_amount": "₹1,000 to ₹3,000/month DBT + 100% Free Anti-TB Medicines & Testing",
+        "coverage_amount_num": 18000,
+        "income_limit": "No income ceiling — All notified TB patients are eligible",
+        "income_limit_max": None,
+        "eligibility_criteria": [
+            "Any patient diagnosed with Drug-Sensitive (DS-TB) or Drug-Resistant (DR-TB) Tuberculosis",
+            "Notified on the official National Ni-kshay Portal (nikshay.in) by public or private health clinic",
+            "Active Indian bank account linked with Aadhaar",
+            "Open to all ages and income groups without deprivation criteria"
+        ],
+        "benefits": [
+            "Monthly nutritional financial support deposited directly into patient bank account (Aadhaar DBT)",
+            "100% free first-line and second-line anti-TB medications (DOTS / 4-FDC blister packs)",
+            "Free molecular diagnostic tests: CBNAAT (GeneXpert) and Truenat testing across all district TB centres in Gujarat",
+            "Free monthly sputum follow-up tests and digital chest X-rays",
+            "Ni-kshay Mitra nutrition basket (food grain, pulses, edible oil) sponsored through community adoption"
+        ],
+        "covered_treatments": [
+            "Pulmonary & Extra-Pulmonary Tuberculosis Treatment",
+            "MDR-TB and XDR-TB Regimen (Bedaquiline, Delamanid, Linezolid)",
+            "Free Monthly Chest X-Rays and Liver/Kidney Function monitoring",
+            "Pediatric TB Formulation & Nutrition Supplements"
+        ],
+        "required_documents": [
+            "Aadhaar Card of patient",
+            "Bank Account Passbook / Cancelled Cheque (for direct DBT)",
+            "Ni-kshay Patient ID Number (issued by DOTS center or private doctor)",
+            "Doctor prescription / TB diagnostic test report"
+        ],
+        "how_to_apply": "Visit any Urban Primary Health Centre (UPHC), CHC, or District TB Centre in Gujarat. Upon diagnosis or notification, the TB Health Visitor (TBHV) or ASHA worker enters your Aadhaar and bank details onto nikshay.in. Payments are auto-credited monthly.",
+        "application_link": "https://www.nikshay.in/",
+        "helpline_number": "1800-11-6666 (Toll-Free TB Helpline)",
+        "verification_status": SchemeVerificationStatus.VERIFIED,
+        "last_verified_on": "2026-10-14",
+        "verified_by": "National Tuberculosis Elimination Program (NTEP) & Gujarat State Health Society",
+        "middle_class_friendly": True,
+        "verification_flag": "Fully verified and operational across all 33 Gujarat districts. Direct Benefit Transfers credited via PFMS directly to beneficiary bank accounts."
+    },
+    {
+        "id": "gujarat-janani-suraksha-yojana",
+        "name": "Janani Suraksha Yojana (JSY — Gujarat Safe Motherhood)",
+        "name_localized": {
+            "gu": "જનની સુરક્ષા યોજના (JSY — સુરક્ષિત માતૃત્વ પ્રોત્સાહન ગુજરાત)",
+            "hi": "जननी सुरक्षा योजना (JSY — सुरक्षित मातृत्व प्रोत्साहन)",
+            "mr": "जननी सुरक्षा योजना (सुरक्षित मातृत्व)",
+            "bn": "জননী সুরক্ষা যোজনা (নিরাপদ মাতৃত্ব)",
+            "ta": "ஜனனி சுரக்ஷா திட்டம்",
+            "te": "జననీ సురక్ష యోజన"
+        },
+        "short_description": "Direct cash assistance of ₹700 to ₹1,400 to rural and urban pregnant women giving birth in government or accredited health institutions to reduce maternal and infant mortality.",
+        "description_localized": {
+            "gu": "માતા અને શિશુ મૃત્યુદર ઘટાડવા માટે સરકારી હોસ્પિટલ કે માન્ય સંસ્થામાં પ્રસુતિ કરાવતી માતાઓને ₹૭૦૦ થી ₹૧,૪૦૦ ની રોકડ સહાય અને મફત વાહન સેવા.",
+            "hi": "सरकारी या मान्यता प्राप्त अस्पताल में प्रसव कराने वाली गर्भवती महिलाओं को ₹700 से ₹1,400 की नकद सहायता और मुफ्त एम्बुलेंस सुविधा।"
+        },
+        "issuing_authority": IssuingAuthorityType.STATE,
+        "state_jurisdiction": "Gujarat",
+        "categories": [
+            SchemeCategory.MATERNITY_CHILD,
+            SchemeCategory.HOSPITALIZATION
+        ],
+        "coverage_amount": "₹700 – ₹1,400 Institutional Cash Incentive + 100% Free Hospital Delivery",
+        "coverage_amount_num": 1400,
+        "income_limit": "BPL, SC, ST, or NFSA Priority Households in Gujarat",
+        "income_limit_max": 250000,
+        "eligibility_criteria": [
+            "Pregnant women aged 19 years and above",
+            "Belonging to BPL, Scheduled Caste (SC), or Scheduled Tribe (ST) in Gujarat",
+            "Delivering at a Government PHC, CHC, Sub-District/District Hospital, or accredited private nursing home",
+            "Registered on the Gujarat TeCHO+ healthcare tracking portal"
+        ],
+        "benefits": [
+            "₹1,400 direct cash assistance for rural mothers delivering in healthcare institutions",
+            "₹700 direct cash assistance for urban mothers",
+            "Additional ₹1,000 financial assistance if Caesarean section delivery is required",
+            "100% free transportation via '108' emergency ambulance from home to hospital and back ('Khilkhilat')",
+            "Free medicines, blood transfusion, and neonatal examination for baby"
+        ],
+        "covered_treatments": [
+            "Normal Institutional Vaginal Delivery",
+            "Emergency Caesarean Section (C-Section)",
+            "Post-partum hemorrhage management",
+            "Immediate Newborn resuscitation and immunization (BCG, OPV-0, Hep-B)"
+        ],
+        "required_documents": [
+            "Mother and Child Protection (Mamta Card / MCP Card)",
+            "Aadhaar Card of pregnant mother",
+            "BPL Ration Card or Caste Certificate (SC/ST)",
+            "Bank passbook of mother with IFSC code"
+        ],
+        "how_to_apply": "Register pregnancy at the nearest Anganwadi or Sub-Center with your local ASHA worker before the 12th week. The Mamta card is issued and entry is recorded on TeCHO+. Cash incentive is credited immediately upon delivery.",
+        "application_link": "https://gujhealth.gujarat.gov.in/janani-suraksha-yojana.htm",
+        "helpline_number": "104 (Health Helpline) / 108",
+        "verification_status": SchemeVerificationStatus.VERIFIED,
+        "last_verified_on": "2026-10-14",
+        "verified_by": "Health and Family Welfare Department, Government of Gujarat",
+        "middle_class_friendly": False,
+        "verification_flag": "Fully active and integrated with Gujarat TeCHO+ e-health system. Payments disbursed via DBT."
+    },
+    {
+        "id": "gujarat-pmmvy-maternity",
+        "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY 2.0 — Gujarat)",
+        "name_localized": {
+            "gu": "પ્રધાનમંત્રી માતૃ વંદના યોજના (PMMVY 2.0 — ગુજરાત)",
+            "hi": "प्रधानमंत्री मातृ वंदना योजना (PMMVY 2.0)",
+            "mr": "प्रधानमंत्री मातृ वंदना योजना",
+            "bn": "প্রধানমন্ত্রী মাতৃ বন্দনা যোজনা",
+            "ta": "பிரதம மந்திரி மாத்ரு வந்தனா திட்டம்",
+            "te": "ప్రధాన మంత్రి మాతృ వందన యోజన"
+        },
+        "short_description": "Maternity cash incentive of ₹5,000 for the first child and ₹6,000 for a second girl child directly transferred to compensate wage loss and encourage healthy nutrition.",
+        "description_localized": {
+            "gu": "સગર્ભા બહેનોને પોષણ અને પ્રસુતિ દરમિયાન રોજગારી નુકસાનના વળતર માટે પ્રથમ બાળક પર ₹૫,૦૦૦ અને બીજી દીકરીના જન્મ પર ₹૬,૦૦૦ સીધા ખાતામાં મળતી યોજના.",
+            "hi": "गर्भवती महिलाओं को पोषण और मजदूरी क्षतिपूर्ति के लिए पहले बच्चे पर ₹5,000 और दूसरी कन्या के जन्म पर ₹6,000 की प्रत्यक्ष नकद सहायता।"
+        },
+        "issuing_authority": IssuingAuthorityType.CENTRAL,
+        "state_jurisdiction": "Gujarat",
+        "categories": [
+            SchemeCategory.MATERNITY_CHILD
+        ],
+        "coverage_amount": "₹5,00,000 Family Cover / ₹5,000 - ₹6,000 DBT Maternity Cash Benefit",
+        "coverage_amount_num": 6000,
+        "income_limit": "Family annual income under ₹8 Lakh, or EWS, SC/ST, Divyang, or NFSA Cardholder",
+        "income_limit_max": 800000,
+        "eligibility_criteria": [
+            "Pregnant women and lactating mothers who conceived their 1st child on or after April 1, 2022",
+            "For 2nd child: Eligible if the newborn is a girl child (incentive to curb female foeticide)",
+            "Mother's family annual income less than ₹8,00,000 (covers middle-class families)",
+            "Holders of EWS certificate, MGNREGA job card, or PM-JAY Ayushman Card"
+        ],
+        "benefits": [
+            "Installment 1: ₹3,000 upon early registration of pregnancy and at least 1 Antenatal Checkup (ANC)",
+            "Installment 2: ₹2,000 upon childbirth registration and completion of first cycle of child vaccination (BCG, OPV, DPT/Pentavalent)",
+            "Special Girl Child Benefit: ₹6,000 in a single installment upon institutional delivery of a second female infant",
+            "Direct Benefit Transfer to mother's Aadhaar-linked bank account without any intermediary deduction"
+        ],
+        "covered_treatments": [
+            "Antenatal check-ups & maternal nutrition monitoring",
+            "Essential obstetric lab work and blood tests",
+            "Primary infant immunization schedule"
+        ],
+        "required_documents": [
+            "Aadhaar Card of pregnant woman and husband",
+            "MCP / Mamta Card with LMP date and ANC stamps",
+            "Bank account passbook of the woman (Aadhaar linked)",
+            "Child's Birth Certificate and vaccination card (for 2nd installment)"
+        ],
+        "how_to_apply": "Apply through the nearest Anganwadi Worker (AWW) or ASHA worker, or submit online directly on the national PMMVY portal (pmmvy.wcd.gov.in) with your Aadhaar and Mamta card.",
+        "application_link": "https://pmmvy.wcd.gov.in/",
+        "helpline_number": "011-23382393 / 104",
+        "verification_status": SchemeVerificationStatus.VERIFIED,
+        "last_verified_on": "2026-10-14",
+        "verified_by": "Ministry of Women and Child Development & Govt of Gujarat",
+        "middle_class_friendly": True,
+        "verification_flag": "Fully operational across all rural talukas and municipal wards of Gujarat. PMMVY 2.0 guidelines verified."
+    },
+    {
+        "id": "gujarat-mukhyamantri-bal-seva",
+        "name": "Mukhyamantri Bal Seva Yojana (Gujarat Child Health & Orphan Protection)",
+        "name_localized": {
+            "gu": "મુખ્યમંત્રી બાળ સેવા યોજના (ગુજરાત અનાથ બાળકો આરોગ્ય અને શિક્ષણ સહાય)",
+            "hi": "मुख्यमंत्री बाल सेवा योजना (गुजरात अनाथ एवं बाल स्वास्थ्य सुरक्षा)",
+            "mr": "मुख्यमंत्री बाल सेवा योजना (गुजरात)",
+            "bn": "মুখ্যমন্ত্রী বাল সেবা যোজনা",
+            "ta": "முதல்வர் பால் சேவா திட்டம் (குஜராத்)",
+            "te": "ముఖ్యమంత్రి బాల సేవా యోజన"
+        },
+        "short_description": "Monthly financial aid of ₹4,000 per child, plus comprehensive free cashless healthcare under PM-JAY MA for orphans and children who lost parents in Gujarat.",
+        "description_localized": {
+            "gu": "માતા-પિતાની છત્રછાયા ગુમાવી ચૂકેલા બાળકોને દર મહિને ₹૪,૦૦૦ ની આર્થિક સહાય અને આયુષ્માન PM-JAY MA કાર્ડ દ્વારા ૧૦૦% મફત સુપર-સ્પેશિયાલિટી સારવાર.",
+            "hi": "माता-पिता को खोने वाले बच्चों को प्रति माह ₹4,000 की वित्तीय सहायता और पीएम-जेएवाई एमए कार्ड के तहत 100% मुफ्त सुपर-स्पेशियलिटी इलाज।"
+        },
+        "issuing_authority": IssuingAuthorityType.STATE,
+        "state_jurisdiction": "Gujarat",
+        "categories": [
+            SchemeCategory.HOSPITALIZATION,
+            SchemeCategory.CRITICAL_ILLNESS,
+            SchemeCategory.MATERNITY_CHILD
+        ],
+        "coverage_amount": "₹4,000 / month Stipend + ₹10 Lakh PM-JAY MA Hospitalization Cover",
+        "coverage_amount_num": 1000000,
+        "income_limit": "No income limit for orphaned children",
+        "income_limit_max": None,
+        "eligibility_criteria": [
+            "Children residing in Gujarat aged 0 to 18 years who lost both parents or single surviving parent",
+            "Extended up to 21 years if continuing higher education or vocational training",
+            "Enrolled under guardianship or in child care institutes registered in Gujarat"
+        ],
+        "benefits": [
+            "Monthly stipend of ₹4,000 deposited into child's bank account until age 18",
+            "Automatic priority issuance of PM-JAY MA Ayushman Health Card with ₹10,00,000 annual cover",
+            "100% cashless medical admissions in Gujarat government and empanelled private multi-specialty hospitals",
+            "Free medical check-ups, psychological counseling, and nutrition kits",
+            "Scholarship support for school and higher professional college admissions"
+        ],
+        "covered_treatments": [
+            "All pediatric surgeries and intensive care treatments",
+            "Specialized chronic disease care, oncology, and congenital disorder correction",
+            "Dental and ophthalmic procedures, free spectacles, and orthodontics",
+            "Emergency pediatric trauma and orthopedic surgeries"
+        ],
+        "required_documents": [
+            "Death Certificate of both parents / surviving parent",
+            "Child's Birth Certificate and Aadhaar Card",
+            "Guardian's Aadhaar Card and bank account passbook",
+            "Proof of residence in Gujarat (Ration card / Electricity bill)"
+        ],
+        "how_to_apply": "Applications are submitted through the District Child Protection Unit (DCPU) or District Social Defense Officer (SDO) in each district collectorate office across Gujarat.",
+        "application_link": "https://esamajkalyan.gujarat.gov.in/",
+        "helpline_number": "1098 (Childline) / 104",
+        "verification_status": SchemeVerificationStatus.VERIFIED,
+        "last_verified_on": "2026-10-14",
+        "verified_by": "Social Justice and Empowerment Department, Government of Gujarat",
+        "middle_class_friendly": True,
+        "verification_flag": "Active state flagship scheme. Fast-track approvals coordinated via e-Samaj Kalyan portal."
+    },
+    {
+        "id": "gujarat-national-dialysis-programme",
+        "name": "Pradhan Mantri National Dialysis Programme (PMNDP — Gujarat)",
+        "name_localized": {
+            "gu": "પ્રધાનમંત્રી રાષ્ટ્રીય ડાયાલિસિસ કાર્યક્રમ (ગુજરાત સિવિલ હોસ્પિટલ નેટવર્ક)",
+            "hi": "प्रधानमंत्री राष्ट्रीय डायलिसिस कार्यक्रम (गुजरात)",
+            "mr": "राष्ट्रीय डायलिसिस कार्यक्रम",
+            "bn": "জাতীয় ডায়ালাইসিস কর্মসূচি",
+            "ta": "தேசிய டயாலிசிஸ் திட்டம்",
+            "te": "జాతీయ డయాలసిస్ ప్రోగ్రామ్"
+        },
+        "short_description": "100% free hemodialysis and peritoneal dialysis service for kidney patients holding Ayushman/MA cards across Sub-District and District Civil Hospitals in Gujarat.",
+        "description_localized": {
+            "gu": "કિડનીના દર્દીઓ માટે ગુજરાતના તમામ ૩૩ જિલ્લા અને સબ-ડિસ્ટ્રિક્ટ હોસ્પિટલોમાં ૧૦૦% મફત હેમોડાયાલિસિસ અને પેરિટોનિયલ ડાયાલિસિસ સારવાર.",
+            "hi": "गुजरात के सभी जिलों में आयुष्मान/बीपीएल कार्डधारकों के लिए 100% मुफ्त हीमोडायलिसिस और पेरिटोनियल डायलिसिस सेवाएं।"
+        },
+        "issuing_authority": IssuingAuthorityType.STATE,
+        "state_jurisdiction": "Gujarat",
+        "categories": [
+            SchemeCategory.CHRONIC_DISEASES,
+            SchemeCategory.CRITICAL_ILLNESS,
+            SchemeCategory.HOSPITALIZATION
+        ],
+        "coverage_amount": "100% Free Lifetime Dialysis (Worth ₹25,000–₹40,000/month in private)",
+        "coverage_amount_num": 480000,
+        "income_limit": "Free for PM-JAY / MA cardholders and BPL; Highly subsidized (₹250-₹400) for non-BPL",
+        "income_limit_max": 400000,
+        "eligibility_criteria": [
+            "Patients diagnosed with Chronic Kidney Disease Stage 5 (CKD-5) or End-Stage Renal Disease (ESRD)",
+            "Gujarat domicile with PM-JAY Ayushman Card or NFSA/BPL card (Free)",
+            "Non-BPL residents of Gujarat eligible at nominal rate of ₹250–₹400 per session"
+        ],
+        "benefits": [
+            "Completely free hemodialysis sessions (normally costing ₹2,000–₹3,500 per session in private clinics)",
+            "Free dialysis consumables: Dialyzer filters, blood tubing sets, and acid/bicarbonate concentrates",
+            "Free monthly laboratory blood investigations (Serum Creatinine, BUN, Potassium, Hemoglobin)",
+            "Free Erythropoietin (EPO) and Iron Sucrose injections for anemia management",
+            "Established dialysis units in all 33 Gujarat district hospitals and over 80 sub-district hospitals (IKDRC network)"
+        ],
+        "covered_treatments": [
+            "Maintenance Hemodialysis (MHD)",
+            "Automated Peritoneal Dialysis (APD) & CAPD",
+            "Arteriovenous (AV) Fistula construction surgery referral",
+            "Pre-transplant nephrology evaluation and workup"
+        ],
+        "required_documents": [
+            "Ayushman PM-JAY Card or Mukhyamantri Amrutam (MA) Card",
+            "Aadhaar Card of the patient",
+            "Nephrologist diagnosis card confirming CKD Stage 5 / ESRD",
+            "Recent viral markers report (HIV, HBsAg, HCV)"
+        ],
+        "how_to_apply": "Present nephrologist referral slip and Ayushman card directly at the Dialysis Centre of any Gujarat District Civil Hospital or GMERS Medical College Hospital. Registration is performed on the PMNDP portal (dialysis.nhm.gov.in) on first visit.",
+        "application_link": "https://dialysis.nhm.gov.in/",
+        "helpline_number": "104 (Health Helpline) / 1800-233-1022",
+        "verification_status": SchemeVerificationStatus.VERIFIED,
+        "last_verified_on": "2026-10-14",
+        "verified_by": "National Health Mission (NHM) & Institute of Kidney Diseases and Research Centre (IKDRC Ahmedabad)",
+        "middle_class_friendly": True,
+        "verification_flag": "Fully operational across all 33 Gujarat districts. Governed by IKDRC Ahmedabad under public-private partnership."
+    },
+    {
+        "id": "gujarat-senior-health-vayoshri",
+        "name": "Rashtriya Vayoshri & Gujarat Senior Health Assistive Aid Scheme",
+        "name_localized": {
+            "gu": "રાષ્ટ્રીય વયોશ્રી અને વરિષ્ઠ નાગરિક સહાયક સાધન યોજના (ગુજરાત)",
+            "hi": "राष्ट्रीय वयोश्री एवं वरिष्ठ नागरिक स्वास्थ्य सहायता योजना",
+            "mr": "राष्ट्रीय वयोश्री योजना (ज्येष्ठ नागरिक)",
+            "bn": "রাষ্ট্রীয় বয়োশ্রী যোজনা",
+            "ta": "ராஷ்ட்ரிய வயோஸ்ரீ திட்டம்",
+            "te": "రాష్ట్రీయ వయోశ్రీ యోజన"
+        },
+        "short_description": "Free provision of physical assisted-living devices (hearing aids, wheelchairs, dentures, spectacles, crutches) and specialized geriatric care for senior citizens aged 60+ across Gujarat.",
+        "description_localized": {
+            "gu": "૬૦ વર્ષ કે તેથી વધુ ઉંમરના વરિષ્ઠ નાગરિકોને સાંભળવાના મશીન, વ્હીલચેર, આંખના ચશ્મા, કૃત્રિમ દાંત અને સહાયક સાધનો ૧૦૦% મફત આપતી સરકારી યોજના.",
+            "hi": "60 वर्ष या अधिक उम्र के वरिष्ठ नागरिकों को सुनने की मशीन, व्हीलचेयर, चश्मा, कृत्रिम दांत और सहायक उपकरण मुफ्त प्रदान करने वाली योजना।"
+        },
+        "issuing_authority": IssuingAuthorityType.CENTRAL,
+        "state_jurisdiction": "Gujarat",
+        "categories": [
+            SchemeCategory.CHRONIC_DISEASES,
+            SchemeCategory.MEDICINES_DIAGNOSTICS
+        ],
+        "coverage_amount": "Free High-Quality Assistive Devices & Free Cataract Surgeries (up to ₹35,000/beneficiary)",
+        "coverage_amount_num": 35000,
+        "income_limit": "Senior citizens with family monthly income under ₹15,000 or BPL / Priority Ration Card",
+        "income_limit_max": 200000,
+        "eligibility_criteria": [
+            "Indian senior citizen aged 60 years or above with Gujarat domicile",
+            "Suffering from age-related infirmities or disabilities (hearing loss, low vision, locomotor impairment, loss of teeth)",
+            "Monthly income of family not exceeding ₹15,000, or holder of BPL / Annapurna / Antyodaya ration card"
+        ],
+        "benefits": [
+            "Free digital Behind-the-Ear (BTE) hearing aids for hearing-impaired seniors",
+            "Free folding wheelchairs, tri-wheelers, and walkers for locomotor disabilities",
+            "Free prescription spectacles and complete denture sets (full mouth rehabilitation)",
+            "Free walking sticks, elbow crutches, quadrupods, and cervical collars",
+            "Completely free cataract removal surgery with Intraocular Lens (IOL) implant at all District Civil Hospitals in Gujarat"
+        ],
+        "covered_treatments": [
+            "Audiometric testing & Hearing aid dispensing",
+            "Ophthalmology cataract surgery and refraction evaluation",
+            "Geriatric physiotherapy and dental prosthesis fitting",
+            "Orthopedic assisted-device calibration"
+        ],
+        "required_documents": [
+            "Aadhaar Card or Senior Citizen Identity Card",
+            "Age proof certificate (School Leaving Certificate / Passport / Voter ID)",
+            "Income certificate issued by Talati / Mamlatdar or BPL Ration Card",
+            "Medical disability assessment certificate issued by Government Civil Hospital doctor"
+        ],
+        "how_to_apply": "District-level assessment camps are conducted twice a year in Gujarat by ALIMCO and District Social Defense Officers. Seniors register at the camp or through the nearest District Collectorate Social Security branch with Aadhaar.",
+        "application_link": "https://socialjustice.gov.in/schemes/73",
+        "helpline_number": "14567 (Elder Line National Helpline) / 104",
+        "verification_status": SchemeVerificationStatus.VERIFIED,
+        "last_verified_on": "2026-10-14",
+        "verified_by": "Ministry of Social Justice & Empowerment & ALIMCO (Govt of India)",
+        "middle_class_friendly": True,
+        "verification_flag": "Fully operational. Beneficiary identification camps conducted across all Gujarat taluka centers."
     }
 ]
 

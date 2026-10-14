@@ -1,6 +1,9 @@
 import json
 import logging
-from groq import AsyncGroq
+try:
+    from groq import AsyncGroq
+except ImportError:
+    AsyncGroq = None
 from app.config import settings
 from pydantic import BaseModel, Field
 
@@ -28,8 +31,8 @@ class MedicalResponse(BaseModel):
 
 class HealthMitraLLM:
     def __init__(self):
-        self.client = AsyncGroq(api_key=settings.GROQ_API_KEY) if settings.GROQ_API_KEY else None
-        self.model = "openai/gpt-oss-20b"
+        self.client = AsyncGroq(api_key=settings.GROQ_API_KEY) if (AsyncGroq and settings.GROQ_API_KEY) else None
+        self.model = "llama-3.3-70b-versatile"
         
     def set_system_prompt_for_healthcare(self, target_language: str) -> str:
         return f"""You are HealthMitra, a highly empathetic and knowledgeable healthcare AI assistant designed for rural India.
