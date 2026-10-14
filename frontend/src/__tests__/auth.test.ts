@@ -21,12 +21,12 @@ describe('Authentication Flow & Security Validation', () => {
   });
 
   describe('Client-Side Password & Input Constraints', () => {
-    it('enforces healthcare standard 12-character password minimum', () => {
-      const shortPassword = 'ShortPass1!';
-      const securePassword = 'MySecurePassword123!';
+    it('enforces 7-character password minimum', () => {
+      const shortPassword = 'Pass1!';
+      const validPassword = 'Pass123';
 
-      expect(shortPassword.length).toBeLessThan(12);
-      expect(securePassword.length).toBeGreaterThanOrEqual(12);
+      expect(shortPassword.length).toBeLessThan(7);
+      expect(validPassword.length).toBeGreaterThanOrEqual(7);
     });
 
     it('requires ASHA authorization passcode for healthcare worker registration', () => {

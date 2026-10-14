@@ -10,7 +10,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     # Public registration allows patient or passcode-protected asha_worker
     role: Literal['patient', 'asha_worker'] = 'patient'
-    password: str = Field(..., min_length=12, max_length=128)
+    password: str = Field(..., min_length=7, max_length=128)
     asha_passcode: Optional[str] = Field(default=None, max_length=64)
     asha_worker_id: Optional[str] = Field(default=None, max_length=64)
 

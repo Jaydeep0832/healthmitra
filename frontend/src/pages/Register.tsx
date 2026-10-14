@@ -33,7 +33,7 @@ export default function Register() {
   const { checkAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  const isPasswordLongEnough = password.length >= 12;
+  const isPasswordLongEnough = password.length >= 7;
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +50,7 @@ export default function Register() {
     }
 
     if (!isPasswordLongEnough) {
-      setErrorMsg('Password must be at least 12 characters long for healthcare data security.');
+      setErrorMsg('Password must be at least 7 characters long.');
       return;
     }
 
@@ -258,7 +258,7 @@ export default function Register() {
                   Password
                 </label>
                 <span className={`text-[10px] font-bold ${isPasswordLongEnough ? 'text-emerald-600' : 'text-slate-400'}`}>
-                  {password.length}/12 characters minimum
+                  {password.length}/7 characters minimum
                 </span>
               </div>
               <div className="relative rounded-2xl shadow-2xs">
@@ -277,11 +277,11 @@ export default function Register() {
                   className={`block w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-slate-900 bg-slate-50/50 border rounded-2xl focus:bg-white focus:outline-none focus:ring-2 transition disabled:opacity-60 ${
                     password.length > 0 && !isPasswordLongEnough
                       ? 'border-amber-300 focus:ring-amber-500 focus:border-amber-500'
-                      : password.length >= 12
+                      : password.length >= 7
                       ? 'border-emerald-300 focus:ring-emerald-500 focus:border-emerald-500'
                       : 'border-slate-200 focus:ring-emerald-500 focus:border-emerald-500'
                   }`}
-                  placeholder="At least 12 characters"
+                  placeholder="At least 7 characters"
                 />
                 <button
                   type="button"
@@ -301,7 +301,7 @@ export default function Register() {
                   }`}
                 />
                 <span className={isPasswordLongEnough ? 'text-emerald-700 font-semibold' : 'text-slate-500'}>
-                  12+ characters required (protects patient medical privacy)
+                  7+ characters required
                 </span>
               </div>
             </div>
