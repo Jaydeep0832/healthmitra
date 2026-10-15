@@ -15,6 +15,20 @@ interface StepItem {
 export default function FormattedMessage({ content, isEscalated }: FormattedMessageProps) {
   if (!content) return null;
 
+  if (content === '...') {
+    return (
+      <div className="flex items-center space-x-2 py-1 px-1">
+        <div className="flex space-x-1">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce"></div>
+        </div>
+        <span className="text-xs text-slate-500 font-medium ml-1.5">HealthMitra AI is preparing clinical advice...</span>
+      </div>
+    );
+  }
+
+
   // Render inline formatting (**bold**, *italic*)
   const renderInlineFormatted = (text: string) => {
     // Split by bold (**text**)

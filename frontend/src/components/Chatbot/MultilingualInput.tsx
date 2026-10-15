@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useChatStore } from '../../store/useChatStore';
+import { Send, Mic, MicOff, Loader2, ShieldCheck } from 'lucide-react';
 
 export default function MultilingualInput() {
   const [text, setText] = useState('');
@@ -34,12 +35,10 @@ export default function MultilingualInput() {
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = false;
-    // For MVP, we can rely on browser default lang or pass specific lang based on store.
-    // recognition.lang = currentLanguage === 'auto' ? 'en-US' : currentLanguage;
     
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setText((prev) => prev + " " + transcript);
+      setText((prev) => (prev ? prev + " " + transcript : transcript));
     };
 
     recognition.onerror = (event: any) => {
@@ -57,54 +56,74 @@ export default function MultilingualInput() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-gray-200">
-      <div className="flex items-end space-x-2">
-        <button
-          type="button"
-          onClick={toggleRecording}
-          className={`p-3 rounded-full flex-shrink-0 transition-colors ${
-            isRecording ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-          title="Voice Input"
-        >
-          {/* Simple Mic Icon */}
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-          </svg>
-        </button>
-        
-        <div className="flex-1 relative">
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Describe your symptoms here..."
-            className="w-full resize-none rounded-xl border border-gray-300 py-3 px-4 focus:ring-2 focus:ring-blue-600 focus:border-transparent min-h-[50px] max-h-[150px]"
-            rows={1}
-            disabled={isLoading}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
+    <div className="shrink-0 bg-white/95 backdrop-blur-md border-t border-slate-200/90 p-3 sm:px-4 sm:py-3 z-10">
+      <form onSubmit={handleSubmit} className="space-y-1.5">
+        <div className="flex items-end space-x-2">
+          {/* Voice Input Mic Button */}
+          <button
+            type="button"
+            onClick={toggleRecording}
+            className={`p-2.5 sm:p-3 rounded-xl flex-shrink-0 transition-all ${
+              isRecording
+                ? 'bg-red-50 text-red-600 border border-red-300 animate-pulse shadow-sm shadow-red-500/20'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900 border border-slate-200/80'
+            }`}
+            title={isRecording ? 'Stop Recording' : 'Voice Input (Speech-to-text)'}
+            aria-label="Voice Input"
+          >
+            {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+          </button>
+          
+          {/* Main Input Textarea */}
+          <div className="flex-1 relative">
+            <textarea
+              id="chat-input"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Type your health questions or symptoms... (Press Enter to send)"
+              className="w-full resize-none rounded-xl border border-slate-300 py-2.5 px-3.5 sm:px-4 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent min-h-[46px] max-h-[110px] leading-relaxed transition"
+              rows={1}
+              disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+          </div>
+
+          {/* Send Command Button */}
+          <button
+            type="submit"
+            id="chat-send-btn"
+            disabled={!text.trim() || isLoading}
+            className={`p-2.5 sm:px-4 sm:py-2.5 rounded-xl flex-shrink-0 transition-all font-bold text-xs sm:text-sm flex items-center gap-1.5 ${
+              !text.trim() || isLoading
+                ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-sm shadow-emerald-600/25 active:scale-95'
+            }`}
+            title="Send Message"
+            aria-label="Send Message"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <Send className="w-4 h-4" />
+                <span className="hidden sm:inline">Send</span>
+              </>
+            )}
+          </button>
         </div>
 
-        <button
-          type="submit"
-          disabled={!text.trim() || isLoading}
-          className={`p-3 rounded-full flex-shrink-0 transition-colors ${
-            !text.trim() || isLoading 
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-              : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
-          }`}
-        >
-          {/* Send Icon */}
-          <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-        </button>
-      </div>
-    </form>
+        {/* Micro Disclaimer Bar */}
+        <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] text-slate-400 font-medium">
+          <ShieldCheck className="h-3 w-3 text-emerald-600 shrink-0" />
+          <span>AI Clinical Assistant • In acute emergencies, immediately dial <strong>108</strong></span>
+        </div>
+      </form>
+    </div>
   );
 }
+
