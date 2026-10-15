@@ -15,38 +15,41 @@ except ImportError:
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODELS = ["qwen/qwen3.8-27b", "openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
 hospital_service = HospitalService()
 
 
 # =============================================================================
-# Groq/Llama Translation Helper
+# Groq Translation Helper
 # =============================================================================
 
-def _call_llm(prompt: str, temperature: float = 0.2, timeout: int = 30) -> str:
-    """Call Groq API (Llama 3.3) and return raw text response."""
+def _call_llm(prompt: str, temperature: float = 0.2, timeout: int = 20) -> str:
+    """Call Groq API (multi-model cascade) and return raw text response."""
     if not GROQ_API_KEY or not REQUESTS_AVAILABLE:
         print("[Groq] Skipped — API key not configured")
         return ""
-    try:
-        headers = {
-            "Authorization": f"Bearer {GROQ_API_KEY}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "model": GROQ_MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": temperature,
-            "max_tokens": 2048
-        }
-        resp = http_requests.post(GROQ_URL, json=payload, headers=headers, timeout=timeout)
-        if resp.status_code == 200:
-            return resp.json()["choices"][0]["message"]["content"]
-        else:
-            print(f"[Groq] HTTP {resp.status_code}: {resp.text[:200]}")
-    except Exception as e:
-        print(f"[Groq] Error: {e}")
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+        "User-Agent": "HealthMitra/2.0"
+    }
+    for model_name in GROQ_MODELS:
+        try:
+            payload = {
+                "model": model_name,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature,
+                "max_tokens": 500
+            }
+            resp = http_requests.post(GROQ_URL, json=payload, headers=headers, timeout=timeout)
+            if resp.status_code == 200:
+                return resp.json()["choices"][0]["message"]["content"]
+            else:
+                print(f"[Groq] Model {model_name} HTTP {resp.status_code}: {resp.text[:150]}")
+        except Exception as e:
+            print(f"[Groq] Error on {model_name}: {e}")
+            continue
     return ""
 
 

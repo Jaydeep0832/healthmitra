@@ -312,7 +312,8 @@ Respond ONLY as a valid JSON object matching this schema:
             completion = await asyncio.wait_for(
                 llm_service.client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
-                    model="llama-3.3-70b-versatile",
+                    model=llm_service.model,
+                    max_tokens=500,
                     response_format={"type": "json_object"}
                 ),
                 timeout=8.0
