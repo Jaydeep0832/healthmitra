@@ -19,6 +19,15 @@ PREFERRED_MODELS = [
 ]
 
 
+def clean_completed_response(text: str) -> str:
+    """Removes trailing dangling numbers (e.g. ' 5.' or ' 5') if the output was truncated."""
+    if not text:
+        return ""
+    cleaned = text.strip()
+    cleaned = re.sub(r'(?:\s|^)[0-9]{1,2}\.?\s*$', '', cleaned).strip()
+    return cleaned
+
+
 def extract_json_from_llm(raw_text: str) -> Optional[Dict[str, Any]]:
     """Clean markdown code fences and extract valid JSON dictionary."""
     if not raw_text:
@@ -30,7 +39,10 @@ def extract_json_from_llm(raw_text: str) -> Optional[Dict[str, Any]]:
     
     # Try direct parse
     try:
-        return json.loads(cleaned)
+        data = json.loads(cleaned)
+        if isinstance(data, dict) and "response" in data:
+            data["response"] = clean_completed_response(data["response"])
+            return data
     except Exception:
         pass
     
@@ -39,7 +51,10 @@ def extract_json_from_llm(raw_text: str) -> Optional[Dict[str, Any]]:
     end = cleaned.rfind("}")
     if start != -1 and end != -1 and end > start:
         try:
-            return json.loads(cleaned[start:end + 1])
+            data = json.loads(cleaned[start:end + 1])
+            if isinstance(data, dict) and "response" in data:
+                data["response"] = clean_completed_response(data["response"])
+                return data
         except Exception:
             pass
 
@@ -48,7 +63,7 @@ def extract_json_from_llm(raw_text: str) -> Optional[Dict[str, Any]]:
     if match:
         response_text = match.group(1).replace(r'\"', '"').replace(r'\n', '\n')
         return {
-            "response": response_text,
+            "response": clean_completed_response(response_text),
             "confidence": 0.90,
             "should_escalate": False,
             "ai_diagnosis": "Healthcare Guidance",
@@ -79,7 +94,7 @@ class GroqChatClient:
             "User-Agent": "HealthMitra/2.0 (Healthcare Assistant)"
         }
 
-        async with httpx.AsyncClient(timeout=12.0) as client:
+        async with httpx.AsyncClient(timeout=14.0) as client:
             for model_name in self.models:
                 payload = {
                     "model": model_name,
@@ -87,8 +102,8 @@ class GroqChatClient:
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": text}
                     ],
-                    # Cap tokens strictly under 500 to never exceed Groq's 1000 OTPM limit
-                    "max_tokens": 450,
+                    # Ample token limit allowing all points and closing guidance to complete fully
+                    "max_tokens": 900,
                     "temperature": 0.2
                 }
                 try:
@@ -103,11 +118,11 @@ class GroqChatClient:
                                 return MedicalResponse.model_validate(parsed_dict)
                             # If content is plain text, sanitize if raw JSON was returned
                             elif content.strip():
-                                clean_text = content.strip()
+                                clean_text = clean_completed_response(content.strip())
                                 if clean_text.startswith("{") and '"response"' in clean_text:
                                     resp_match = re.search(r'"response"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)', clean_text)
                                     if resp_match:
-                                        clean_text = resp_match.group(1).replace(r'\"', '"').replace(r'\n', '\n')
+                                        clean_text = clean_completed_response(resp_match.group(1).replace(r'\"', '"').replace(r'\n', '\n'))
                                 return MedicalResponse(
                                     response=clean_text,
                                     confidence=0.88,

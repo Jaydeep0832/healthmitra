@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useChatStore } from '../../store/useChatStore';
+import FormattedMessage from './FormattedMessage';
 
 export default function ChatHistory() {
   const { messages } = useChatStore();
@@ -33,15 +34,8 @@ export default function ChatHistory() {
           
           {/* AI Response */}
           <div className="flex justify-start">
-            <div className={`rounded-2xl rounded-tl-none px-4 py-3 max-w-[90%] shadow-sm ${msg.should_escalate ? 'bg-red-50 border border-red-200' : 'bg-white border border-gray-100'}`}>
-              <div className="prose prose-sm max-w-none text-gray-800">
-                <p>{msg.ai_response}</p>
-                {msg.should_escalate && (
-                  <div className="mt-2 text-sm text-red-600 font-bold border-t border-red-200 pt-2">
-                    ⚠️ Immediate medical attention is recommended.
-                  </div>
-                )}
-              </div>
+            <div className={`rounded-2xl rounded-tl-none p-4 max-w-[94%] sm:max-w-[85%] shadow-sm ${msg.should_escalate ? 'bg-red-50/70 border border-red-200' : 'bg-white border border-slate-200/90'}`}>
+              <FormattedMessage content={msg.ai_response} isEscalated={msg.should_escalate} />
             </div>
           </div>
         </div>
