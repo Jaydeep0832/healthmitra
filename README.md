@@ -13,7 +13,7 @@
 
 **Empowering rural Indian healthcare with vernacular AI symptom triage, diagnostic report interpretation, geospatial facility discovery, and community frontline (ASHA) worker field orchestration.**
 
-[Explore Live Demo](http://localhost:3000) • [API Documentation](http://localhost:8000/docs) • [Report a Vulnerability](https://github.com/Jaydeep0832/healthmitra/issues)
+[🌐 Live Web Platform](https://healthmitra-dsgg.onrender.com) • [🏥 Healthcare Locator](https://healthmitra-dsgg.onrender.com/hospitals) • [💬 AI Assistant](https://healthmitra-dsgg.onrender.com/chatbot) • [API Health](https://healthmitra-backend-mu58.onrender.com/api/health) • [Report Issue](https://github.com/Jaydeep0832/healthmitra/issues)
 
 </div>
 
@@ -93,11 +93,11 @@ HealthMitra 2.0 provides an end-to-end digital health infrastructure designed fo
 
 ---
 
-### 2. 🗺️ Geospatial Medical Facilities & Hospital Locator
-> **Interactive OpenStreetMap geospatial engine** indexing 1,000+ verified health facilities across all 33 districts of Gujarat. Filter by ICU beds, oxygen availability, 24/7 Jan Aushadhi pharmacies, and instant driving directions.
+### 2. 🗺️ Geospatial Medical Facilities & Healthcare Locator
+> **Interactive geospatial discovery engine** indexing 169+ verified health facilities (Civil Hospitals, private multispeciality centers, primary health clinics, and 24/7 Jan Aushadhi pharmacies) across all 33 districts of Gujarat. Filter by distance radius (5km to 500km), bed counts, ICU availability, ambulance fleet, and view complete facility specifications with turn-by-turn GPS directions.
 
 <p align="center">
-  <img src="docs/screenshots/04_hospital_facilities.png" alt="Geospatial Hospital Locator & Facilities" width="100%" />
+  <img src="docs/screenshots/04_hospital_facilities.png" alt="Geospatial Healthcare Locator & Facilities" width="100%" />
 </p>
 
 ---
@@ -147,11 +147,21 @@ HealthMitra 2.0 provides an end-to-end digital health infrastructure designed fo
 
 ---
 
-### 8. 💬 Vernacular AI Healthcare Assistant & Dual-Role Onboarding
+### 8. 💬 24/7 Vernacular Clinical AI Assistant
+> **Full-viewport conversational clinical agent** delivering evidence-based triage, health scheme guidance (such as Ayushman Bharat PM-JAY and MA Yojana application workflows), symptom analysis, and preventative counseling in 5 Indian languages (Gujarati, Hindi, Marathi, Bengali, and English) with structured action cards and emergency 108 integration.
 
-| 💬 24/7 Vernacular Medical Chatbot | 🔐 Dual-Role Patient & ASHA Onboarding |
-| :---: | :---: |
-| <img src="docs/screenshots/08_ai_chatbot.png" alt="AI Chatbot Assistant" width="100%" /> | <img src="docs/screenshots/02_onboarding_register.png" alt="User Registration & Role Selection" width="100%" /> |
+<p align="center">
+  <img src="docs/screenshots/08_ai_chatbot.png" alt="HealthMitra Vernacular AI Assistant in Gujarati" width="100%" />
+</p>
+
+---
+
+### 9. 🔐 Dual-Role Patient & Frontline ASHA Onboarding
+> **Streamlined role-based authentication** supporting both rural citizens and accredited ASHA community health workers with secure passcode validation and encrypted patient profiles.
+
+<p align="center">
+  <img src="docs/screenshots/02_onboarding_register.png" alt="User Registration & Role Selection" width="100%" />
+</p>
 
 ---
 
