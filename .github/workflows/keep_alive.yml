@@ -1,0 +1,39 @@
+name: Keep Live Backend Awake
+
+on:
+  schedule:
+    # Run every 10 minutes to reset Render's 15-minute inactivity sleep timer
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
+
+jobs:
+  ping-services:
+    name: Ping HealthMitra Live Services
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Backend Health Endpoint
+        run: |
+          echo "Pinging HealthMitra backend at $(date -u)..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" --max-time 60 https://healthmitra-backend-mu58.onrender.com/api/health)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          echo "Backend HTTP Status: $HTTP_CODE"
+          echo "Backend Response Body: $BODY"
+          
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Backend is active and healthy."
+          else
+            echo "⚠️ Unexpected status code: $HTTP_CODE. Retrying in 5s..."
+            sleep 5
+            curl -sSf --max-time 60 https://healthmitra-backend-mu58.onrender.com/api/health
+          fi
+
+      - name: Ping Frontend Site
+        run: |
+          echo "Pinging HealthMitra frontend at $(date -u)..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://healthmitra-dsgg.onrender.com)
+          echo "Frontend HTTP Status: $HTTP_CODE"
+          if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 304 ]; then
+            echo "✅ Frontend is reachable and warm."
+          fi
