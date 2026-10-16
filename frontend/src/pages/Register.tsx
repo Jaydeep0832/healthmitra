@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
+import { useChatStore } from '../store/useChatStore';
 import { authService } from '../services/auth';
 import { getApiErrorMessage } from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
@@ -63,6 +64,7 @@ export default function Register() {
     setErrorMsg('');
 
     try {
+      useChatStore.getState().resetChat();
       await authService.register({
         email: email.trim().toLowerCase(),
         password,
@@ -72,8 +74,9 @@ export default function Register() {
         asha_worker_id: role === 'asha_worker' ? ashaWorkerId.trim() : undefined,
       });
 
-      // Automatically login after successful registration
+      // Automatically login after successful registration and reset chat session
       await authService.login(email.trim().toLowerCase(), password);
+      useChatStore.getState().resetChat();
       await checkAuth();
       navigate('/dashboard');
     } catch (error: unknown) {

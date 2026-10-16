@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
+import { useChatStore } from '../store/useChatStore';
 import { authService } from '../services/auth';
 import { getApiErrorMessage } from '../services/api';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -37,10 +38,12 @@ export default function Login() {
 
     setLoading(true);
     setErrorMsg('');
+    useChatStore.getState().resetChat();
 
     try {
       await authService.login(email.trim().toLowerCase(), password);
       await checkAuth();
+      useChatStore.getState().resetChat();
       const destination = (location.state as any)?.from?.pathname || '/dashboard';
       navigate(destination, { replace: true });
     } catch (error: unknown) {

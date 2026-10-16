@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useChatStore } from '../../store/useChatStore';
 import { useTranslation } from '../../i18n/I18nContext';
 import LanguageSelector from '../Common/LanguageSelector';
 import {
@@ -29,6 +30,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
+    useChatStore.getState().resetChat();
     logout();
     navigate('/login');
   };

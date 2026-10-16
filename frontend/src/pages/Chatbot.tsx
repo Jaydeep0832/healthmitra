@@ -3,14 +3,20 @@ import ChatHistory from '../components/Chatbot/ChatHistory';
 import MultilingualInput from '../components/Chatbot/MultilingualInput';
 import LanguageSelector from '../components/Chatbot/LanguageSelector';
 import { useChatStore } from '../store/useChatStore';
-import { Bot, Sparkles } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
+import { Bot, Sparkles, PlusCircle } from 'lucide-react';
 
 export default function Chatbot() {
-  const { fetchHistory } = useChatStore();
+  const { fetchHistory, startNewSession, isLoading } = useChatStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    fetchHistory(user?.id);
+  }, [fetchHistory, user?.id]);
+
+  const handleNewSession = async () => {
+    await startNewSession();
+  };
 
   return (
     <div className="flex-1 min-h-0 flex flex-col h-full w-full overflow-hidden bg-slate-50">
@@ -41,6 +47,16 @@ export default function Chatbot() {
         </div>
 
         <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={handleNewSession}
+            disabled={isLoading}
+            title="Start a new consultation session"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200/90 bg-white hover:bg-emerald-50 text-xs font-semibold text-slate-700 hover:text-emerald-800 hover:border-emerald-300 transition-all shadow-2xs cursor-pointer disabled:opacity-60"
+          >
+            <PlusCircle className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="hidden xs:inline">New Chat</span>
+          </button>
           <LanguageSelector />
         </div>
       </header>

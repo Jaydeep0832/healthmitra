@@ -25,3 +25,4 @@ class ChatSessionResponse(ChatSessionCreate):
 class ChatRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=5000)
     language: Literal["auto", "en", "hi", "gu", "mr", "bn"]
+    session_id: Optional[str] = None
