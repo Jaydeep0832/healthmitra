@@ -35,7 +35,7 @@ async def find_nearby_hospitals(
         True, description="Import nearby clinics and pharmacies from OpenStreetMap"
     ),
     sort_by: str = Query("distance", description="Sort: distance, rating, bed_count"),
-    limit: int = Query(20, ge=1, le=100, description="Results per page"),
+    limit: int = Query(20, ge=1, le=500, description="Results per page"),
     page: int = Query(1, ge=1, description="Page number"),
 ):
     """

@@ -5,6 +5,8 @@ import HospitalMap from '../components/HospitalLocator/Map';
 import HospitalList from '../components/HospitalLocator/HospitalList';
 import FilterPanel from '../components/HospitalLocator/FilterPanel';
 
+import { getApiErrorMessage } from '../services/api';
+
 const HospitalsPage: React.FC = () => {
   const {
     userLat,
@@ -101,11 +103,13 @@ const HospitalsPage: React.FC = () => {
         facility_type: facilityFilter || undefined,
         include_external: true,
         sort_by: sortBy,
-        limit: 200,
+        limit: 100,
       });
-      setHospitals(result.hospitals, result.total);
+      const list = Array.isArray(result?.hospitals) ? result.hospitals : [];
+      const total = typeof result?.total === 'number' ? result.total : list.length;
+      setHospitals(list, total);
     } catch (err: any) {
-      setError(err?.response?.data?.detail || 'Failed to load healthcare facilities');
+      setError(getApiErrorMessage(err, 'Failed to load healthcare facilities'));
       setHospitals([], 0);
     }
   }, [
@@ -201,6 +205,7 @@ const HospitalsPage: React.FC = () => {
                 selectedHospital={selectedHospital}
                 onSelect={setSelectedHospital}
                 loading={loading}
+                onRadiusExpand={setSearchRadius}
               />
             </div>
           </div>

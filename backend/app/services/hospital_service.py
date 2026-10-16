@@ -228,7 +228,7 @@ class HospitalService:
 
         hospitals = await collection.aggregate(pipeline).to_list(limit)
 
-        # Fallback: If 0 results found via radius but user filtered by district/service/facility_type,
+        # Fallback 1: If 0 results found via radius but user filtered by district/service/facility_type,
         # perform a direct database query so facilities in distant districts are never hidden.
         if total == 0 and match_filter:
             cursor = collection.find(match_filter)
@@ -245,6 +245,34 @@ class HospitalService:
                     h_lng, h_lat = d["location"]["coordinates"]
                     d["distance_km"] = round(self._haversine(latitude, longitude, h_lat, h_lng), 2)
                 hospitals.append(d)
+        elif total == 0:
+            # Fallback 2: If no facilities found in strict radius, query closest facilities in Gujarat
+            # so the user is never presented with a blank map or empty results.
+            nearest_pipeline = [
+                {
+                    "$geoNear": {
+                        "near": {
+                            "type": "Point",
+                            "coordinates": [longitude, latitude],
+                        },
+                        "distanceField": "distance_meters",
+                        "spherical": True,
+                        "query": {},
+                    }
+                },
+                {
+                    "$addFields": {
+                        "distance_km": {"$round": [{"$divide": ["$distance_meters", 1000]}, 2]},
+                        "id": {"$toString": "$_id"},
+                    }
+                },
+                {"$project": {"_id": 0, "distance_meters": 0}},
+                {"$limit": min(limit, 50)},
+            ]
+            fallback_docs = await collection.aggregate(nearest_pipeline).to_list(min(limit, 50))
+            if fallback_docs:
+                hospitals = fallback_docs
+                total = len(fallback_docs)
 
         return {
             "hospitals": hospitals,
