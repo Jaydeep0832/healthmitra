@@ -56,8 +56,8 @@ class HospitalService:
 
     async def seed_from_csv(self, csv_path: Optional[str] = None) -> int:
         """
-        Load hospital data from CSV into MongoDB.
-        Returns the number of hospitals inserted.
+        Load hospital, clinic, and pharmacy data from CSV into MongoDB.
+        Performs an idempotent upsert so existing records are preserved and updated.
         """
         if csv_path is None:
             csv_path = os.path.join(
@@ -67,19 +67,34 @@ class HospitalService:
         collection = await self._get_collection()
         await self.ensure_indexes()
 
-        # Check if already seeded
-        count = await collection.count_documents({})
-        if count > 0:
-            return count
-
-        hospitals = []
+        facilities = []
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                hospital = {
-                    "name": row["name"].strip(),
-                    "facility_type": "hospital",
-                    "hospital_type": row["type"].strip(),
+                name = row["name"].strip()
+                name_lower = name.lower()
+                row_type = row.get("type", "").strip()
+                type_lower = row_type.lower()
+                
+                # Determine facility category: hospital, clinic, or pharmacy
+                facility_type = row.get("facility_type", "").strip().lower()
+                if not facility_type:
+                    if any(w in name_lower for w in ["clinic", "dental", "dr.", "eye care", "ent hospital", "pathology", "dispensary", "polyclinic", "uphc", "phc", "child care", "veterinary"]) or type_lower in ["clinic", "dental", "veterinary", "specialty", "ayurvedic", "homeopathy"]:
+                        facility_type = "clinic"
+                    elif any(w in name_lower for w in ["pharmacy", "chemist", "medical store", "aushadhi", "dawa", "druggist"]) or type_lower in ["pharmacy", "medical_store"]:
+                        facility_type = "pharmacy"
+                    else:
+                        facility_type = "hospital"
+
+                # Parse bed count safely
+                bed_count = 0
+                if row.get("bed_count") and row["bed_count"].strip().isdigit():
+                    bed_count = int(row["bed_count"].strip())
+
+                facility = {
+                    "name": name,
+                    "facility_type": facility_type,
+                    "hospital_type": row_type or ("government" if "civil" in name_lower or "uphc" in name_lower else "private"),
                     "address": row["address"].strip(),
                     "location": {
                         "type": "Point",
@@ -88,25 +103,36 @@ class HospitalService:
                             float(row["latitude"]),
                         ],
                     },
-                    "contact": row["contact"].strip(),
+                    "contact": row.get("contact", "").strip(),
                     "services": [
-                        s.strip() for s in row["services"].split(",")
+                        s.strip() for s in row.get("services", "").split(",") if s.strip()
                     ],
-                    "bed_count": int(row["bed_count"]),
-                    "ambulance": row["ambulance"].strip().lower() == "true",
-                    "operating_hours": row["operating_hours"].strip(),
-                    "state": row["state"].strip(),
-                    "district": row["district"].strip(),
-                    "rating": float(row["rating"]),
+                    "bed_count": bed_count,
+                    "ambulance": row.get("ambulance", "false").strip().lower() == "true",
+                    "operating_hours": row.get("operating_hours", "24/7").strip(),
+                    "state": row.get("state", "Gujarat").strip(),
+                    "district": row.get("district", "Gujarat").strip(),
+                    "rating": float(row.get("rating", 4.0)),
                     "source": "healthmitra_seed",
-                    "source_id": f"healthmitra:{row['name'].strip().lower()}",
+                    "source_id": f"healthmitra:{name_lower.replace(' ', '_')}",
                 }
-                hospitals.append(hospital)
+                facilities.append(facility)
 
-        if hospitals:
-            await collection.insert_many(hospitals)
+        if facilities:
+            from pymongo import UpdateOne
+            operations = [
+                UpdateOne(
+                    {"name": f["name"], "district": f["district"]},
+                    {"$set": f},
+                    upsert=True
+                )
+                for f in facilities
+            ]
+            await collection.bulk_write(operations, ordered=False)
 
-        return len(hospitals)
+        count = await collection.count_documents({})
+        return count
+
 
     # ── Geospatial Queries ──────────────────────────────────────────
 

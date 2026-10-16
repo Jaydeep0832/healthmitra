@@ -39,7 +39,7 @@ const sortOptions = [
   { value: 'bed_count', label: '🛏️ Beds' },
 ];
 
-const radiusOptions = [5, 10, 25, 50, 100];
+const radiusOptions = [5, 10, 25, 50, 100, 250, 500];
 
 const FilterPanel: React.FC<FilterPanelProps> = ({
   searchRadius,

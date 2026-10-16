@@ -86,8 +86,8 @@ class OpenStreetMapService:
         radius_meters = radius_km * 1000
         return f"""[out:json][timeout:20];
 (
-  nwr(around:{radius_meters},{latitude},{longitude})["amenity"~"clinic|doctors|dentist|pharmacy"];
-  nwr(around:{radius_meters},{latitude},{longitude})["healthcare"~"clinic|doctor|dentist|pharmacy"];
+  nwr(around:{radius_meters},{latitude},{longitude})["amenity"~"hospital|clinic|doctors|dentist|pharmacy"];
+  nwr(around:{radius_meters},{latitude},{longitude})["healthcare"~"hospital|clinic|doctor|dentist|pharmacy"];
   nwr(around:{radius_meters},{latitude},{longitude})["shop"~"chemist|pharmacy|medical_supply"];
 );
 out center tags;"""
@@ -99,11 +99,12 @@ out center tags;"""
         return """[out:json][timeout:180];
 area["name"="Gujarat"]["boundary"="administrative"]["admin_level"="4"]->.searchArea;
 (
-  nwr(area.searchArea)["amenity"~"clinic|doctors|dentist|pharmacy"];
-  nwr(area.searchArea)["healthcare"~"clinic|doctor|dentist|pharmacy"];
+  nwr(area.searchArea)["amenity"~"hospital|clinic|doctors|dentist|pharmacy"];
+  nwr(area.searchArea)["healthcare"~"hospital|clinic|doctor|dentist|pharmacy"];
   nwr(area.searchArea)["shop"~"chemist|pharmacy|medical_supply"];
 );
 out center tags;"""
+
 
     def _fetch(self, query: str, timeout: int = 25) -> List[Dict[str, Any]]:
         last_error: Optional[Exception] = None
@@ -210,7 +211,13 @@ out center tags;"""
             or tags.get("healthcare") in {"clinic", "doctor", "dentist"}
         ):
             return "clinic"
+        if (
+            tags.get("amenity") == "hospital"
+            or tags.get("healthcare") == "hospital"
+        ):
+            return "hospital"
         return None
+
 
     @staticmethod
     def _address(tags: Dict[str, str]) -> str:

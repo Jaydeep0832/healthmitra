@@ -101,7 +101,7 @@ const HospitalsPage: React.FC = () => {
         facility_type: facilityFilter || undefined,
         include_external: true,
         sort_by: sortBy,
-        limit: 50,
+        limit: 200,
       });
       setHospitals(result.hospitals, result.total);
     } catch (err: any) {
