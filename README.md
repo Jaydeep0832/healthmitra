@@ -13,7 +13,7 @@
 
 **Empowering rural Indian healthcare with vernacular AI symptom triage, diagnostic report interpretation, geospatial facility discovery, and community frontline (ASHA) worker field orchestration.**
 
-[🌐 Live Web Platform](https://healthmitra-dsgg.onrender.com) • [🏥 Healthcare Locator](https://healthmitra-dsgg.onrender.com/hospitals) • [💬 AI Assistant](https://healthmitra-dsgg.onrender.com/chatbot) • [API Health](https://healthmitra-backend-mu58.onrender.com/api/health) • [Report Issue](https://github.com/Jaydeep0832/healthmitra/issues)
+[🌐 Live Web Platform](https://healthmitra-dsgg.onrender.com) • [🏥 Healthcare Locator](https://healthmitra-dsgg.onrender.com/hospitals) • [💬 AI Assistant](https://healthmitra-dsgg.onrender.com/chatbot) • [🔐 Sign In](https://healthmitra-dsgg.onrender.com/login) • [API Health](https://healthmitra-backend-mu58.onrender.com/api/health) • [Report Issue](https://github.com/Jaydeep0832/healthmitra/issues)
 
 </div>
 
@@ -156,12 +156,12 @@ HealthMitra 2.0 provides an end-to-end digital health infrastructure designed fo
 
 ---
 
-### 9. 🔐 Dual-Role Patient & Frontline ASHA Onboarding
-> **Streamlined role-based authentication** supporting both rural citizens and accredited ASHA community health workers with secure passcode validation and encrypted patient profiles.
+### 9. 🔐 Dual-Role Authentication & Onboarding (Login & Signup)
+> **256-bit encrypted healthcare sessions** supporting dual roles for rural citizens/patients and accredited ASHA community health workers. Features passcode-protected field worker credentials, automated token rotation, quick-dial healthcare helplines, and localized access.
 
-<p align="center">
-  <img src="docs/screenshots/02_onboarding_register.png" alt="User Registration & Role Selection" width="100%" />
-</p>
+| 🔑 Secure Patient & Worker Login | 📝 Dual-Role Registration & Role Assignment |
+| :---: | :---: |
+| <img src="docs/screenshots/02_onboarding_login.png" alt="HealthMitra Patient & Worker Login Portal" width="100%" /> | <img src="docs/screenshots/02_onboarding_register.png" alt="HealthMitra Dual-Role Registration" width="100%" /> |
 
 ---
 
